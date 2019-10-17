@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#f16638</color>
+    <color name="colorAccent2">#d23d0c</color>
+    <color name="colorGradient1">#fccc5a</color>
+    <color name="colorGradient2">#f15824</color>
+    <color name="circle_lock_screen_pf">#EE5555</color>
+    <color name="background_lock_screen_pf">#663333</color>
+    <color name="code_lock_screen_pf">#f4511e</color>
+    <color name="white_selector_pf">#66ffffff</color>
+    <color name="hint_color">#42000000</color>
+    <color name="warning_color">#f4511e</color>
+    <color name="success_color">#009688</color>
+    <color name="pass_color">#00aa00</color>
+    <color name="error_color">#aa0000</color>
+</resources>

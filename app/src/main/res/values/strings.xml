@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">JDID eKYC</string>
+    <string name="please_register">กรุณาลงทะเบียนอุปกรณ์</string>
+    <string name="device_id">รหัสอุปกรณ์</string>
+    <string name="manager_name">ชื่อนามสกุล ผู้จัดการสาขา</string>
+    <string name="branch_name">ชื่อสาขา</string>
+    <string name="phone_number">เบอร์โทรศัพท์</string>
+    <string name="email">อีเมล์</string>
+    <string name="next_step">ขั้นตอนต่อไป</string>
+    <string name="lock_screen_title_pf">Input pin code or use fingerprint</string>
+    <string name="forgot_pf">Forgot?</string>
+    <string name="next_pf">Next</string>
+    <string name="assign_pin">กำหนด PIN Code จำนวน 6 หลัก</string>
+    <string name="confirm_assign_pin">ยืนยัน PIN Code อีกครั้ง</string>
+    <string name="input_pin">กรุณาระบุ PIN Code ให้ถูกต้อง</string>
+    <string name="missing_confirm_pin">ยืนยัน PIN Code ไม่ถูกต้อง กรุณาลองอีกครั้ง</string>
+    <string name="finish">เสร็จสิ้น</string>
+    <string name="verify_person">ตรวจสอบบุคคล</string>
+    <string name="register_ekyc">ลงทะเบียน eKYC</string>
+    <string name="get_data_from_card">กรุณากดเพื่ออ่านข้อมูลจากบัตร</string>
+    <string name="compare_success">สำเร็จ</string>
+    <string name="compare_success_description">อัตลักษณ์ภาพถ่ายตรงกัน</string>
+    <string name="compare_fail">ล้มเหลว</string>
+    <string name="compare_fail_description">อัตลักษณ์ภาพถ่ายไม่ตรงกัน</string>
+    <string name="try_again">ลองอีกครั้ง</string>
+    <string name="kyc_title">ลงทะเบียน eKYC</string>
+    <string name="company_name">ชื่อบริษัท</string>
+    <string-array name="mariageStatusList">
+        <item>โสด</item>
+        <item>สมรส</item>
+        <item>หย่า</item>
+    </string-array>
+</resources>
