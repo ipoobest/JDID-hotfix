@@ -63,13 +63,24 @@ public class WaitForAuthoriseFragment extends Fragment implements WaitForAuthori
     }
 
     private String formatImei(String strImei) {
-        String strReturn = strImei.substring(0,4);
-        strReturn += "-";
-        strReturn += strImei.substring(4,8);
-        strReturn += "-";
-        strReturn += strImei.substring(8,12);
-        strReturn += "-";
-        strReturn += strImei.substring(12,16);
+        String strReturn = "";
+        if (strImei.length() == 15){
+            strReturn = strImei.substring(0,4);
+            strReturn += "-";
+            strReturn += strImei.substring(4,8);
+            strReturn += "-";
+            strReturn += strImei.substring(8,12);
+            strReturn += "-";
+            strReturn += strImei.substring(12,15);
+        }else {
+            strReturn = strImei.substring(0,4);
+            strReturn += "-";
+            strReturn += strImei.substring(4,8);
+            strReturn += "-";
+            strReturn += strImei.substring(8,12);
+            strReturn += "-";
+            strReturn += strImei.substring(12,16);
+        }
         return strReturn;
     }
 }

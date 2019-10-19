@@ -166,10 +166,13 @@ public class RegisterFragment extends Fragment {
         if (Build.VERSION.SDK_INT >= 26) {
             if (mTelephonyMgr.getPhoneType() == TelephonyManager.PHONE_TYPE_CDMA) {
                 imei = Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
+
             } else if (mTelephonyMgr.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
                 imei = Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
+
             } else {
                 imei = ""; // default!!!
+
             }
         } else {
             imei = Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -180,16 +183,28 @@ public class RegisterFragment extends Fragment {
         edBranch = view.findViewById(R.id.edBranch);
         edPhone = view.findViewById(R.id.edPhone);
         edEmail = view.findViewById(R.id.edEMail);
+
     }
 
     private String formatImei(String strImei) {
-        String strReturn = strImei.substring(0,4);
-        strReturn += "-";
-        strReturn += strImei.substring(4,8);
-        strReturn += "-";
-        strReturn += strImei.substring(8,12);
-        strReturn += "-";
-        strReturn += strImei.substring(12,16);
+        String strReturn = "";
+        if (strImei.length() == 15){
+            strReturn = strImei.substring(0,4);
+            strReturn += "-";
+            strReturn += strImei.substring(4,8);
+            strReturn += "-";
+            strReturn += strImei.substring(8,12);
+            strReturn += "-";
+            strReturn += strImei.substring(12,15);
+        }else {
+            strReturn = strImei.substring(0,4);
+            strReturn += "-";
+            strReturn += strImei.substring(4,8);
+            strReturn += "-";
+            strReturn += strImei.substring(8,12);
+            strReturn += "-";
+            strReturn += strImei.substring(12,16);
+        }
         return strReturn;
     }
 }

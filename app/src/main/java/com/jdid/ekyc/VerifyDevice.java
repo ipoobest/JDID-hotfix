@@ -76,6 +76,7 @@ public class VerifyDevice extends AppCompatActivity {
             }
 
             Intent intent;
+            Log.d("mStrDeviceID0", mStrDeviceID);
             try {
                 /*
                 {
@@ -90,6 +91,7 @@ public class VerifyDevice extends AppCompatActivity {
                    "updated_at":"2019-09-22T00:46:23"
                 }
                  */
+                Log.d("imei0", result.getString("imei"));
                 if (result.getString("imei").equals(mStrDeviceID)) {
                     intent = new Intent(getApplicationContext(), JAppActivity.class);
                     intent.putExtra("imei", result.getString("imei"));

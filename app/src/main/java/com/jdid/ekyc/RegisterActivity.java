@@ -5,7 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.ProgressBar;
@@ -133,7 +136,8 @@ public class RegisterActivity extends JCompatActivity {
         JSONObject responseJson = null;
         JSONObject requestParams = new JSONObject();
         try {
-            requestParams.put("imei", this.imei);
+            String imei = getImeiNumber();
+            requestParams.put("imei",imei);
             requestParams.put("pin", mFinalPinCode);
 
         } catch (JSONException e) {
@@ -144,18 +148,19 @@ public class RegisterActivity extends JCompatActivity {
             final String USER_AGENT = "Mozilla/5.0";
             URL obj = new URL("https://e-kyc.dome.cloud/device/set_pin");
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            conn.setDoOutput(true);
             conn.setDoInput(true);
+            conn.setDoOutput(true);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Authorization", "Basic ZWt5Y2Rldjpla3ljZGV2");
 
             String requestContent = requestParams.toString();
+            Log.d("request : " , requestContent);
             OutputStream os = conn.getOutputStream();
             os.write(requestContent.getBytes());
             os.close();
 
-            InputStream in = new BufferedInputStream(conn.getInputStream());
+            InputStream in = conn.getInputStream();
             String result = org.apache.commons.io.IOUtils.toString(in, "UTF-8");
             responseJson = new JSONObject(result);
 
@@ -218,6 +223,28 @@ public class RegisterActivity extends JCompatActivity {
             Toast.makeText(RegisterActivity.this, getResources().getString(R.string.missing_confirm_pin), Toast.LENGTH_LONG).show();
             showPinRegisterFragment();
         }
+    }
+
+    //get imei
+    private String getImeiNumber(){
+        String ts = this.TELEPHONY_SERVICE;
+        TelephonyManager mTelephonyMgr = (TelephonyManager) this.getSystemService(ts);
+        if (Build.VERSION.SDK_INT >= 26) {
+            if (mTelephonyMgr.getPhoneType() == TelephonyManager.PHONE_TYPE_CDMA) {
+                imei = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+
+            } else if (mTelephonyMgr.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
+                imei = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+
+            } else {
+                imei = ""; // default!!!
+
+            }
+        } else {
+            imei = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+        }
+        Log.d("imeii : " , imei);
+        return imei;
     }
 }
 
