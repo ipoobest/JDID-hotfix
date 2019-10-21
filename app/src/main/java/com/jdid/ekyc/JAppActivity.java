@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.LoginFilter;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -57,6 +58,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
@@ -577,6 +579,7 @@ public class JAppActivity extends JCompatActivity {
             try {
                 mProgressDialog.dismiss();
                 mProgressDialog = null;
+                Log.d("result string", result.getString("created"));
                 // if save success then show success fragment
                 if ((result != null) && (result.getString("created").length() > 0)) {
                     successFragment();
@@ -601,24 +604,43 @@ public class JAppActivity extends JCompatActivity {
             income = 0;
         }
 
+//        {
+//            "name_th": "ภูเบศ",
+//                "name_en": "poobest",
+//                "birthdate": "string",
+//                "id": "1579900409641",
+//                "gender": "string",
+//                "address": "string",
+//                "nationality": "string",
+//                "contact_number": "0845592690",
+//                "purpose": "string",
+//                "census_address": "string",
+//                "mariage_status": "string",
+//                "occupation": "string",
+//                "company": "string",
+//                "company_address": "string",
+//                "income": 0,
+//                "photo": "string"
+//        }
         try {
-            fields.put("name_th", generalInformation[THAIFULLNAME]);
-            fields.put("name_en", generalInformation[ENGLISHFULLNAME]);
-            fields.put("birthdate", generalInformation[BIRTH]);
-            fields.put("id", generalInformation[CID]);
-            fields.put("gender", generalInformation[GENDER]);
-            fields.put("address", generalInformation[ADDRESS]);
-            fields.put("nationality", "Thai");
-            fields.put("contact_number", fieldsList[CONTACT_NUMBER]);
-            fields.put("census_address", fieldsList[CENSUS_ADDRESS]);
-            fields.put("mariage_status", fieldsList[MARIAGE_STATUS]);
-            fields.put("occupation", fieldsList[OCCUPATION]);
-            fields.put("company", fieldsList[COMPANY]);
-            fields.put("company_addrss", fieldsList[COMPANY_ADDRSS]);
-            fields.put("income", income);
-            fields.put("purpose", fieldsList[PURPOSE]);
-            fields.put("photo", Base64.encodeToString(byteImage, Base64.NO_WRAP));
-            requestParams.put("fields", fields);
+            requestParams.put("name_th", generalInformation[THAIFULLNAME]);
+            requestParams.put("name_en", generalInformation[ENGLISHFULLNAME]);
+            requestParams.put("birthdate", generalInformation[BIRTH]);
+            requestParams.put("id", generalInformation[CID]);
+            requestParams.put("gender", generalInformation[GENDER]);
+            requestParams.put("address", generalInformation[ADDRESS]);
+            requestParams.put("nationality", "Thai");
+            requestParams.put("contact_number", fieldsList[CONTACT_NUMBER]);
+            requestParams.put("purpose", "kyc");
+            requestParams.put("census_address", fieldsList[CENSUS_ADDRESS]);
+            requestParams.put("mariage_status", fieldsList[MARIAGE_STATUS]);
+            requestParams.put("occupation", fieldsList[OCCUPATION]);
+            requestParams.put("company", fieldsList[COMPANY]);
+            requestParams.put("company_address", fieldsList[COMPANY_ADDRSS]);
+            requestParams.put("income", income);
+            requestParams.put("photo", "String");
+            //            requestParams.put("photo", Base64.encodeToString(byteImage, Base64.NO_WRAP)");
+//            requestParams.put("fields", fields);
         } catch (JSONException e) {
             Log.e(TAG, "JsonException in requestparams makeup in FacialCompareActivity::compareImage", e);
         }
@@ -628,18 +650,25 @@ public class JAppActivity extends JCompatActivity {
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
             conn.setDoOutput(true);
             conn.setDoInput(true);
-            conn.setRequestMethod("PUT");
+            conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Authorization", "Basic ZWt5Y2Rldjpla3ljZGV2");
             String requestContent;
             requestContent = requestParams.toString();
+            Log.d("requsetContent",requestContent);
+
 
             OutputStream os = conn.getOutputStream();
             os.write(requestContent.getBytes());
             os.close();
 
-            InputStream in = conn.getInputStream();
+            PrintStream out = new PrintStream(conn.getResponseMessage());
+            Log.d("PrintStream", out.toString());
+
+            InputStream in =  conn.getInputStream();
+            Log.d("body : ", in.toString());
             String result = org.apache.commons.io.IOUtils.toString(in, "UTF-8");
+            Log.d("result : " , result);
             responseJson = new JSONObject(result);
             in.close();
 
