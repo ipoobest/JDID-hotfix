@@ -15,7 +15,6 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -25,7 +24,6 @@ import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -47,6 +45,7 @@ import com.jdid.ekyc.Fragments.SuccessFragment;
 import com.jdid.ekyc.Fragments.WaitForAuthoriseFragment;
 import com.jdid.ekyc.base.JCompatActivity;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -64,7 +63,12 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
-import static android.content.ContentValues.TAG;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class JAppActivity extends JCompatActivity {
 
@@ -589,8 +593,7 @@ public class JAppActivity extends JCompatActivity {
     }
 
     public JSONObject _saveUserInfo() throws TimeoutException, IOException {
-        JSONObject responseJson = null;
-        JSONObject requestParams = new JSONObject();
+        final JSONObject responseJson = new JSONObject();
         JSONObject fields = new JSONObject();
 
         double income;
@@ -610,46 +613,65 @@ public class JAppActivity extends JCompatActivity {
             fields.put("address", generalInformation[ADDRESS]);
             fields.put("nationality", "Thai");
             fields.put("contact_number", fieldsList[CONTACT_NUMBER]);
+            fields.put("purpose", "ekyc");
             fields.put("census_address", fieldsList[CENSUS_ADDRESS]);
             fields.put("mariage_status", fieldsList[MARIAGE_STATUS]);
             fields.put("occupation", fieldsList[OCCUPATION]);
             fields.put("company", fieldsList[COMPANY]);
             fields.put("company_addrss", fieldsList[COMPANY_ADDRSS]);
             fields.put("income", income);
-            fields.put("purpose", fieldsList[PURPOSE]);
             fields.put("photo", Base64.encodeToString(byteImage, Base64.NO_WRAP));
-            requestParams.put("fields", fields);
+//            requestParams.put("fields", fields);
         } catch (JSONException e) {
             Log.e(TAG, "JsonException in requestparams makeup in FacialCompareActivity::compareImage", e);
         }
 
         try {
-            URL obj = new URL("https://e-kyc.dome.cloud/user");
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            conn.setRequestMethod("PUT");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Authorization", "Basic ZWt5Y2Rldjpla3ljZGV2");
-            String requestContent;
-            requestContent = requestParams.toString();
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-            OutputStream os = conn.getOutputStream();
-            os.write(requestContent.getBytes());
-            os.close();
+            OkHttpClient okHttpClient = new OkHttpClient();
+            okhttp3.RequestBody body = RequestBody.create(JSON, fields.toString());
+            okhttp3.Request request = new okhttp3.Request.Builder()
+                    .url("https://e-kyc.dome.cloud/user")
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("X-API-KEY", "3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
+                    .post(body)
+                    .build();
 
-            InputStream in = conn.getInputStream();
-            String result = org.apache.commons.io.IOUtils.toString(in, "UTF-8");
-            responseJson = new JSONObject(result);
-            in.close();
+            okHttpClient.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    e.printStackTrace();
+                }
 
-            conn.disconnect();
-
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        throw new IOException("Unexpected code " + response.body().string());
+                    } else {
+                        Log.d("response555 : " , response.body().toString());
+//                        TODO ;: this
+                    }
+                    // do something wih the result
+                }
+            });
+//
         } catch (Exception e) {
             Log.e(TAG, e.getMessage(), e);
         }
 
         return responseJson;
+    }
+
+    JSONObject stringToJson(String str){
+        JSONObject object = new JSONObject();
+        try {
+//            {"status_code":200,"data":{"otp_ref":"IwzMYX"},"message":"Operation Success","created_at":"2019-10-17T12:47:44"}
+            object = new JSONObject(str);
+        }catch (JSONException err){
+            Log.d("Error", err.toString());
+        }
+        return  object;
     }
 
 
