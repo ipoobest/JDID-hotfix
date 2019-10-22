@@ -552,150 +552,6 @@ public class JAppActivity extends JCompatActivity {
     /* SAVE Data fields */
     /* ******************************************************* */
 
-//    public void SaveInformation() {
-//        SaveUserInformation saveUserInfo = new SaveUserInformation();
-//        saveUserInfo.execute();
-//    }
-
-//    private class SaveUserInformation2 extends AsyncTask<Void, Void, JSONObject> {
-//
-//        @Override
-//        protected void onPreExecute() {
-//            mProgressDialog = ProgressDialog.show(JAppActivity.this,
-//                    null, "กำลังทำการบันทึกข้อมูล กรุณารอสักครู่", true, false);
-//        }
-//
-//        @Override
-//        protected JSONObject doInBackground(Void... voids) {
-//            JSONObject result = new JSONObject();
-//            try {
-//                result = _saveUserInfo();
-//            } catch (TimeoutException e) {
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            return result;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(JSONObject result) {
-//            try {
-//                mProgressDialog.dismiss();
-//                mProgressDialog = null;
-//                // if save success then show success fragment
-//                if ((result != null) && (result.getString("created").length() > 0)) {
-//                    successFragment();
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//
-//        }
-//    }
-
-//    private class SaveUserInformation extends AsyncTask<Void, Void, String> {
-//        @Override
-//        protected void onPreExecute() {
-//            mProgressDialog = ProgressDialog.show(JAppActivity.this,
-//                    null, "กำลังทำการบันทึกข้อมูล กรุณารอสักครู่", true, false);
-//        }
-//
-//        @Override
-//        protected String doInBackground(Void... voids) {
-//            String result = "";
-//            try {
-//                result = _saveUserinfo2();
-//            } catch (TimeoutException e) {
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            return  result;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(String strings) {
-//                mProgressDialog.dismiss();
-//                mProgressDialog = null;
-//                // if save success then show success fragment
-//                if (strings != null) {
-//                    successFragment();
-//                }
-//
-//        }
-//    }
-
-
-//    public JSONObject _saveUserInfo() throws TimeoutException, IOException {
-//        final JSONObject responseJson = null;
-//        JSONObject fields = new JSONObject();
-//
-//        double income;
-//
-//        try {
-//            income = Double.parseDouble(fieldsList[INCOME]);
-//        } catch (NumberFormatException e) {
-//            income = 0;
-//        }
-//
-//        try {
-//            fields.put("name_th", generalInformation[THAIFULLNAME]);
-//            fields.put("name_en", generalInformation[ENGLISHFULLNAME]);
-//            fields.put("birthdate", generalInformation[BIRTH]);
-//            fields.put("id", generalInformation[CID]);
-//            fields.put("gender", generalInformation[GENDER]);
-//            fields.put("address", generalInformation[ADDRESS]);
-//            fields.put("nationality", "Thai");
-//            fields.put("contact_number", fieldsList[CONTACT_NUMBER]);
-//            fields.put("purpose", "ekyc");
-//            fields.put("census_address", fieldsList[CENSUS_ADDRESS]);
-//            fields.put("mariage_status", fieldsList[MARIAGE_STATUS]);
-//            fields.put("occupation", fieldsList[OCCUPATION]);
-//            fields.put("company", fieldsList[COMPANY]);
-//            fields.put("company_addrss", fieldsList[COMPANY_ADDRSS]);
-//            fields.put("income", income);
-//            fields.put("photo", Base64.encodeToString(byteImage, Base64.NO_WRAP));
-////            requestParams.put("fields", fields);
-//        } catch (JSONException e) {
-//            Log.e(TAG, "JsonException in requestparams makeup in FacialCompareActivity::compareImage", e);
-//        }
-//
-//        try {
-//            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-//
-//            OkHttpClient okHttpClient = new OkHttpClient();
-//            okhttp3.RequestBody body = RequestBody.create(JSON, fields.toString());
-//            okhttp3.Request request = new okhttp3.Request.Builder()
-//                    .url("https://e-kyc.dome.cloud/user")
-//                    .addHeader("Content-Type", "application/json")
-//                    .addHeader("X-API-KEY", "3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
-//                    .post(body)
-//                    .build();
-//
-//            okHttpClient.newCall(request).enqueue(new Callback() {
-//                @Override
-//                public void onFailure(@NotNull Call call, @NotNull IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                @Override
-//                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-//                    if (!response.isSuccessful()) {
-//                        throw new IOException("Unexpected code " + response.body().string());
-//                    } else {
-//                        Log.d("response555 : ", response.body().toString());
-//                    }
-//                }
-//            });
-////
-//        } catch (Exception e) {
-//            Log.e(TAG, e.getMessage(), e);
-//        }
-//
-//        return responseJson;
-//    }
-
     public void SaveInformation(){
         Log.d("save","SaveInformation");
         final User request = new User();
@@ -707,6 +563,7 @@ public class JAppActivity extends JCompatActivity {
             income = 0;
         }
 
+        //TODO:: 1. setPurpost Form fieldsList[purpose]
         request.setNameTh(generalInformation[THAIFULLNAME]);
         request.setNameEn(generalInformation[ENGLISHFULLNAME]);
         request.setBirthdate(generalInformation[BIRTH]);
@@ -755,6 +612,7 @@ public class JAppActivity extends JCompatActivity {
         OtpRef otpRef = resutl.getOtpRef();
         String otp = otpRef.getOtpRef();
 
+        //TODO:: 2 onActivity result reconfirm OTP for register
         Log.d("otp", otp);
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
                     null, "กำลังทำการตรวจสอบบันทึกข้อมูล กรุณารอสักครู่", true, false);
@@ -764,7 +622,6 @@ public class JAppActivity extends JCompatActivity {
                 if (otp != null) {
                     successFragment();
                }
-//        return otp;
     }
     /* ******************************************************* */
     /* Citizen Card Reader Routine
