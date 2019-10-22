@@ -1,11 +1,9 @@
-package com.jdid.ekyc.models;
-
+package com.jdid.ekyc.repository.pojo;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Data {
-
+public class OtpRef {
     @SerializedName("otp_ref")
     @Expose
     private String otpRef;
@@ -17,5 +15,4 @@ public class Data {
     public void setOtpRef(String otpRef) {
         this.otpRef = otpRef;
     }
-
 }
