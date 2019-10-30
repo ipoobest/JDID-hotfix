@@ -574,7 +574,7 @@ public class JAppActivity extends JCompatActivity {
         request.setAddress(generalInformation[ADDRESS]);
         request.setNationality("Thai");
         request.setContactNumber(fieldsList[CONTACT_NUMBER]);
-        request.setPurpose("kyc");
+        request.setPurpose(fieldsList[PURPOSE]);
         request.setCensusAddress(fieldsList[CENSUS_ADDRESS]);
         request.setMariageStatus(fieldsList[MARIAGE_STATUS]);
         request.setOccupation(fieldsList[OCCUPATION]);
