@@ -210,6 +210,11 @@ public class FormFillFragment extends Fragment {
 
     private void authenOTP() {
         // need save data fields first
+        if (spPurpose.getSelectedItemPosition()==0) {
+            ((JAppActivity) getActivity()).fieldsList[JAppActivity.PURPOSE] = edOtherPurpose.getText().toString();
+        } else {
+            ((JAppActivity) getActivity()).fieldsList[JAppActivity.PURPOSE] = spPurpose.getSelectedItem().toString();
+        }
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.CONTACT_NUMBER] = edPhone.getText().toString();
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.CENSUS_ADDRESS] = edCurrentAddress.getText().toString();
         long lMariageStatus = spMarriageStatus.getSelectedItemId();
