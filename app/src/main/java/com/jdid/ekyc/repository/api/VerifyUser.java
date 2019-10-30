@@ -16,4 +16,3 @@ public interface VerifyUser {
     Call<ResponseOtp> verrifyUser(@Path("id") int id, Body Otp);
 
 }
-v

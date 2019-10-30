@@ -102,7 +102,9 @@ public class FormFillFragment extends Fragment {
         try {
             URL obj = new URL("https://e-kyc.dome.cloud/purpose");
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            conn.setRequestProperty("Authorization", "Basic ZWt5Y2Rldjpla3ljZGV2");
+//            conn.setRequestProperty("Authorization", "Basic ZWt5Y2Rldjpla3ljZGV2");
+            conn.setRequestProperty("X-API-KEY", "3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb");
+
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(

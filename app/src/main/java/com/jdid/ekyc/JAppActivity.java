@@ -418,7 +418,9 @@ public class JAppActivity extends JCompatActivity {
             conn.setDoInput(true);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Authorization", "Basic ZWt5Y2Rldjpla3ljZGV2");
+//            conn.setRequestProperty("Authorization", "Basic ZWt5Y2Rldjpla3ljZGV2");
+            conn.setRequestProperty("X-API-KEY", "3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb");
+
 
             String requestContent = requestParams.toString();
             OutputStream os = conn.getOutputStream();

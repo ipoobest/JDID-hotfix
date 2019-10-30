@@ -123,7 +123,8 @@ public class VerifyDevice extends AppCompatActivity {
         try {
             URL obj = new URL("https://e-kyc.dome.cloud/device/" + mStrDeviceID);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            conn.setRequestProperty("Authorization", "Basic ZWt5Y2Rldjpla3ljZGV2");
+//            conn.setRequestProperty("Authorization", "Basic ZWt5Y2Rldjpla3ljZGV2");
+            conn.setRequestProperty("X-API-KEY", "3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb");
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
