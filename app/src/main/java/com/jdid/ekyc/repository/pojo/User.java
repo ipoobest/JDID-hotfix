@@ -19,9 +19,9 @@ public class User {
     @SerializedName("gender")
     @Expose
     private String gender;
-    @SerializedName("address")
+    @SerializedName("official_address")
     @Expose
-    private String address;
+    private String officialAddress;
     @SerializedName("nationality")
     @Expose
     private String nationality;
@@ -93,12 +93,12 @@ public class User {
         this.gender = gender;
     }
 
-    public String getAddress() {
-        return address;
+    public String getOfficialAddress() {
+        return officialAddress;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setOfficialAddress(String officialAddress) {
+        this.officialAddress = officialAddress;
     }
 
     public String getNationality() {
