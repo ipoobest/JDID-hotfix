@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -25,14 +26,13 @@ import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 
 import com.acs.smartcard.Features;
 import com.acs.smartcard.Reader;
@@ -50,7 +50,10 @@ import com.jdid.ekyc.Fragments.WaitForAuthoriseFragment;
 import com.jdid.ekyc.base.JCompatActivity;
 import com.jdid.ekyc.repository.RetrofitInstance;
 import com.jdid.ekyc.repository.api.CreateUser;
+import com.jdid.ekyc.repository.api.Device;
 import com.jdid.ekyc.repository.pojo.OtpRef;
+import com.jdid.ekyc.repository.pojo.Pin;
+import com.jdid.ekyc.repository.pojo.ResponCheckPin;
 import com.jdid.ekyc.repository.pojo.User;
 import com.jdid.ekyc.repository.pojo.UserResponse;
 
@@ -263,9 +266,7 @@ public class JAppActivity extends JCompatActivity {
 
     public void authenPinCode(String strPin) {
         mAuthenPinCode = strPin;
-//        TODO : เรียก function authen ที่นี่
-        AuthenPinCode authen = new AuthenPinCode();
-        authen.execute();
+        AuthenPinCode();
     }
 
     public void showHomeFragment() {
@@ -386,82 +387,42 @@ public class JAppActivity extends JCompatActivity {
     /* Authenticate PIN Code                                   */
     /* ******************************************************* */
 
-    private class AuthenPinCode2{
-        //TODO :: authen this
-    }
+    public void AuthenPinCode(){
+        mProgressDialog = ProgressDialog.show(JAppActivity.this,
+                null, "กำลังทำการขออนุญาตเข้าระบบ", true, false);
 
-    private class AuthenPinCode extends AsyncTask<Void, Void, JSONObject> {
-        @Override
-        protected void onPreExecute() {
-            mProgressDialog = ProgressDialog.show(JAppActivity.this,
-                    null, "กำลังทำการขออนุญาตเข้าระบบ", true, false);
-        }
+        Pin request = new Pin();
+        request.setImei(mIMEI);
+        request.setPin(mAuthenPinCode);
 
-        @Override
-        protected JSONObject doInBackground(Void... voids) {
-            JSONObject result = new JSONObject();
-            result = _authenPinCode();
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject result) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-            try {
-                if (result != null) {
-                    if (result.getString("imei").equals(mIMEI)) {
+        Device service = RetrofitInstance.getRetrofitInstance().create(Device.class);
+        Call<ResponCheckPin> call = service.CheckPin(request);
+        call.enqueue(new Callback<ResponCheckPin>() {
+            @Override
+            public void onResponse(Call<ResponCheckPin> call, Response<ResponCheckPin> response) {
+                if (response.isSuccessful()){
+                    ResponCheckPin result = response.body();
+                    if (result.getVerified()){
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
                         showHomeFragment();
-                    } else {
-                        Log.d("AuthenPinCode555", result.getString("imei"));
-                        Toast.makeText(JAppActivity.this, "PIN Code ไม่ถูกต้อง กรุณาป้อน PIN Code ใหม่", Toast.LENGTH_LONG).show();
                     }
+                }else {
+                    Toast.makeText(getAppContext(),"รหัสผ่านผิดกรุณากรอกใหม่", Toast.LENGTH_SHORT).show();
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
                 }
-            } catch (JSONException e) {
-
             }
-        }
-    }
 
-    private JSONObject _authenPinCode() {
-        JSONObject responseJson = null;
-        JSONObject requestParams = new JSONObject();
-        try {
-            requestParams.put("imei", mIMEI);
-            requestParams.put("pin", mAuthenPinCode);
-
-        } catch (JSONException e) {
-            Log.e(TAG, "JsonException in requestparams makeup in PinCoee authentication", e);
-        }
-
-        try {
-            final String USER_AGENT = "Mozilla/5.0";
-            URL obj = new URL("https://e-kyc.dome.cloud/device/check_pin");
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("X-API-KEY", "3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb");
+            @Override
+            public void onFailure(Call<ResponCheckPin> call, Throwable t) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+                Log.d("error xx : ", t.toString());
+            }
+        });
 
 
-            String requestContent = requestParams.toString();
-            OutputStream os = conn.getOutputStream();
-            os.write(requestContent.getBytes());
-            os.close();
-
-            InputStream in = new BufferedInputStream(conn.getInputStream());
-            String result = org.apache.commons.io.IOUtils.toString(in, "UTF-8");
-            responseJson = new JSONObject(result);
-
-            in.close();
-            conn.disconnect();
-
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-
-        return responseJson;
     }
 
     /* ******************************************************* */
@@ -588,6 +549,7 @@ public class JAppActivity extends JCompatActivity {
             income = 0;
         }
 
+        //TODO :: เปลี่ยนตำแหน่ง fieldsList
         request.setNameTh(generalInformation[THAIFULLNAME]);
         request.setNameEn(generalInformation[ENGLISHFULLNAME]);
         request.setBirthdate(generalInformation[BIRTH]);
@@ -635,9 +597,7 @@ public class JAppActivity extends JCompatActivity {
     private void sentConfirmOtp(String id,UserResponse result) {
         OtpRef otpRef = result.getOtpRef();
         String otp = otpRef.getOtpRef();
-
-        //TODO:: 2 onActivity result reconfirm OTP for register
-        Log.d("otp", otp);
+//        Log.d("otp", otp);
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
                 null, "กำลังทำการตรวจสอบบันทึกข้อมูล กรุณารอสักครู่", true, false);
         mProgressDialog.dismiss();
@@ -1240,7 +1200,16 @@ public class JAppActivity extends JCompatActivity {
 
     @Override
     public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setMessage("ต้องการหยุดทำรายการ และออกจาก application หรือไม่?")
+                .setCancelable(false)
+                .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        JAppActivity.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton("ยกเลิก", null)
+                .show();
 
-        super.onBackPressed();
     }
 }
