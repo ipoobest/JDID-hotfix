@@ -13,6 +13,6 @@ public interface VerifyUser {
 
     @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
     @PUT("/user/verify/{id}")
-    Call<ResponseOtp> verrifyUser(@Path("id") int id, Body Otp);
+    Call<ResponseOtp> verifyUser(@Path("id") String id, @Body Otp otp);
 
 }

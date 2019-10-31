@@ -28,6 +28,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import androidx.core.app.ActivityCompat;
 
 import androidx.annotation.Nullable;
@@ -39,6 +40,7 @@ import com.acs.smartcard.ReaderException;
 import com.jdid.ekyc.Fragments.CardAcquireFragment;
 import com.jdid.ekyc.Fragments.CardInfoFragment;
 import com.jdid.ekyc.Fragments.ConfirmOTPRegisterFragment;
+import com.jdid.ekyc.Fragments.ConfirmOTPRegisterUserFragment;
 import com.jdid.ekyc.Fragments.FaceCompareResultFragment;
 import com.jdid.ekyc.Fragments.FormFillFragment;
 import com.jdid.ekyc.Fragments.HomeFragment;
@@ -84,7 +86,10 @@ public class JAppActivity extends JCompatActivity {
     private boolean mfLoginPage = false;
     private boolean mfStartFromRegister = false;
     private boolean mfVerifyPerson = false;
-    public boolean isVerifyPerson() { return mfVerifyPerson; }
+
+    public boolean isVerifyPerson() {
+        return mfVerifyPerson;
+    }
 
     private static Context context;
 
@@ -98,8 +103,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final int COMPARE_SIMILARITY = 90;
 
-    static byte[] byteImageCam=null;
-    static byte[] byteImage=null;
+    static byte[] byteImageCam = null;
+    static byte[] byteImage = null;
     private ImageView imageBuffer;
 
     static String strCLA;
@@ -148,7 +153,11 @@ public class JAppActivity extends JCompatActivity {
     public static final int EXPIRE = 7;
     public static final int ADDRESS = 8;
     static String[] generalInformation = new String[9];
-    public String[] getGeneralInformation() { return generalInformation; }
+
+    public String[] getGeneralInformation() {
+        return generalInformation;
+    }
+
     static String[] generalRetrieve = {
             "80b0000402000d",
             "80b00011020064",
@@ -163,11 +172,11 @@ public class JAppActivity extends JCompatActivity {
 
     private Features mFeatures = new Features();
 
-    static byte[] byteAPDU=null;
-    static byte[] respAPDU=null;
+    static byte[] byteAPDU = null;
+    static byte[] respAPDU = null;
 
-    static byte[] byteAPDU2=null;
-    static byte[] respAPDU2=null;
+    static byte[] byteAPDU2 = null;
+    static byte[] respAPDU2 = null;
 
     private ProgressDialog mProgressDialog;
     static boolean fImageFromCamLoaded = false;
@@ -180,16 +189,19 @@ public class JAppActivity extends JCompatActivity {
     public static Context getAppContext() {
         return JAppActivity.context;
     }
-    public byte[] getByteImage() { return JAppActivity.byteImage; }
+
+    public byte[] getByteImage() {
+        return JAppActivity.byteImage;
+    }
 
     public final static int PURPOSE = 0;
-    public final static int CONTACT_NUMBER  = 1;
-    public final static int CENSUS_ADDRESS  = 2;
-    public final static int MARIAGE_STATUS  = 3;
-    public final static int OCCUPATION      = 4;
-    public final static int COMPANY         = 5;
-    public final static int COMPANY_ADDRSS  = 6;
-    public final static int INCOME          = 7;
+    public final static int CONTACT_NUMBER = 1;
+    public final static int CENSUS_ADDRESS = 2;
+    public final static int MARIAGE_STATUS = 3;
+    public final static int OCCUPATION = 4;
+    public final static int COMPANY = 5;
+    public final static int COMPANY_ADDRSS = 6;
+    public final static int INCOME = 7;
     public final static int MAX_FORM_FIELDS = 8;
     public String[] fieldsList = new String[MAX_FORM_FIELDS];
 
@@ -293,6 +305,12 @@ public class JAppActivity extends JCompatActivity {
                 .replace(R.id.container_view, fragment).addToBackStack(null).commit();
     }
 
+    public void showOTPVerifyUserFragment(String id ,String otpRef) {
+        final ConfirmOTPRegisterUserFragment fragment = new ConfirmOTPRegisterUserFragment(id, otpRef);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container_view, fragment).addToBackStack(null).commit();
+    }
+
     public void successFragment() {
         final SuccessFragment fragment = new SuccessFragment();
         getSupportFragmentManager().beginTransaction()
@@ -345,17 +363,14 @@ public class JAppActivity extends JCompatActivity {
 
             imageBuffer.setImageURI(imageUri);
             Log.d(TAG, imageUri.toString());
-            try
-            {
+            try {
                 Bitmap bitmap = convertImageViewToBitmap(imageBuffer);
                 bitmap = getResizedBitmap(bitmap, 297, 355);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                 byteImageCam = stream.toByteArray();
 
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -474,7 +489,7 @@ public class JAppActivity extends JCompatActivity {
             try {
                 if ((result != null) && (result.toString().length() != 0)
                         && (result.getInt("rtn") == 0 || result.getInt("rtn") == -6131)
-                        && (result.getInt("pair_verify_similarity")>=95)) {
+                        && (result.getInt("pair_verify_similarity") >= 95)) {
 
                 }
                 mProgressDialog.dismiss();
@@ -486,8 +501,8 @@ public class JAppActivity extends JCompatActivity {
         }
     }
 
-    private Bitmap convertImageViewToBitmap(ImageView v){
-        Bitmap bm=((BitmapDrawable)v.getDrawable()).getBitmap();
+    private Bitmap convertImageViewToBitmap(ImageView v) {
+        Bitmap bm = ((BitmapDrawable) v.getDrawable()).getBitmap();
         return bm;
     }
 
@@ -556,8 +571,8 @@ public class JAppActivity extends JCompatActivity {
     /* SAVE Data fields */
     /* ******************************************************* */
 
-    public void SaveInformation(){
-        Log.d("save","SaveInformation");
+    public void SaveInformation() {
+        Log.d("save", "SaveInformation");
         final User request = new User();
         double income;
 
@@ -567,7 +582,6 @@ public class JAppActivity extends JCompatActivity {
             income = 0;
         }
 
-        //TODO:: 1. setPurpost Form fieldsList[purpose]
         request.setNameTh(generalInformation[THAIFULLNAME]);
         request.setNameEn(generalInformation[ENGLISHFULLNAME]);
         request.setBirthdate(generalInformation[BIRTH]);
@@ -594,10 +608,10 @@ public class JAppActivity extends JCompatActivity {
         call.enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful()) {
                     UserResponse resutl = response.body();
                     Log.d("success : ", resutl.getStatusCode().toString());
-                    sentConfirmOtp(resutl);
+                    sentConfirmOtp(generalInformation[CID],resutl);
                 } else {
                     UserResponse resutl = response.body();
                     Log.d("not success", resutl.getStatusCode().toString());
@@ -612,66 +626,52 @@ public class JAppActivity extends JCompatActivity {
         });
     }
 
-    private void sentConfirmOtp(UserResponse resutl) {
-        OtpRef otpRef = resutl.getOtpRef();
+    private void sentConfirmOtp(String id,UserResponse result) {
+        OtpRef otpRef = result.getOtpRef();
         String otp = otpRef.getOtpRef();
 
         //TODO:: 2 onActivity result reconfirm OTP for register
         Log.d("otp", otp);
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
-                    null, "กำลังทำการตรวจสอบบันทึกข้อมูล กรุณารอสักครู่", true, false);
+                null, "กำลังทำการตรวจสอบบันทึกข้อมูล กรุณารอสักครู่", true, false);
         mProgressDialog.dismiss();
-                mProgressDialog = null;
-                // if save success then show success fragment
-                if (otp != null) {
-                    successFragment();
-               }
+        mProgressDialog = null;
+        // if save success then show success fragment
+        if (otp != null) {
+            showOTPVerifyUserFragment(id,otp);
+        }
     }
     /* ******************************************************* */
     /* Citizen Card Reader Routine
     /* ******************************************************* */
 
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver()
-    {
-        public void onReceive(Context context, Intent intent)
-        {
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
 
             String action = intent.getAction();
-            if (ACTION_USB_PERMISSION.equals(action))
-            {
-                synchronized (this)
-                {
+            if (ACTION_USB_PERMISSION.equals(action)) {
+                synchronized (this) {
 
                     UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false))
-                    {
-                        if (device != null)
-                        {
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        if (device != null) {
                             new OpenTask().execute(device);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         mcardAcquireFragment.updateEventLog(false, false, "ไม่ได้รัรบอนุญาตให้เข้าถึง USB");
                     }
                 }
-            }
-            else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action))
-            {
-                synchronized (this)
-                {
-                    deviceName="";
-                    for(UsbDevice device : mManager.getDeviceList().values())
-                    {
-                        if(mReader.isSupported(device))
-                        {
+            } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
+                synchronized (this) {
+                    deviceName = "";
+                    for (UsbDevice device : mManager.getDeviceList().values()) {
+                        if (mReader.isSupported(device)) {
                             deviceName = device.getDeviceName();
                             break;
                         }
                     }
                     UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                    if (device != null && device.equals(mReader.getDevice()))
-                    {
+                    if (device != null && device.equals(mReader.getDevice())) {
 //                        icoUSB.setImageResource(R.drawable.ic_usb_off);
 //                        TextUsb.setText("NO READER DETECTED");
 //                        TextCard.setText("PLEASE INSERT CARD");
@@ -686,41 +686,31 @@ public class JAppActivity extends JCompatActivity {
         }
     };
 
-    private class OpenTask extends AsyncTask<UsbDevice, Void, Exception>
-    {
+    private class OpenTask extends AsyncTask<UsbDevice, Void, Exception> {
         @Override
-        protected Exception doInBackground(UsbDevice... params)
-        {
+        protected Exception doInBackground(UsbDevice... params) {
             Exception result = null;
-            try
-            {
+            try {
                 mReader.open(params[0]);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 result = e;
             }
             return result;
         }
 
         @Override
-        protected void onPostExecute(Exception result)
-        {
-            if (result != null)
-            {
+        protected void onPostExecute(Exception result) {
+            if (result != null) {
 //                clearlog();
 //                print("Please, disconnect and reconnect the reader again.");
-                Toast.makeText(JAppActivity.this, "Please, disconnect and reconnect the reader again", Toast.LENGTH_SHORT). show();
+                Toast.makeText(JAppActivity.this, "Please, disconnect and reconnect the reader again", Toast.LENGTH_SHORT).show();
                 mcardAcquireFragment.updateEventLog(false, false, "กรุณาติดตั้งเครื่องอ่านบัตรใหม่");
-            }
-            else
-            {
+            } else {
 //                icoUSB.setImageResource(R.drawable.ic_usb_on);
 //                TextUsb.setText(mReader.getReaderName());
                 int numSlots = mReader.getNumSlots();
-                if(numSlots>0)
-                {
-                    iSlotNum=0;
+                if (numSlots > 0) {
+                    iSlotNum = 0;
                 }
                 mFeatures.clear();
 //                clearlog();
@@ -737,28 +727,21 @@ public class JAppActivity extends JCompatActivity {
 
         mManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         mReader = new Reader(mManager);
-        mReader.setOnStateChangeListener(new Reader.OnStateChangeListener()
-        {
+        mReader.setOnStateChangeListener(new Reader.OnStateChangeListener() {
             @Override
-            public void onStateChange(int slotNum, int prevState, int currState)
-            {
-                if (prevState < Reader.CARD_UNKNOWN || prevState > Reader.CARD_SPECIFIC)
-                {
+            public void onStateChange(int slotNum, int prevState, int currState) {
+                if (prevState < Reader.CARD_UNKNOWN || prevState > Reader.CARD_SPECIFIC) {
                     prevState = Reader.CARD_UNKNOWN;
                 }
-                if (currState < Reader.CARD_UNKNOWN || currState > Reader.CARD_SPECIFIC)
-                {
+                if (currState < Reader.CARD_UNKNOWN || currState > Reader.CARD_SPECIFIC) {
                     currState = Reader.CARD_UNKNOWN;
                 }
                 final int iActualState = currState;
 
-                runOnUiThread(new Runnable()
-                {
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void run()
-                    {
-                        if(iActualState==1)
-                        {
+                    public void run() {
+                        if (iActualState == 1) {
                             strCLA = "";
                             strINS = "";
                             strP1 = "";
@@ -768,8 +751,7 @@ public class JAppActivity extends JCompatActivity {
                             Toast.makeText(JAppActivity.this, "Please insert card", Toast.LENGTH_SHORT).show();
                             clearCardInformation();
                         }
-                        if(iActualState==2)
-                        {
+                        if (iActualState == 2) {
                             vPowerOnCard();
                         }
                     }
@@ -777,36 +759,31 @@ public class JAppActivity extends JCompatActivity {
             }
         });
 
-        mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION),0);
+        mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_USB_PERMISSION);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         registerReceiver(mReceiver, filter);
 
-        deviceName="";
-        for(UsbDevice device : mManager.getDeviceList().values())
-        {
-            if (mReader.isSupported(device))
-            {
+        deviceName = "";
+        for (UsbDevice device : mManager.getDeviceList().values()) {
+            if (mReader.isSupported(device)) {
                 deviceName = device.getDeviceName();
                 Toast.makeText(JAppActivity.this, deviceName, Toast.LENGTH_SHORT).show();
                 break;
             }
         }
 
-        byteAPDU=null;
-        byteAPDU2=null;
-        respAPDU=null;
-        respAPDU2=null;
+        byteAPDU = null;
+        byteAPDU2 = null;
+        respAPDU = null;
+        respAPDU2 = null;
 
-        if(deviceName!="")
-        {
-            for (UsbDevice device : mManager.getDeviceList().values())
-            {
-                if (deviceName.equals(device.getDeviceName()))
-                {
+        if (deviceName != "") {
+            for (UsbDevice device : mManager.getDeviceList().values()) {
+                if (deviceName.equals(device.getDeviceName())) {
 //                    clearlog();
-                    mManager.requestPermission(device,mPermissionIntent);
+                    mManager.requestPermission(device, mPermissionIntent);
                     break;
                 }
             }
@@ -814,53 +791,39 @@ public class JAppActivity extends JCompatActivity {
 
     }
 
-    private void vPowerOnCard()
-    {
+    private void vPowerOnCard() {
         byte[] atr = null;
         int actionNum = 1;
         int preferredProtocols = (Reader.PROTOCOL_UNDEFINED | Reader.PROTOCOL_T0 | Reader.PROTOCOL_T1);
         int activeProtocol = 0;
 
-        if (iSlotNum >= 0)
-        {
-            if(actionNum < Reader.CARD_POWER_DOWN || actionNum > Reader.CARD_WARM_RESET)
-            {
+        if (iSlotNum >= 0) {
+            if (actionNum < Reader.CARD_POWER_DOWN || actionNum > Reader.CARD_WARM_RESET) {
                 actionNum = Reader.CARD_WARM_RESET;
             }
-            try
-            {
+            try {
                 atr = mReader.power(iSlotNum, actionNum);
-            }
-            catch (ReaderException e1)
-            {
+            } catch (ReaderException e1) {
                 e1.printStackTrace();
             }
 
-            if(atr != null)
-            {
-                try
-                {
+            if (atr != null) {
+                try {
 //                    TextCard.setText(getHexString(atr, atr.length));
 //                    icoCard.setImageResource(R.drawable.ic_icc_on);
 //                    mSendAPDUButton.setEnabled(true);
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
-            try
-            {
-                activeProtocol = mReader.setProtocol(iSlotNum,preferredProtocols);
-            }
-            catch (ReaderException e)
-            {
+            try {
+                activeProtocol = mReader.setProtocol(iSlotNum, preferredProtocols);
+            } catch (ReaderException e) {
                 e.printStackTrace();
             }
             String activeProtocolString = "Transmission Protocol ";
-            switch (activeProtocol)
-            {
+            switch (activeProtocol) {
                 case Reader.PROTOCOL_T0:
                     activeProtocolString += "T=0";
                     break;
@@ -894,14 +857,13 @@ public class JAppActivity extends JCompatActivity {
         bSendAPDU();
     }
 
-    private boolean bSendAPDU()
-    {
+    private boolean bSendAPDU() {
 //        HideKbd();
 
-        byteAPDU=null;
-        byteAPDU2=null;
-        respAPDU=null;
-        respAPDU2=null;
+        byteAPDU = null;
+        byteAPDU2 = null;
+        respAPDU = null;
+        respAPDU2 = null;
 
         String StringAPDU = null;
 
@@ -914,63 +876,51 @@ public class JAppActivity extends JCompatActivity {
         String StringLe = strLe;
 
 //        if (!mCheckRaw.isChecked())
-        if (false)
-        {
-            if ( (StringCLA.length()==0)||(StringINS.length()==0)||(StringP1.length()==0)||(StringP2.length()==0)||( (StringDataIn.length()%2)!=0 ) )
-            {
+        if (false) {
+            if ((StringCLA.length() == 0) || (StringINS.length() == 0) || (StringP1.length() == 0) || (StringP2.length() == 0) || ((StringDataIn.length() % 2) != 0)) {
                 return false;
             }
-            if(!StringLc.contentEquals(""))
-            {
-                if( StringDataIn.length() != (((int) Long.parseLong(StringLc, 16))*2) )
-                {
+            if (!StringLc.contentEquals("")) {
+                if (StringDataIn.length() != (((int) Long.parseLong(StringLc, 16)) * 2)) {
                     return false;
                 }
             }
-            if ( StringLe.length() == 1 )
-            {
-                StringLe = "0"+ StringLe;
+            if (StringLe.length() == 1) {
+                StringLe = "0" + StringLe;
                 //editLe.setText(StringLe);
                 strLe = StringLe;
             }
-            if ( StringLc.length() == 1 )
-            {
-                StringLc = "0"+ StringLc;
+            if (StringLc.length() == 1) {
+                StringLc = "0" + StringLc;
 //                editLc.setText(StringLc);
                 strLc = StringLc;
             }
-            if ( StringP2.length() == 1 )
-            {
-                StringP2 = "0"+ StringP2;
+            if (StringP2.length() == 1) {
+                StringP2 = "0" + StringP2;
 //                editP2.setText(StringP2);
                 strP2 = StringP2;
             }
-            if ( StringP1.length() == 1 )
-            {
-                StringP1 = "0"+ StringP1;
+            if (StringP1.length() == 1) {
+                StringP1 = "0" + StringP1;
 //                editP1.setText(StringP1);
                 strP1 = StringP1;
             }
-            if ( StringINS.length() == 1 )
-            {
-                StringINS = "0"+ StringINS;
+            if (StringINS.length() == 1) {
+                StringINS = "0" + StringINS;
 //                editINS.setText(StringINS);
                 strINS = StringINS;
             }
-            if ( StringCLA.length() == 1 )
-            {
-                StringCLA = "0"+ StringCLA;
+            if (StringCLA.length() == 1) {
+                StringCLA = "0" + StringCLA;
 //                editCLA.setText(StringCLA);
                 strCLA = StringCLA;
             }
         }
 
-        if (true)
-        {
+        if (true) {
 //            StringAPDU = editDataIn.getText().toString();
             StringAPDU = strDataIn;
-            if ( ((StringAPDU.length()%2)!=0)|| (StringAPDU.length() < 1) )
-            {
+            if (((StringAPDU.length() % 2) != 0) || (StringAPDU.length() < 1)) {
                 return false;
             }
         }
@@ -979,22 +929,17 @@ public class JAppActivity extends JCompatActivity {
 //            StringAPDU = StringCLA + StringINS + StringP1 + StringP2 + StringLc + StringDataIn + StringLe;
 //        }
 
-        if(StringAPDU.length() < 8)
-        {
+        if (StringAPDU.length() < 8) {
             return false;
         }
 
         byteAPDU = atohex(StringAPDU);
         respAPDU = transceives(byteAPDU);
 
-        if(true)
-        {
-            try
-            {
+        if (true) {
+            try {
                 vShowResponseInterpretation(respAPDU);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
 //                clearlog();
 //                print("Response is not TLV format !!!");
             }
@@ -1003,94 +948,71 @@ public class JAppActivity extends JCompatActivity {
         return true;
     }
 
-    private byte[]  transceives (byte[] data)
-    {
+    private byte[] transceives(byte[] data) {
         byte[] response = new byte[512];
         int responseLength = 0;
-        try
-        {
+        try {
 //            print("***COMMAND APDU***");
 //            print("");
 //            print("IFD - " + getHexString(data,data.length))
-            Log.i("FacialCompareActivity", "transceives: "+getHexString(data, data.length));
-        }
-        catch (Exception e1)
-        {
+            Log.i("FacialCompareActivity", "transceives: " + getHexString(data, data.length));
+        } catch (Exception e1) {
             e1.printStackTrace();
         }
 
-        if (iSlotNum >= 0)
-        {
-            try
-            {
-                responseLength = mReader.transmit(iSlotNum,data, data.length, response, response.length);
-            }
-            catch (Exception e)
-            {
+        if (iSlotNum >= 0) {
+            try {
+                responseLength = mReader.transmit(iSlotNum, data, data.length, response, response.length);
+            } catch (Exception e) {
 //                print("****************************************");
 //                print("       ERROR transmit: Review APDU  ");
 //                print("****************************************");
 //                Toast.makeText(FacialCompareActivity.this, "Error transmit: Review APDU", Toast.LENGTH_SHORT).show();
-                responseLength=0;
+                responseLength = 0;
                 byte[] ra = Arrays.copyOf(response, responseLength);
                 response = null;
                 return (ra);
             }
-            try
-            {
+            try {
                 byte[] ra2 = Arrays.copyOf(response, responseLength);
-                respAPDU2=ra2;
-            }
-            catch(Exception e)
-            {
+                respAPDU2 = ra2;
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 //        if(mCheckAutoSend.isChecked())
         {
-            if( (response[0]==0x61)||(response[0]==0x6C) )
-            {
-                byte[] GetResponse = {(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00};
-                if(response[0]==0x6C)
-                {
-                    GetResponse[0]=data[0];
-                    GetResponse[1]=data[1];
-                    GetResponse[2]=data[2];
-                    GetResponse[3]=data[3];
-                    GetResponse[4]=response[1];
+            if ((response[0] == 0x61) || (response[0] == 0x6C)) {
+                byte[] GetResponse = {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+                if (response[0] == 0x6C) {
+                    GetResponse[0] = data[0];
+                    GetResponse[1] = data[1];
+                    GetResponse[2] = data[2];
+                    GetResponse[3] = data[3];
+                    GetResponse[4] = response[1];
+                } else {
+                    GetResponse[0] = (byte) 0x00;
+                    GetResponse[1] = (byte) 0xC0;
+                    GetResponse[2] = (byte) 0x00;
+                    GetResponse[3] = (byte) 0x00;
+                    GetResponse[4] = response[1];
                 }
-                else
-                {
-                    GetResponse[0]=(byte)0x00;
-                    GetResponse[1]=(byte)0xC0;
-                    GetResponse[2]=(byte)0x00;
-                    GetResponse[3]=(byte)0x00;
-                    GetResponse[4]=response[1];
-                }
-                try
-                {
+                try {
 //                    print("IFD - " + getHexString(GetResponse,GetResponse.length));
-                    byteAPDU2=GetResponse;
-                }
-                catch (Exception e1)
-                {
+                    byteAPDU2 = GetResponse;
+                } catch (Exception e1) {
                     e1.printStackTrace();
                 }
-                if(iSlotNum >= 0)
-                {
-                    try
-                    {
-                        responseLength = mReader.transmit(iSlotNum,GetResponse, GetResponse.length, response,response.length);
-                    }
-                    catch (Exception e)
-                    {
-                        responseLength=0;
+                if (iSlotNum >= 0) {
+                    try {
+                        responseLength = mReader.transmit(iSlotNum, GetResponse, GetResponse.length, response, response.length);
+                    } catch (Exception e) {
+                        responseLength = 0;
                         byte[] ra = Arrays.copyOf(response, responseLength);
                         response = null;
                         return (ra);
                     }
-                    try
-                    {
+                    try {
 
 //                        String strResponse = getHexString(response, responseLength);
 //                        String strApplet = strResponse.substring(6, 29);
@@ -1103,63 +1025,59 @@ public class JAppActivity extends JCompatActivity {
 //                            bSendAPDU();
 //                        } else {
 
-                            if (boolGetImage) {
-                                // save image chunk into byteImage
-                                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                                if (iCurrentImageChunk != 0)
-                                    outputStream.write(byteImage);
-                                outputStream.write(response, 0, responseLength - 2);
-                                byteImage = outputStream.toByteArray();
+                        if (boolGetImage) {
+                            // save image chunk into byteImage
+                            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                            if (iCurrentImageChunk != 0)
+                                outputStream.write(byteImage);
+                            outputStream.write(response, 0, responseLength - 2);
+                            byteImage = outputStream.toByteArray();
 
-                                if (iCurrentImageChunk == 19) {
-                                    boolGetImage = false;
-                                    finishImageRetrieval();
+                            if (iCurrentImageChunk == 19) {
+                                boolGetImage = false;
+                                finishImageRetrieval();
 
-                                    boolGetInformation = true;
-                                    iCurrentInfoChunk = 0;
-                                    strDataIn = generalRetrieve[iCurrentInfoChunk];
-                                    bSendAPDU();
-                                } else {
-                                    iCurrentImageChunk++;
-                                    strDataIn = imageRetrieve[iCurrentImageChunk];
-                                    bSendAPDU();
-                                }
-                            } else if (boolGetInformation) {
-                                // convert data from card to string and put into
-                                // generalInformation[]
-                                if (iCurrentInfoChunk==8) {
-                                    generalInformation[iCurrentInfoChunk] = TrimData(new String(Arrays.copyOfRange(response, 0, response.length - 2), "TIS620"));
-                                } else {
-                                    generalInformation[iCurrentInfoChunk] = TrimData(new String(Arrays.copyOfRange(response, 0, response.length - 2), "TIS620"));
-                                }
-                                if (iCurrentInfoChunk == iMaxInfoChunk - 1) {
-                                    boolGetInformation = false;
-                                    iCurrentImageChunk = 0;
-                                    iCurrentInfoChunk = 0;
-                                    //finishGeneralInformation();
-                                    // ^^^ just store
+                                boolGetInformation = true;
+                                iCurrentInfoChunk = 0;
+                                strDataIn = generalRetrieve[iCurrentInfoChunk];
+                                bSendAPDU();
+                            } else {
+                                iCurrentImageChunk++;
+                                strDataIn = imageRetrieve[iCurrentImageChunk];
+                                bSendAPDU();
+                            }
+                        } else if (boolGetInformation) {
+                            // convert data from card to string and put into
+                            // generalInformation[]
+                            if (iCurrentInfoChunk == 8) {
+                                generalInformation[iCurrentInfoChunk] = TrimData(new String(Arrays.copyOfRange(response, 0, response.length - 2), "TIS620"));
+                            } else {
+                                generalInformation[iCurrentInfoChunk] = TrimData(new String(Arrays.copyOfRange(response, 0, response.length - 2), "TIS620"));
+                            }
+                            if (iCurrentInfoChunk == iMaxInfoChunk - 1) {
+                                boolGetInformation = false;
+                                iCurrentImageChunk = 0;
+                                iCurrentInfoChunk = 0;
+                                //finishGeneralInformation();
+                                // ^^^ just store
 //                                    mProgressDialog.dismiss();
 //                                    mProgressDialog = null;
-                                    JAppActivity.this.mcardAcquireFragment.updateEventLog(true, true,"อ่านข้อมูลจากบัตรแล้ว");
-                                    JAppActivity.this.mcardAcquireFragment.setNextStep();
-                                } else {
-                                    iCurrentInfoChunk++;
-                                    strDataIn = generalRetrieve[iCurrentInfoChunk];
-                                    bSendAPDU();
-                                }
+                                JAppActivity.this.mcardAcquireFragment.updateEventLog(true, true, "อ่านข้อมูลจากบัตรแล้ว");
+                                JAppActivity.this.mcardAcquireFragment.setNextStep();
+                            } else {
+                                iCurrentInfoChunk++;
+                                strDataIn = generalRetrieve[iCurrentInfoChunk];
+                                bSendAPDU();
                             }
+                        }
 //                        }
-                    }
-                    catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-            }
-            else
-            {
-                respAPDU2=null;
-                byteAPDU2=null;
+            } else {
+                respAPDU2 = null;
+                byteAPDU2 = null;
             }
         }
         byte[] ra = Arrays.copyOf(response, responseLength);
@@ -1176,11 +1094,10 @@ public class JAppActivity extends JCompatActivity {
 
         try {
 //            Toast.makeText(this, photo.getPath(), Toast.LENGTH_LONG).show();
-            FileOutputStream fos=new FileOutputStream(photo.getPath());
+            FileOutputStream fos = new FileOutputStream(photo.getPath());
             fos.write(byteImage);
             fos.close();
-        }
-        catch (java.io.IOException e) {
+        } catch (java.io.IOException e) {
             Log.e("PictureDemo", "Exception in photoCallback", e);
         }
 
@@ -1188,7 +1105,7 @@ public class JAppActivity extends JCompatActivity {
 //        DisplayMetrics dm = new DisplayMetrics();
 //        ((AppCompatActivity)FacialCompareActivity.getAppContext()).getWindowManager().getDefaultDisplay().getMetrics(dm);
         DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager windowManager = (WindowManager)context
+        WindowManager windowManager = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(metrics);
 
@@ -1199,43 +1116,33 @@ public class JAppActivity extends JCompatActivity {
     }
 
 
-    private static void vShowResponseInterpretation(byte[] data)
-    {
+    private static void vShowResponseInterpretation(byte[] data) {
 //        print("");
 //        print("====================================");
 //        print("RESPONSE INTERPRETATION:");
 
-        if (data.length > 2)
-        {
+        if (data.length > 2) {
             byte[] sw12 = new byte[2];
-            System.arraycopy(data, data.length-2, sw12, 0, 2);
-            byte[] payload = Arrays.copyOf(data, (data.length)-2 );
-            try
-            {
+            System.arraycopy(data, data.length - 2, sw12, 0, 2);
+            byte[] payload = Arrays.copyOf(data, (data.length) - 2);
+            try {
 //                print("SW1-SW2 " + getHexString(sw12,sw12.length) + RetStatusWord.getSWDescription(Util.szByteHex2String(sw12[0]) + Util.szByteHex2String(sw12[1])));
                 //textInformation.setText("SW1-SW2 " + getHexString(sw12,sw12.length) + RetStatusWord.getSWDescription(Util.szByteHex2String(sw12[0]) + Util.szByteHex2String(sw12[1])));
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
 //                print("Error Processing Response");
 //                textInformation.setText("Error Processing Response");
             }
 //            print(EmvInterpreter.ShowEMV_Interpretation(payload));
 
 
-        }
-        else if (data.length == 2)
-        {
+        } else if (data.length == 2) {
             byte[] sw12 = new byte[2];
-            System.arraycopy(data, data.length-2, sw12, 0, 2);
-            try
-            {
+            System.arraycopy(data, data.length - 2, sw12, 0, 2);
+            try {
 //                print("SW1-SW2 " + getHexString(sw12,sw12.length) );
 //                print(RetStatusWord.getSWDescription(Util.szByteHex2String(sw12[0]) + Util.szByteHex2String(sw12[1])));
 //                textInformation.setText("SW1-SW2 " + getHexString(sw12,sw12.length));
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
 //                print("Error Processing Response");
 //                textInformation.setText("Error Processing Response");
             }
@@ -1244,45 +1151,39 @@ public class JAppActivity extends JCompatActivity {
         return;
     }
 
-    private static String getHexString(byte[] data,int slen) throws Exception
-    {
+    private static String getHexString(byte[] data, int slen) throws Exception {
         String szDataStr = "";
-        for (int ii=0; ii < slen; ii++)
-        {
+        for (int ii = 0; ii < slen; ii++) {
             szDataStr += String.format("%02X ", data[ii] & 0xFF);
         }
         return szDataStr;
     }
 
-    private static byte[] atohex(String data)
-    {
+    private static byte[] atohex(String data) {
         String hexchars = "0123456789abcdef";
 
-        data = data.replaceAll(" ","").toLowerCase();
-        if (data == null)
-        {
+        data = data.replaceAll(" ", "").toLowerCase();
+        if (data == null) {
             return null;
         }
         byte[] hex = new byte[data.length() / 2];
 
-        for (int ii = 0; ii < data.length(); ii += 2)
-        {
+        for (int ii = 0; ii < data.length(); ii += 2) {
             int i1 = hexchars.indexOf(data.charAt(ii));
             int i2 = hexchars.indexOf(data.charAt(ii + 1));
-            hex[ii/2] = (byte)((i1 << 4) | i2);
+            hex[ii / 2] = (byte) ((i1 << 4) | i2);
         }
         return hex;
     }
 
-    private void vShowCardProtocol(String activeProtocolString)
-    {
+    private void vShowCardProtocol(String activeProtocolString) {
         Context context = getApplicationContext();
         int duration = Toast.LENGTH_LONG;
         Toast toast = Toast.makeText(context, activeProtocolString, duration);
         toast.show();
     }
 
-    private void checkDiskPermission () {
+    private void checkDiskPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "no disk access", Toast.LENGTH_LONG).show();
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
@@ -1299,9 +1200,9 @@ public class JAppActivity extends JCompatActivity {
     private static String TrimData(String strData) {
         String strReturn = new String();
         boolean fHash = false;
-        for (int idx=0;idx<strData.length();idx++) {
+        for (int idx = 0; idx < strData.length(); idx++) {
             int ch = strData.charAt(idx);
-            if (ch=='#') {
+            if (ch == '#') {
                 if (fHash == false) {
                     fHash = true;
                     strReturn += " ";
@@ -1310,7 +1211,7 @@ public class JAppActivity extends JCompatActivity {
 //                    (strData.charAt(idx)==0) ||
 //                    (strData.charAt(idx)==0x90)) {
             } else if ((ch == 0) ||
-                      ( ch == 0x90)) {
+                    (ch == 0x90)) {
                 fHash = false;
                 break;
             } else {
