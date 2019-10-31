@@ -240,4 +240,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
             verifyOTP.execute();
         }
     };
+
+
+
 }

@@ -218,6 +218,6 @@ public class RegisterFragment extends Fragment {
     private void hideKeyboard() {
         InputMethodManager inputManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
+                0);
     }
 }

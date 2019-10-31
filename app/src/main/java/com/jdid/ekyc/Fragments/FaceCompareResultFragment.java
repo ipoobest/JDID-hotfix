@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
@@ -33,6 +34,7 @@ public class FaceCompareResultFragment extends Fragment {
     private byte[] byteImage;
     private boolean mfNextStep = false;
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -40,6 +42,8 @@ public class FaceCompareResultFragment extends Fragment {
         initialize(view);
         return view;
     }
+
+
 
     private void initialize(View view) {
         if (((JAppActivity)getActivity()).isVerifyPerson()==false) {

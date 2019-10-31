@@ -31,6 +31,7 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 
 import com.acs.smartcard.Features;
 import com.acs.smartcard.Reader;
@@ -283,13 +284,13 @@ public class JAppActivity extends JCompatActivity {
     public void showFormFillFragment() {
         final FormFillFragment fragment = new FormFillFragment();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container_view, fragment).commit();
+                .replace(R.id.container_view, fragment).addToBackStack(null).commit();
     }
 
     public void showOTPVerifyFragment() {
         final ConfirmOTPRegisterFragment fragment = new ConfirmOTPRegisterFragment();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container_view, fragment).commit();
+                .replace(R.id.container_view, fragment).addToBackStack(null).commit();
     }
 
     public void successFragment() {
@@ -1330,4 +1331,9 @@ public class JAppActivity extends JCompatActivity {
     /* ******************************************************* */
     /* ******************************************************* */
 
+    @Override
+    public void onBackPressed() {
+
+        super.onBackPressed();
+    }
 }
