@@ -56,6 +56,7 @@ import com.jdid.ekyc.repository.pojo.Pin;
 import com.jdid.ekyc.repository.pojo.ResponCheckPin;
 import com.jdid.ekyc.repository.pojo.User;
 import com.jdid.ekyc.repository.pojo.UserResponse;
+import com.jdid.ekyc.views.PFCodeView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -85,6 +86,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
+
+    private PFCodeView mCodeView;
 
     private boolean mfLoginPage = false;
     private boolean mfStartFromRegister = false;
@@ -406,11 +409,17 @@ public class JAppActivity extends JCompatActivity {
                         mProgressDialog.dismiss();
                         mProgressDialog = null;
                         showHomeFragment();
+                    }else {
+                        Toast.makeText(getAppContext(),"รหัสผ่านผิดกรุณากรอกใหม่", Toast.LENGTH_SHORT).show();
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
+                        showPinRegisterFragment();
                     }
                 }else {
                     Toast.makeText(getAppContext(),"รหัสผ่านผิดกรุณากรอกใหม่", Toast.LENGTH_SHORT).show();
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
+                    showPinRegisterFragment();
                 }
             }
 
@@ -1205,7 +1214,7 @@ public class JAppActivity extends JCompatActivity {
                 .setCancelable(false)
                 .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        JAppActivity.super.onBackPressed();
+                        finish();
                     }
                 })
                 .setNegativeButton("ยกเลิก", null)
