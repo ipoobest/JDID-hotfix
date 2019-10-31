@@ -263,6 +263,7 @@ public class JAppActivity extends JCompatActivity {
 
     public void authenPinCode(String strPin) {
         mAuthenPinCode = strPin;
+//        TODO : เรียก function authen ที่นี่
         AuthenPinCode authen = new AuthenPinCode();
         authen.execute();
     }
@@ -305,7 +306,7 @@ public class JAppActivity extends JCompatActivity {
                 .replace(R.id.container_view, fragment).addToBackStack(null).commit();
     }
 
-    public void showOTPVerifyUserFragment(String id ,String otpRef) {
+    public void showOTPVerifyUserFragment(String id, String otpRef) {
         final ConfirmOTPRegisterUserFragment fragment = new ConfirmOTPRegisterUserFragment(id, otpRef);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container_view, fragment).addToBackStack(null).commit();
@@ -384,6 +385,11 @@ public class JAppActivity extends JCompatActivity {
     /* ******************************************************* */
     /* Authenticate PIN Code                                   */
     /* ******************************************************* */
+
+    private class AuthenPinCode2{
+        //TODO :: authen this
+    }
+
     private class AuthenPinCode extends AsyncTask<Void, Void, JSONObject> {
         @Override
         protected void onPreExecute() {
@@ -407,6 +413,7 @@ public class JAppActivity extends JCompatActivity {
                     if (result.getString("imei").equals(mIMEI)) {
                         showHomeFragment();
                     } else {
+                        Log.d("AuthenPinCode555", result.getString("imei"));
                         Toast.makeText(JAppActivity.this, "PIN Code ไม่ถูกต้อง กรุณาป้อน PIN Code ใหม่", Toast.LENGTH_LONG).show();
                     }
                 }

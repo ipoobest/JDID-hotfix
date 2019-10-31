@@ -62,6 +62,12 @@ public class PinCodeFragment extends Fragment {
         view.findViewById(R.id.button_7).setOnClickListener(mOnKeyClickListener);
         view.findViewById(R.id.button_8).setOnClickListener(mOnKeyClickListener);
         view.findViewById(R.id.button_9).setOnClickListener(mOnKeyClickListener);
+        view.findViewById(R.id.button_delete).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                 mCodeView.delete();
+            }
+        });
 
         mCodeView = view.findViewById(R.id.code_view);
         mCodeView.setListener(mCodeListener);

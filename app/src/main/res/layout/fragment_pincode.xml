@@ -301,25 +301,22 @@
                 <ImageView
                     android:id="@+id/button_delete"
                     style="?pf_delete_button"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
+                    android:src="@drawable/delete_icon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_gravity="center"
-                    android:background="@drawable/side_button_background_pf"
-                    android:gravity="center"
-                    android:text="fp"
-                    android:theme="@style/PFLockScreenDeleteButtonStyle"
-                    android:visibility="gone" />
+                    android:gravity="center"/>
 
-                <ImageView
-                    android:id="@+id/button_finger_print"
-                    style="?pf_fingerprint_button"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/side_button_background_pf"
-                    android:gravity="center"
-                    android:text="fp"
-                    android:theme="@style/PFLockScreenFingerPrintButtonStyle" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/button_finger_print"-->
+<!--                    style="?pf_fingerprint_button"-->
+<!--                    android:layout_width="70dp"-->
+<!--                    android:layout_height="70dp"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:background="@drawable/side_button_background_pf"-->
+<!--                    android:gravity="center"-->
+<!--                    android:text="fp"-->
+<!--                    android:theme="@style/PFLockScreenFingerPrintButtonStyle" />-->
 
             </FrameLayout>
 
