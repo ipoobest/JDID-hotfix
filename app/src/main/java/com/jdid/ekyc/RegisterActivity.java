@@ -1,9 +1,11 @@
 package com.jdid.ekyc;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -251,5 +253,18 @@ public class RegisterActivity extends JCompatActivity {
         return imei;
     }
 
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setMessage("ต้องการหยุดทำรายการ และออกจาก application หรือไม่?")
+                .setCancelable(false)
+                .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        RegisterActivity.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton("ยกเลิก", null)
+                .show();
+    }
 }
 

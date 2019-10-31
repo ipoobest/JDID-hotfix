@@ -258,7 +258,7 @@ public class JAppActivity extends JCompatActivity {
         final PinCodeFragment fragment = new PinCodeFragment();
         fragment.setPinAssign(PinCodeFragment.AUTHEN_PIN);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container_view, fragment).commit();
+                .replace(R.id.container_view, fragment).addToBackStack(null).commit();
     }
 
     public void authenPinCode(String strPin) {
