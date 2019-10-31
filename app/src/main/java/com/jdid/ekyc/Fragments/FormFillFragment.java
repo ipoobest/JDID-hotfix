@@ -1,12 +1,14 @@
 package com.jdid.ekyc.Fragments;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -205,6 +207,7 @@ public class FormFillFragment extends Fragment {
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY] = edWork.getText().toString();
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY_ADDRSS] = edWorkAddress.getText().toString();
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.INCOME] = edIncome.getText().toString();
+        hideKeyboard();
         ((JAppActivity)getActivity()).SaveInformation();
     }
 
@@ -223,6 +226,7 @@ public class FormFillFragment extends Fragment {
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY] = edWork.getText().toString();
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY_ADDRSS] = edWorkAddress.getText().toString();
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.INCOME] = edIncome.getText().toString();
+        hideKeyboard();
         ((JAppActivity)getActivity()).showOTPVerifyFragment();
     }
 
@@ -257,5 +261,10 @@ public class FormFillFragment extends Fragment {
 //            return false;
 //        }
         return true;
+    }
+    private void hideKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
     }
 }
