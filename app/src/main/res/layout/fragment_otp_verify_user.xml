@@ -47,7 +47,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/kanit"
         android:lines="1"
-        android:text="ที่ปรากฎใน SMS"
+        android:text="ที่ปรากฎใน SMS เพื่อยืนยันการสมัคร"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

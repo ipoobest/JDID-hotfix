@@ -3,6 +3,7 @@ package com.jdid.ekyc;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -11,6 +12,7 @@ import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -248,5 +250,6 @@ public class RegisterActivity extends JCompatActivity {
         Log.d("imeii : " , imei);
         return imei;
     }
+
 }
 

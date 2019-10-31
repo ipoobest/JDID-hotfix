@@ -1,12 +1,14 @@
 package com.jdid.ekyc.Fragments;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -102,7 +104,9 @@ public class FormFillFragment extends Fragment {
         try {
             URL obj = new URL("https://e-kyc.dome.cloud/purpose");
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            conn.setRequestProperty("Authorization", "Basic ZWt5Y2Rldjpla3ljZGV2");
+//            conn.setRequestProperty("Authorization", "Basic ZWt5Y2Rldjpla3ljZGV2");
+            conn.setRequestProperty("X-API-KEY", "3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb");
+
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -203,6 +207,7 @@ public class FormFillFragment extends Fragment {
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY] = edWork.getText().toString();
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY_ADDRSS] = edWorkAddress.getText().toString();
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.INCOME] = edIncome.getText().toString();
+        hideKeyboard();
         ((JAppActivity)getActivity()).SaveInformation();
     }
 
@@ -214,6 +219,11 @@ public class FormFillFragment extends Fragment {
             ((JAppActivity) getActivity()).fieldsList[JAppActivity.PURPOSE] = spPurpose.getSelectedItem().toString();
         }
         // need save data fields first
+        if (spPurpose.getSelectedItemPosition()==0) {
+            ((JAppActivity) getActivity()).fieldsList[JAppActivity.PURPOSE] = edOtherPurpose.getText().toString();
+        } else {
+            ((JAppActivity) getActivity()).fieldsList[JAppActivity.PURPOSE] = spPurpose.getSelectedItem().toString();
+        }
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.CONTACT_NUMBER] = edPhone.getText().toString();
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.CENSUS_ADDRESS] = edCurrentAddress.getText().toString();
         long lMariageStatus = spMarriageStatus.getSelectedItemId();
@@ -222,6 +232,7 @@ public class FormFillFragment extends Fragment {
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY] = edWork.getText().toString();
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY_ADDRSS] = edWorkAddress.getText().toString();
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.INCOME] = edIncome.getText().toString();
+        hideKeyboard();
         ((JAppActivity)getActivity()).showOTPVerifyFragment();
     }
 
@@ -256,5 +267,10 @@ public class FormFillFragment extends Fragment {
 //            return false;
 //        }
         return true;
+    }
+    private void hideKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
     }
 }
