@@ -558,7 +558,6 @@ public class JAppActivity extends JCompatActivity {
             income = 0;
         }
 
-        //TODO :: เปลี่ยนตำแหน่ง fieldsList
         request.setNameTh(generalInformation[THAIFULLNAME]);
         request.setNameEn(generalInformation[ENGLISHFULLNAME]);
         request.setBirthdate(generalInformation[BIRTH]);
