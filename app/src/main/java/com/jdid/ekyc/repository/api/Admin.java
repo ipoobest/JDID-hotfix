@@ -14,11 +14,11 @@ public interface Admin {
 
     // ADMIN SEND OTP
     @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
-    @POST("/admin/send_otp")
+    @POST("/admin/login")
     Call<ResponseOTPForRegister> sentOTP(@Body RequestOTPForRegister RequestOTPForRegister);
 
     // ADMIN VERIFY OTP
     @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
-    @POST("/admin/verify_otp")
+    @POST("/admin/verify_login")
     Call<ResponseOTPForVerify> verifyOTP(@Body RequestOTPForVerify requestOTPForVerify);
 }

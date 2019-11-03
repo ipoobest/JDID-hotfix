@@ -87,6 +87,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                     ResponseOTPForRegister result = response.body();
                     String otpRef = result.getOtpRef().getOtpRef();
                     txtOTPREF.setText("OTP Ref : "+ otpRef);
+                    mRef = otpRef;
                 }else {
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
@@ -103,85 +104,17 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         });
     }
 
-    private class RequestOTP extends AsyncTask<Void, Void, JSONObject> {
-
-        @Override
-        protected void onPreExecute() {
-            mProgressDialog = ProgressDialog.show(getActivity(),
-                    null, "กำลังทำการร้องขอรหัส OTP", true, false);
-        }
-
-        @Override
-        protected JSONObject doInBackground(Void... voids) {
-            JSONObject result;
-            result = _requestOTP();
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject result) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-
-            if (result!=null) {
-                try {
-                    JSONObject data = result.getJSONObject("data");
-                    mRef = data.getString("otp_ref");
-                    txtOTPREF.setText("OTP Ref : "+mRef);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    private JSONObject _requestOTP() {
-        JSONObject responseJson = null;
-        JSONObject requestParams = new JSONObject();
-        try {
-            requestParams.put("phone_no", mPhoneNumber);
-        } catch (JSONException e) {
-            Log.e(TAG, "JsonException in requestparams makeup in Device Registration", e);
-        }
-
-        try {
-            final String USER_AGENT = "Mozilla/5.0";
-            URL obj = new URL("https://e-kyc.dome.cloud/admin/login");
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("X-API-KEY", "3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb");
-
-            String requestContent = requestParams.toString();
-            OutputStream os = conn.getOutputStream();
-            os.write(requestContent.getBytes());
-            os.close();
-
-            InputStream in = new BufferedInputStream(conn.getInputStream());
-            String result = org.apache.commons.io.IOUtils.toString(in, "UTF-8");
-            responseJson = new JSONObject(result);
-
-            in.close();
-            conn.disconnect();
-
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-
-        return responseJson;
-    }
-
     /* ******************************************************* */
     private void verifyOTP(){
         mProgressDialog = ProgressDialog.show(getActivity(),
                 null, "กำลังทำการรตรวจรหัส OTP", true, false);
 
-        final RequestOTPForVerify request = new RequestOTPForVerify();
+        RequestOTPForVerify request = new RequestOTPForVerify();
         request.setPhoneNo(mPhoneNumber);
         request.setOtp(edOTP.getText().toString());
         request.setOtpRef(mRef);
+
+        Log.d("request verify 55 : " , request.getOtp()+request.getOtpRef() + request.getPhoneNo());
 
         Admin service = RetrofitInstance.getRetrofitInstance().create(Admin.class);
         Call<ResponseOTPForVerify> call = service.verifyOTP(request);
@@ -209,78 +142,6 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         });
     }
 
-    private class VerifyOTP extends AsyncTask<Void, Void, JSONObject> {
-
-        @Override
-        protected void onPreExecute() {
-            mProgressDialog = ProgressDialog.show(getActivity(),
-                    null, "กำลังทำการตรวจสอบรหัส OTP", true, false);
-        }
-
-        @Override
-        protected JSONObject doInBackground(Void... voids) {
-            JSONObject result;
-            result = _verifyOTP();
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject result) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-
-            if (result!=null) {
-                try {
-                    if (result.getString("access_token").length()>0) {
-                        ((JAppActivity)getActivity()).SaveInformation();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    private JSONObject _verifyOTP() {
-        JSONObject responseJson = null;
-        JSONObject requestParams = new JSONObject();
-        try {
-            requestParams.put("phone_no", mPhoneNumber);
-            requestParams.put("otp_ref", mRef);
-            requestParams.put("otp", edOTP.getText().toString());
-        } catch (JSONException e) {
-            Log.e(TAG, "JsonException in requestparams makeup in Device Registration", e);
-        }
-
-        try {
-            final String USER_AGENT = "Mozilla/5.0";
-            URL obj = new URL("https://e-kyc.dome.cloud/admin/verify_login");
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-
-            conn.setRequestProperty("X-API-KEY", "3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb");
-
-            String requestContent = requestParams.toString();
-            OutputStream os = conn.getOutputStream();
-            os.write(requestContent.getBytes());
-            os.close();
-
-            InputStream in = new BufferedInputStream(conn.getInputStream());
-            String result = org.apache.commons.io.IOUtils.toString(in, "UTF-8");
-            responseJson = new JSONObject(result);
-
-            in.close();
-            conn.disconnect();
-
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-        return responseJson;
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -297,9 +158,9 @@ public class ConfirmOTPRegisterFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 //TODO :: verify OTP
-//                verifyOTP();
-                VerifyOTP otp = new VerifyOTP();
-                otp.execute();
+                verifyOTP();
+//                VerifyOTP otp = new VerifyOTP();
+//                otp.execute();
             }
         });
         btnNextStep.setEnabled(false);
@@ -307,21 +168,5 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         edOTP.addTextChangedListener(mTextEditorWatcher);
         txtOTPREF = view.findViewById(R.id.txtOTPREF);
     }
-
-//    private void requestOTP() {
-//        requestOTP();
-//        requestOTP requestOtp = new requestOTP();
-//        requestOtp.execute();
-//    }
-
-    private final View.OnClickListener mOnButtonClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            VerifyOTP verifyOTP = new VerifyOTP();
-            verifyOTP.execute();
-        }
-    };
-
-
 
 }
