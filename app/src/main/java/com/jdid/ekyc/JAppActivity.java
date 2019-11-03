@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -551,6 +552,7 @@ public class JAppActivity extends JCompatActivity {
         Log.d("save", "SaveInformation");
         final RequestCreateUser request = new RequestCreateUser();
         double income;
+        String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         try {
             income = Double.parseDouble(fieldsList[INCOME]);
@@ -573,8 +575,11 @@ public class JAppActivity extends JCompatActivity {
         request.setCompany(fieldsList[COMPANY]);
         request.setCompanyAddress(fieldsList[COMPANY_ADDRSS]);
         request.setIncome(income);
+        //TODO :: add device_id
+        request.setVerifyBy(mStrDeviceID);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
         //Create user
+        Log.d("mStrDeviceID55 : " , request.getVerifyBy());
         createUser(request);
     }
 

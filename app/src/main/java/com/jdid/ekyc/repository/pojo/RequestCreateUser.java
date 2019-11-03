@@ -49,6 +49,9 @@ public class RequestCreateUser {
     @SerializedName("income")
     @Expose
     private Double income;
+    @SerializedName("verify_by")
+    @Expose
+    private String verifyBy;
     @SerializedName("photo")
     @Expose
     private String photo;
@@ -179,5 +182,13 @@ public class RequestCreateUser {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public String getVerifyBy() {
+        return verifyBy;
+    }
+
+    public void setVerifyBy(String verifyBy) {
+        this.verifyBy = verifyBy;
     }
 }
