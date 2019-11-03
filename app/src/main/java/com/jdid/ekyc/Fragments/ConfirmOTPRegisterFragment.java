@@ -114,8 +114,6 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         request.setOtp(edOTP.getText().toString());
         request.setOtpRef(mRef);
 
-        Log.d("request verify 55 : " , request.getOtp()+request.getOtpRef() + request.getPhoneNo());
-
         Admin service = RetrofitInstance.getRetrofitInstance().create(Admin.class);
         Call<ResponseOTPForVerify> call = service.verifyOTP(request);
         call.enqueue(new Callback<ResponseOTPForVerify>() {
@@ -128,7 +126,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 }else {
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
-                    Toast.makeText(getContext(), "fffff", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
 
                 }
             }

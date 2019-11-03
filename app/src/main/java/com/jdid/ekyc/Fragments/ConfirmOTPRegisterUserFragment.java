@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -59,6 +60,8 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
 
     /* ******************************************************* */
     private void verifyUser(String id) {
+        mProgressDialog = ProgressDialog.show(getActivity(),
+                null, "กำลังทำการรตรวจรหัส OTP", true, false);
 
         RequestOTPForVerify request = new RequestOTPForVerify();
         request.setPhoneNo(mPhoneNumber);
@@ -70,14 +73,20 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
             @Override
             public void onResponse(Call<ResponseVerifyUser> call, Response<ResponseVerifyUser> response) {
                 if (response.isSuccessful()) {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
                     ((JAppActivity) getActivity()).successFragment();
                 } else {
-                    Log.d("result", "ยืนยันไม่สำเร็จ");
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                    Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseVerifyUser> call, Throwable t) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
                 Log.e("error : ", t.toString());
             }
         });
@@ -94,9 +103,6 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
     }
 
     private void setupUI(View view) {
-//        view.findViewById(R.id.btnNextStep).setOnClickListener(new View.OnClickListener() {
-//            VerifyOTP vOTP = new VerifyOTP();
-//        });
         edOTP = view.findViewById(R.id.edOTP);
         edOTP.addTextChangedListener(mTextEditorWatcher);
         txtOTPREF = view.findViewById(R.id.txtOTPREF);
@@ -112,6 +118,5 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
         btnNextStep.setEnabled(false);
 
     }
-
 
 }
