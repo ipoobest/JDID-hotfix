@@ -1,13 +1,12 @@
 package com.jdid.ekyc.Fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,8 +15,6 @@ import androidx.fragment.app.Fragment;
 
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
-import com.jdid.ekyc.RegisterActivity;
-import com.jdid.ekyc.views.PFCodeView;
 
 public class HomeFragment extends Fragment {
 
@@ -45,6 +42,7 @@ public class HomeFragment extends Fragment {
     private void initialize(View view) {
         view.findViewById(R.id.btnRegisterEKYC).setOnClickListener(mOnKeyClickListener);
         view.findViewById(R.id.btnVerifyPerson).setOnClickListener(mOnKeyClickListener);
+        view.findViewById(R.id.btnVerifyDipChip).setOnClickListener(mOnKeyClickListener);
         ((TextView)view.findViewById(R.id.txtBranch)).setText("JDID สาขา "+((JAppActivity)getActivity()).mBranch);
 
     }
@@ -60,6 +58,8 @@ public class HomeFragment extends Fragment {
                     ((JAppActivity)getActivity()).acquireCardData(false);
                 } else if (id==R.id.btnVerifyPerson) {
                     ((JAppActivity)getActivity()).acquireCardData(true);
+                } else if (id == R.id.btnVerifyDipChip){
+                    Toast.makeText(getContext(), "DIPCHIP", Toast.LENGTH_LONG).show();
                 }
             }
         }
