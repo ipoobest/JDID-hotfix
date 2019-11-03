@@ -34,7 +34,9 @@
         <activity android:name=".MainActivity">
         </activity>
         <activity android:name=".VerifyDevice"></activity>
-        <activity android:name=".JAppActivity"></activity>
+        <activity android:name=".JAppActivity">
+
+        </activity>
         <activity android:name=".RegisterActivity"></activity>
     </application>
 

@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import androidx.annotation.Nullable;
@@ -222,11 +223,17 @@ public class JAppActivity extends JCompatActivity {
 
     private String mAuthenPinCode;
 
+    Toolbar toolbar;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JAppActivity.context = getApplicationContext();
         setContentView(R.layout.activity_japp);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         if (getIntent().getBooleanExtra("ToFormFill", false)) {
             showFormFillFragment();
@@ -324,6 +331,7 @@ public class JAppActivity extends JCompatActivity {
     }
 
     public void acquireCardData(boolean fVerify) {
+        // TODO :: ADD MENU DIP CHIP
         mfVerifyPerson = fVerify;
         final CardAcquireFragment fragment = new CardAcquireFragment();
         mcardAcquireFragment = fragment;
@@ -401,37 +409,34 @@ public class JAppActivity extends JCompatActivity {
 
         Device service = RetrofitInstance.getRetrofitInstance().create(Device.class);
         Call<ResponVerifyPin> call = service.checkPin(request);
+
         call.enqueue(new Callback<ResponVerifyPin>() {
             @Override
             public void onResponse(Call<ResponVerifyPin> call, Response<ResponVerifyPin> response) {
                 if (response.isSuccessful()){
                     ResponVerifyPin result = response.body();
                     if (result.getVerified()){
-                        mProgressDialog.dismiss();
-                        mProgressDialog = null;
                         showHomeFragment();
                     }else {
                         Toast.makeText(getAppContext(),"รหัสผ่านผิดกรุณากรอกใหม่", Toast.LENGTH_SHORT).show();
-                        mProgressDialog.dismiss();
-                        mProgressDialog = null;
                         showPinRegisterFragment();
                     }
                 }else {
                     Toast.makeText(getAppContext(),"รหัสผ่านผิดกรุณากรอกใหม่", Toast.LENGTH_SHORT).show();
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
+
                     showPinRegisterFragment();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponVerifyPin> call, Throwable t) {
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
+//                mProgressDialog.dismiss();
+//                mProgressDialog = null;
                 Log.d("error xx : ", t.toString());
             }
         });
-
+        mProgressDialog.dismiss();
+        mProgressDialog = null;
 
     }
 
@@ -569,7 +574,7 @@ public class JAppActivity extends JCompatActivity {
         request.setNationality("Thai");
         request.setContactNumber(fieldsList[CONTACT_NUMBER]);
         request.setPurpose(fieldsList[PURPOSE]);
-        request.setCensusAddress(fieldsList[CENSUS_ADDRESS]);
+        request.setCurrentAddress(fieldsList[CENSUS_ADDRESS]);
         request.setMariageStatus(fieldsList[MARIAGE_STATUS]);
         request.setOccupation(fieldsList[OCCUPATION]);
         request.setCompany(fieldsList[COMPANY]);
@@ -1217,11 +1222,13 @@ public class JAppActivity extends JCompatActivity {
                 .setCancelable(false)
                 .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        finish();
+                        showHomeFragment();
+//                        finish();
                     }
                 })
                 .setNegativeButton("ยกเลิก", null)
                 .show();
-
     }
+
+
 }

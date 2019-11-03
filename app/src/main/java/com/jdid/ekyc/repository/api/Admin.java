@@ -14,7 +14,7 @@ public interface Admin {
 
     // ADMIN SEND OTP
     @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
-    @POST("/admin/login")
+    @POST("/admin/send_otp")
     Call<ResponseOTPForRegister> sentOTP(@Body RequestOTPForRegister RequestOTPForRegister);
 
     // ADMIN VERIFY OTP

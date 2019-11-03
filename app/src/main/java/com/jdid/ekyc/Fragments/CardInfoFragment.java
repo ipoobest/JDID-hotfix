@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.jdid.ekyc.JAppActivity;
@@ -46,12 +48,22 @@ public class CardInfoFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_card_information, container, false);
+        setHasOptionsMenu(true);
         initialize(view);
         fillCardInformation();
         return view;
     }
 
     private void initialize(View view) {
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        if (((JAppActivity)getActivity()).isVerifyPerson()==false) {
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
+        } else {
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
+        }
+
         edCID = view.findViewById(R.id.edCID);
         edThaiName = view.findViewById(R.id.edThaiName);
         edEnglishName = view.findViewById(R.id.edEnglishName);
@@ -59,11 +71,6 @@ public class CardInfoFragment extends Fragment {
         edGender = view.findViewById(R.id.edGender);
         edAddress = view.findViewById(R.id.edAddress);
 
-        if (((JAppActivity)getActivity()).isVerifyPerson()==false) {
-            ((TextView)view.findViewById(R.id.txtTitle)).setText(R.string.kyc_title);
-        } else {
-            ((TextView)view.findViewById(R.id.txtTitle)).setText(R.string.verify_person);
-        }
 
         btnNextStep = view.findViewById(R.id.btnNextStep);
         btnNextStep.setOnClickListener(new View.OnClickListener() {
@@ -73,13 +80,13 @@ public class CardInfoFragment extends Fragment {
             }
         });
 
-        btnBack = view.findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((JAppActivity)getActivity()).acquireCardData(((JAppActivity)getActivity()).isVerifyPerson());
-            }
-        });
+//        btnBack = view.findViewById(R.id.btnBack);
+//        btnBack.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                ((JAppActivity)getActivity()).acquireCardData(((JAppActivity)getActivity()).isVerifyPerson());
+//            }
+//        });
 
         imageFromCard = view.findViewById(R.id.imageFromCard);
         imageFromCard.setImageResource(R.drawable.ic_credit_card_black_24dp);
@@ -133,6 +140,16 @@ public class CardInfoFragment extends Fragment {
         strReturn += "-";
         strReturn += strCID.substring(12, 13);
         return strReturn;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home){
+            ((JAppActivity) getActivity()).acquireCardData(false);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

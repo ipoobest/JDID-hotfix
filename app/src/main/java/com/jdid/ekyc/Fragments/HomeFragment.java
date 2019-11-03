@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.jdid.ekyc.JAppActivity;
@@ -28,6 +29,17 @@ public class HomeFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
         initialize(view);
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        ((AppCompatActivity)getActivity()).getSupportActionBar().show();
     }
 
     private void initialize(View view) {

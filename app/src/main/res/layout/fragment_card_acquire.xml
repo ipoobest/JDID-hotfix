@@ -8,12 +8,6 @@
     android:background="#f1f1f1">
 
     <ImageView
-        android:id="@+id/imgPageBar"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        app:srcCompat="@drawable/page_bar" />
-
-    <ImageView
         android:id="@+id/imgDipChip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -159,24 +153,18 @@
         app:layout_constraintTop_toTopOf="@+id/txtLog5"
         app:srcCompat="@drawable/collect_icon" />
 
-    <Button
-        android:id="@+id/btnBack"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:background="@drawable/back_icon"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
 
-    <TextView
-        android:id="@+id/txtTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/kanit"
-        android:text="ตรวจสอบบุคคล"
-        android:textColor="@android:color/white"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+<!--    <TextView-->
+<!--        android:id="@+id/txtTitle"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:fontFamily="@font/kanit"-->
+<!--        android:text="ตรวจสอบบุคคล"-->
+<!--        android:textColor="@android:color/background_dark"-->
+<!--        android:textSize="24sp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        />-->
 </androidx.constraintlayout.widget.ConstraintLayout>

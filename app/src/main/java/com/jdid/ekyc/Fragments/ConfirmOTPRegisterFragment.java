@@ -1,6 +1,7 @@
 package com.jdid.ekyc.Fragments;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,6 +20,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.jdid.ekyc.JAppActivity;
@@ -144,6 +148,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_otp_register, container, false);
+        setHasOptionsMenu(true);
         mPhoneNumber = ((JAppActivity)getActivity()).fieldsList[JAppActivity.CONTACT_NUMBER];
         setupUI(view);
         requestOTP();
@@ -151,6 +156,11 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     }
 
     private void setupUI(View view) {
+        // Toolbar
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Confirm OTP");
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         btnNextStep = view.findViewById(R.id.btnNextStep);
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,4 +174,25 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         txtOTPREF = view.findViewById(R.id.txtOTPREF);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home){
+            confirmBack();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void confirmBack() {
+         new AlertDialog.Builder(getContext())
+                .setMessage("ต้องการหยุดทำรายการ และกลับไปหน้ากรอกข้อมูลใหม่หรือไม่")
+                .setCancelable(false)
+                .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ((JAppActivity) getActivity()).showFormFillFragment();
+                    }
+                })
+                .setNegativeButton("ยกเลิก", null)
+                .show();
+    }
 }

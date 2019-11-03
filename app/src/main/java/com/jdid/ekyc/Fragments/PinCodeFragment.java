@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 
@@ -37,6 +38,18 @@ public class PinCodeFragment extends Fragment {
         initialize(view);
         return view;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        ((AppCompatActivity)getActivity()).getSupportActionBar().show();
+    }
+
 
     private void initialize(View view) {
         tvTitle = view.findViewById(R.id.title_text_view);

@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.jdid.ekyc.JAppActivity;
@@ -105,9 +106,13 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
     }
 
     private void setupUI(View view) {
+        // Toolbar
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Confirm OTP");
+
         edOTP = view.findViewById(R.id.edOTP);
         edOTP.addTextChangedListener(mTextEditorWatcher);
         txtOTPREF = view.findViewById(R.id.txtOTPREF);
+        txtOTPREF.setText("OTP Ref : "+ mRef);
         btnNextStep = view.findViewById(R.id.btnNextStep);
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override

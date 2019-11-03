@@ -1,10 +1,12 @@
 package com.jdid.ekyc.Fragments;
 
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -14,6 +16,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -39,6 +43,7 @@ public class FaceCompareResultFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_face_compare_result, container, false);
+        setHasOptionsMenu(true);
         initialize(view);
         return view;
     }
@@ -46,19 +51,17 @@ public class FaceCompareResultFragment extends Fragment {
 
 
     private void initialize(View view) {
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         if (((JAppActivity)getActivity()).isVerifyPerson()==false) {
-            ((TextView)view.findViewById(R.id.txtTitle)).setText(R.string.kyc_title);
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
         } else {
-            ((TextView)view.findViewById(R.id.txtTitle)).setText(R.string.verify_person);
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
         }
+
         btnNextStep = view.findViewById(R.id.btnNextStep);
-        btnBack = view.findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((JAppActivity)getActivity()).showCardInformation();
-            }
-        });
+
         txtResult = view.findViewById(R.id.txtResult);
         txtResultDescription = view.findViewById(R.id.txtResultDescription);
         imageFromCard = view.findViewById(R.id.imageFromCard);
@@ -116,5 +119,27 @@ public class FaceCompareResultFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home){
+            confirmBack();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void confirmBack() {
+        new AlertDialog.Builder(getContext())
+                .setMessage("ต้องการหยุดทำรายการ และกลับไปหน้าแสดงข้อมูลหรือไม่")
+                .setCancelable(false)
+                .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ((JAppActivity) getActivity()).showCardInformation();
+                    }
+                })
+                .setNegativeButton("ยกเลิก", null)
+                .show();
     }
 }

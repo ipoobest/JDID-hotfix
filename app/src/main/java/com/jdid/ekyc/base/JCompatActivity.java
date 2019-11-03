@@ -12,6 +12,6 @@ public class JCompatActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);//will hide the title
-        getSupportActionBar().hide(); //hide the title bar
+//        getSupportActionBar().hide(); //hide the title bar
     }
 }

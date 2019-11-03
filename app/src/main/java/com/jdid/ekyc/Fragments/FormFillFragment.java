@@ -2,10 +2,12 @@ package com.jdid.ekyc.Fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -19,6 +21,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.jdid.ekyc.JAppActivity;
@@ -134,17 +138,22 @@ public class FormFillFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_form_fill, container, false);
+        setHasOptionsMenu(true);
         initialize(view);
         GetPurpose purpose = new GetPurpose();
         purpose.execute();
         return view;
     }
 
+
     private void initialize(View view) {
+        // ToolBar
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
         if (((JAppActivity)getActivity()).isVerifyPerson()==false) {
-            ((TextView)view.findViewById(R.id.txtTitle)).setText(R.string.kyc_title);
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
         } else {
-            ((TextView)view.findViewById(R.id.txtTitle)).setText(R.string.verify_person);
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
         }
 
         spPurpose = view.findViewById(R.id.spPurpose);
@@ -266,5 +275,27 @@ public class FormFillFragment extends Fragment {
         InputMethodManager inputManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home){
+            confirmBack();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void confirmBack() {
+        new AlertDialog.Builder(getContext())
+                .setMessage("ต้องการหยุดทำรายการ และกลับไปหน้าเมนูหลัก หรือไม่?")
+                .setCancelable(false)
+                .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ((JAppActivity) getActivity()).showHomeFragment();
+                    }
+                })
+                .setNegativeButton("ยกเลิก", null)
+                .show();
     }
 }

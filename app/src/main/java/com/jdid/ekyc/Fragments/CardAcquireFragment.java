@@ -3,6 +3,7 @@ package com.jdid.ekyc.Fragments;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.jdid.ekyc.JAppActivity;
@@ -21,7 +23,6 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
     private static final String TAG = "CardAcquireFragment";
 
     private Button btnNextStep;
-    private Button btnBack;
 
     private int miCurrentLog;
 
@@ -35,6 +36,7 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_card_acquire, container, false);
+        setHasOptionsMenu(true);
         initialize(view);
         ((JAppActivity)getActivity()).initializeCardReader();
         return view;
@@ -42,9 +44,9 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
 
     private void initialize(View view) {
         if (((JAppActivity)getActivity()).isVerifyPerson()==false) {
-            ((TextView)view.findViewById(R.id.txtTitle)).setText(R.string.kyc_title);
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
         } else {
-            ((TextView)view.findViewById(R.id.txtTitle)).setText(R.string.verify_person);
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
         }
         miCurrentLog = 0;
         mfNextStep = false;
@@ -60,13 +62,13 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
                 }
             }
         });
-        btnBack = view.findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((JAppActivity)getActivity()).showHomeFragment();
-            }
-        });
+//        btnBack = view.findViewById(R.id.btnBack);
+//        btnBack.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                ((JAppActivity)getActivity()).showHomeFragment();
+//            }
+//        });
         tvInfo[0] = view.findViewById(R.id.txtLog1);
         tvInfo[0].setText("");
         tvInfo[1] = view.findViewById(R.id.txtLog2);
@@ -133,5 +135,14 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
     @Override
     public void startCompareFace() {
         ((JAppActivity)getActivity()).showFaceCompareResult();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home){
+            ((JAppActivity)getActivity()).showHomeFragment();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

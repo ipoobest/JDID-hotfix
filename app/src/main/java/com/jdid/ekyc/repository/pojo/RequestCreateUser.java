@@ -31,9 +31,9 @@ public class RequestCreateUser {
     @SerializedName("purpose")
     @Expose
     private String purpose;
-    @SerializedName("census_address")
+    @SerializedName("current_address")
     @Expose
-    private String censusAddress;
+    private String currentAddress;
     @SerializedName("mariage_status")
     @Expose
     private String mariageStatus;
@@ -128,12 +128,12 @@ public class RequestCreateUser {
         this.purpose = purpose;
     }
 
-    public String getCensusAddress() {
-        return censusAddress;
+    public String getCurrentAddress() {
+        return currentAddress;
     }
 
-    public void setCensusAddress(String censusAddress) {
-        this.censusAddress = censusAddress;
+    public void setCurrentAddress(String currentAddress) {
+        this.currentAddress = currentAddress;
     }
 
     public String getMariageStatus() {
