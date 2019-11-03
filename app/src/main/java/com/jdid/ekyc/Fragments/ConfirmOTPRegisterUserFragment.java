@@ -1,7 +1,6 @@
 package com.jdid.ekyc.Fragments;
 
 import android.app.ProgressDialog;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,24 +19,13 @@ import androidx.fragment.app.Fragment;
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
 import com.jdid.ekyc.repository.RetrofitInstance;
-import com.jdid.ekyc.repository.api.VerifyUser;
-import com.jdid.ekyc.repository.pojo.Otp;
-import com.jdid.ekyc.repository.pojo.ResponseOtp;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import com.jdid.ekyc.repository.api.User;
+import com.jdid.ekyc.repository.pojo.RequestOTPForVerify;
+import com.jdid.ekyc.repository.pojo.ResponseVerifyUser;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.content.ContentValues.TAG;
 
 public class ConfirmOTPRegisterUserFragment extends Fragment {
 
@@ -72,15 +60,15 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
     /* ******************************************************* */
     private void verifyUser(String id) {
 
-        Otp request = new Otp();
+        RequestOTPForVerify request = new RequestOTPForVerify();
         request.setPhoneNo(mPhoneNumber);
         request.setOtp(edOTP.getText().toString());
         request.setOtpRef(mRef);
-        VerifyUser service = RetrofitInstance.getRetrofitInstance().create(VerifyUser.class);
-        Call<ResponseOtp> call = service.verifyUser(id, request);
-        call.enqueue(new Callback<ResponseOtp>() {
+        User service = RetrofitInstance.getRetrofitInstance().create(User.class);
+        Call<ResponseVerifyUser> call = service.verifyUser(id, request);
+        call.enqueue(new Callback<ResponseVerifyUser>() {
             @Override
-            public void onResponse(Call<ResponseOtp> call, Response<ResponseOtp> response) {
+            public void onResponse(Call<ResponseVerifyUser> call, Response<ResponseVerifyUser> response) {
                 if (response.isSuccessful()) {
                     ((JAppActivity) getActivity()).successFragment();
                 } else {
@@ -89,7 +77,7 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<ResponseOtp> call, Throwable t) {
+            public void onFailure(Call<ResponseVerifyUser> call, Throwable t) {
                 Log.e("error : ", t.toString());
             }
         });

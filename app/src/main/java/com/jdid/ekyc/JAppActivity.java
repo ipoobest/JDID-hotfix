@@ -49,13 +49,13 @@ import com.jdid.ekyc.Fragments.SuccessFragment;
 import com.jdid.ekyc.Fragments.WaitForAuthoriseFragment;
 import com.jdid.ekyc.base.JCompatActivity;
 import com.jdid.ekyc.repository.RetrofitInstance;
-import com.jdid.ekyc.repository.api.CreateUser;
+import com.jdid.ekyc.repository.api.User;
 import com.jdid.ekyc.repository.api.Device;
 import com.jdid.ekyc.repository.pojo.OtpRef;
-import com.jdid.ekyc.repository.pojo.Pin;
-import com.jdid.ekyc.repository.pojo.ResponCheckPin;
-import com.jdid.ekyc.repository.pojo.User;
-import com.jdid.ekyc.repository.pojo.UserResponse;
+import com.jdid.ekyc.repository.pojo.RequestVrifyPin;
+import com.jdid.ekyc.repository.pojo.RequestCreateUser;
+import com.jdid.ekyc.repository.pojo.ResponVerifyPin;
+import com.jdid.ekyc.repository.pojo.ResponseCreateUser;
 import com.jdid.ekyc.views.PFCodeView;
 
 import org.json.JSONException;
@@ -394,17 +394,17 @@ public class JAppActivity extends JCompatActivity {
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
                 null, "กำลังทำการขออนุญาตเข้าระบบ", true, false);
 
-        Pin request = new Pin();
+        RequestVrifyPin request = new RequestVrifyPin();
         request.setImei(mIMEI);
         request.setPin(mAuthenPinCode);
 
         Device service = RetrofitInstance.getRetrofitInstance().create(Device.class);
-        Call<ResponCheckPin> call = service.CheckPin(request);
-        call.enqueue(new Callback<ResponCheckPin>() {
+        Call<ResponVerifyPin> call = service.checkPin(request);
+        call.enqueue(new Callback<ResponVerifyPin>() {
             @Override
-            public void onResponse(Call<ResponCheckPin> call, Response<ResponCheckPin> response) {
+            public void onResponse(Call<ResponVerifyPin> call, Response<ResponVerifyPin> response) {
                 if (response.isSuccessful()){
-                    ResponCheckPin result = response.body();
+                    ResponVerifyPin result = response.body();
                     if (result.getVerified()){
                         mProgressDialog.dismiss();
                         mProgressDialog = null;
@@ -424,7 +424,7 @@ public class JAppActivity extends JCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ResponCheckPin> call, Throwable t) {
+            public void onFailure(Call<ResponVerifyPin> call, Throwable t) {
                 mProgressDialog.dismiss();
                 mProgressDialog = null;
                 Log.d("error xx : ", t.toString());
@@ -549,7 +549,7 @@ public class JAppActivity extends JCompatActivity {
 
     public void SaveInformation() {
         Log.d("save", "SaveInformation");
-        final User request = new User();
+        final RequestCreateUser request = new RequestCreateUser();
         double income;
 
         try {
@@ -578,31 +578,31 @@ public class JAppActivity extends JCompatActivity {
         createUser(request);
     }
 
-    private void createUser(User user) {
-        CreateUser service = RetrofitInstance.getRetrofitInstance().create(CreateUser.class);
-        Call<UserResponse> call = service.createUser(user);
-        call.enqueue(new Callback<UserResponse>() {
+    private void createUser(RequestCreateUser requestCreateUser) {
+        User service = RetrofitInstance.getRetrofitInstance().create(User.class);
+        Call<ResponseCreateUser> call = service.createUser(requestCreateUser);
+        call.enqueue(new Callback<ResponseCreateUser>() {
             @Override
-            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+            public void onResponse(Call<ResponseCreateUser> call, Response<ResponseCreateUser> response) {
                 if (response.isSuccessful()) {
-                    UserResponse resutl = response.body();
+                    ResponseCreateUser resutl = response.body();
                     Log.d("success : ", resutl.getStatusCode().toString());
                     sentConfirmOtp(generalInformation[CID],resutl);
                 } else {
-                    UserResponse resutl = response.body();
+                    ResponseCreateUser resutl = response.body();
                     Log.d("not success", resutl.getStatusCode().toString());
 //                    sentConfirmOtp(resutl);
                 }
             }
 
             @Override
-            public void onFailure(Call<UserResponse> call, Throwable t) {
+            public void onFailure(Call<ResponseCreateUser> call, Throwable t) {
                 Log.d("onFailure", t.toString());
             }
         });
     }
 
-    private void sentConfirmOtp(String id,UserResponse result) {
+    private void sentConfirmOtp(String id, ResponseCreateUser result) {
         OtpRef otpRef = result.getOtpRef();
         String otp = otpRef.getOtpRef();
 //        Log.d("otp", otp);

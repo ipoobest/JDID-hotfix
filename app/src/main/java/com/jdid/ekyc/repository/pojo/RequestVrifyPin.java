@@ -3,7 +3,7 @@ package com.jdid.ekyc.repository.pojo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Pin {
+public class RequestVrifyPin {
     @SerializedName("imei")
     @Expose
     private String imei;

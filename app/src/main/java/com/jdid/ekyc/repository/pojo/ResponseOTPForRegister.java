@@ -3,8 +3,7 @@ package com.jdid.ekyc.repository.pojo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class UserResponse {
-
+public class ResponseOTPForRegister {
     @SerializedName("status_code")
     @Expose
     private Integer statusCode;
@@ -14,9 +13,6 @@ public class UserResponse {
     @SerializedName("message")
     @Expose
     private String message;
-    @SerializedName("created_at")
-    @Expose
-    private String createdAt;
 
     public Integer getStatusCode() {
         return statusCode;
@@ -30,8 +26,8 @@ public class UserResponse {
         return otpRef;
     }
 
-    public void setOtpRef(OtpRef data) {
-        this.otpRef = data;
+    public void setOtpRef(OtpRef otpRef) {
+        this.otpRef = otpRef;
     }
 
     public String getMessage() {
@@ -40,13 +36,5 @@ public class UserResponse {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
     }
 }

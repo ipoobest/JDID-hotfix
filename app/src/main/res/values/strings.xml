@@ -7,7 +7,7 @@
     <string name="phone_number">เบอร์โทรศัพท์</string>
     <string name="email">อีเมล์</string>
     <string name="next_step">ขั้นตอนต่อไป</string>
-    <string name="lock_screen_title_pf">Input pin code or use fingerprint</string>
+    <string name="lock_screen_title_pf">Input requestVrifyPin code or use fingerprint</string>
     <string name="forgot_pf">Forgot?</string>
     <string name="next_pf">Next</string>
     <string name="assign_pin">กำหนด PIN Code จำนวน 6 หลัก</string>
