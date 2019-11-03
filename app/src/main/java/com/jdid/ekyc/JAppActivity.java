@@ -575,7 +575,6 @@ public class JAppActivity extends JCompatActivity {
         request.setCompany(fieldsList[COMPANY]);
         request.setCompanyAddress(fieldsList[COMPANY_ADDRSS]);
         request.setIncome(income);
-        //TODO :: add device_id
         request.setVerifyBy(mStrDeviceID);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
         //Create user

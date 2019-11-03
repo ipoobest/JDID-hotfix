@@ -59,8 +59,6 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            //This sets a textview to the current length
-//            mTextView.setText(String.valueOf(s.length()));
             if (s.length()==6) {
                 btnNextStep.setEnabled(true);
             }
@@ -122,7 +120,9 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 if (response.isSuccessful()){
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
+                    if (response.body().getAccessToken().length() > 0){
                         ((JAppActivity)getActivity()).SaveInformation();
+                    }
                 }else {
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
@@ -155,10 +155,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO :: verify OTP
                 verifyOTP();
-//                VerifyOTP otp = new VerifyOTP();
-//                otp.execute();
             }
         });
         btnNextStep.setEnabled(false);

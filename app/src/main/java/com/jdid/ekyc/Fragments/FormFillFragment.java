@@ -236,31 +236,30 @@ public class FormFillFragment extends Fragment {
             return false;
         }
 
-        //TODO :: uncomments this
-//        if (edCurrentAddress.getText().length()==0) {
-//            edCurrentAddress.requestFocus();
-//            return false;
-//        }
-//        if (edPhone.getText().length()==0) {
-//            edPhone.requestFocus();
-//            return false;
-//        }
-//        if (edProfession.getText().length()==0) {
-//            edProfession.requestFocus();
-//            return false;
-//        }
-//        if (edWork.getText().length()==0) {
-//            edWork.requestFocus();
-//            return false;
-//        }
-//        if (edWorkAddress.getText().length()==0) {
-//            edWorkAddress.requestFocus();
-//            return false;
-//        }
-//        if (edIncome.getText().length()==0) {
-//            edIncome.requestFocus();
-//            return false;
-//        }
+        if (edCurrentAddress.getText().length()==0) {
+            edCurrentAddress.requestFocus();
+            return false;
+        }
+        if (edPhone.getText().length()==0) {
+            edPhone.requestFocus();
+            return false;
+        }
+        if (edProfession.getText().length()==0) {
+            edProfession.requestFocus();
+            return false;
+        }
+        if (edWork.getText().length()==0) {
+            edWork.requestFocus();
+            return false;
+        }
+        if (edWorkAddress.getText().length()==0) {
+            edWorkAddress.requestFocus();
+            return false;
+        }
+        if (edIncome.getText().length()==0) {
+            edIncome.requestFocus();
+            return false;
+        }
         return true;
     }
     private void hideKeyboard() {
