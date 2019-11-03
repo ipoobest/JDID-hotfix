@@ -212,12 +212,6 @@ public class FormFillFragment extends Fragment {
     }
 
     private void authenOTP() {
-
-        if (spPurpose.getSelectedItemPosition()==0) {
-            ((JAppActivity) getActivity()).fieldsList[JAppActivity.PURPOSE] = edOtherPurpose.getText().toString();
-        } else {
-            ((JAppActivity) getActivity()).fieldsList[JAppActivity.PURPOSE] = spPurpose.getSelectedItem().toString();
-        }
         // need save data fields first
         if (spPurpose.getSelectedItemPosition()==0) {
             ((JAppActivity) getActivity()).fieldsList[JAppActivity.PURPOSE] = edOtherPurpose.getText().toString();
@@ -242,6 +236,7 @@ public class FormFillFragment extends Fragment {
             return false;
         }
 
+        //TODO :: uncomments this
 //        if (edCurrentAddress.getText().length()==0) {
 //            edCurrentAddress.requestFocus();
 //            return false;

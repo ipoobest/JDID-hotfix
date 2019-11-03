@@ -38,5 +38,6 @@ public class RequestOTPForVerify {
     public void setOtpRef(String otpRef) {
         this.otpRef = otpRef;
     }
+
 }
 

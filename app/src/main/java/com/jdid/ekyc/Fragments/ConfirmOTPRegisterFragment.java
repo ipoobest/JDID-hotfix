@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +23,13 @@ import androidx.fragment.app.Fragment;
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
 import com.jdid.ekyc.RegisterActivity;
+import com.jdid.ekyc.repository.RetrofitInstance;
+import com.jdid.ekyc.repository.api.Admin;
+import com.jdid.ekyc.repository.pojo.OtpRef;
+import com.jdid.ekyc.repository.pojo.RequestOTPForRegister;
+import com.jdid.ekyc.repository.pojo.RequestOTPForVerify;
+import com.jdid.ekyc.repository.pojo.ResponseOTPForRegister;
+import com.jdid.ekyc.repository.pojo.ResponseOTPForVerify;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,6 +39,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.content.ContentValues.TAG;
 
@@ -58,6 +70,39 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         }
     };
     /* ******************************************************* */
+
+    private void requestOTP(){
+        mProgressDialog = ProgressDialog.show(getActivity(),
+                null, "กำลังทำการร้องขอรหัส OTP", true, false);
+        RequestOTPForRegister request = new RequestOTPForRegister();
+        request.setPhoneNo(mPhoneNumber);
+        Admin service = RetrofitInstance.getRetrofitInstance().create(Admin.class);
+        Call<ResponseOTPForRegister> call = service.sentOTP(request);
+        call.enqueue(new Callback<ResponseOTPForRegister>() {
+            @Override
+            public void onResponse(Call<ResponseOTPForRegister> call, Response<ResponseOTPForRegister> response) {
+                if (response.isSuccessful()){
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                    ResponseOTPForRegister result = response.body();
+                    String otpRef = result.getOtpRef().getOtpRef();
+                    txtOTPREF.setText("OTP Ref : "+ otpRef);
+                }else {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                    Toast.makeText(getContext(), "error request", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseOTPForRegister> call, Throwable t) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+                Log.d("requestOTP :" , t.toString());
+            }
+        });
+    }
+
     private class RequestOTP extends AsyncTask<Void, Void, JSONObject> {
 
         @Override
@@ -129,6 +174,41 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     }
 
     /* ******************************************************* */
+    private void verifyOTP(){
+        mProgressDialog = ProgressDialog.show(getActivity(),
+                null, "กำลังทำการรตรวจรหัส OTP", true, false);
+
+        final RequestOTPForVerify request = new RequestOTPForVerify();
+        request.setPhoneNo(mPhoneNumber);
+        request.setOtp(edOTP.getText().toString());
+        request.setOtpRef(mRef);
+
+        Admin service = RetrofitInstance.getRetrofitInstance().create(Admin.class);
+        Call<ResponseOTPForVerify> call = service.verifyOTP(request);
+        call.enqueue(new Callback<ResponseOTPForVerify>() {
+            @Override
+            public void onResponse(Call<ResponseOTPForVerify> call, Response<ResponseOTPForVerify> response) {
+                if (response.isSuccessful()){
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                        ((JAppActivity)getActivity()).SaveInformation();
+                }else {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                    Toast.makeText(getContext(), "fffff", Toast.LENGTH_LONG).show();
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseOTPForVerify> call, Throwable t) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+                Log.d("requestOTP :" , t.toString());
+            }
+        });
+    }
+
     private class VerifyOTP extends AsyncTask<Void, Void, JSONObject> {
 
         @Override
@@ -212,13 +292,12 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     }
 
     private void setupUI(View view) {
-//        view.findViewById(R.id.btnNextStep).setOnClickListener(new View.OnClickListener() {
-//            VerifyOTP vOTP = new VerifyOTP();
-//        });
         btnNextStep = view.findViewById(R.id.btnNextStep);
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //TODO :: verify OTP
+//                verifyOTP();
                 VerifyOTP otp = new VerifyOTP();
                 otp.execute();
             }
@@ -229,10 +308,11 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         txtOTPREF = view.findViewById(R.id.txtOTPREF);
     }
 
-    private void requestOTP() {
-        RequestOTP requestOtp = new RequestOTP();
-        requestOtp.execute();
-    }
+//    private void requestOTP() {
+//        requestOTP();
+//        requestOTP requestOtp = new requestOTP();
+//        requestOtp.execute();
+//    }
 
     private final View.OnClickListener mOnButtonClickListener = new View.OnClickListener() {
         @Override
