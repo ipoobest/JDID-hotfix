@@ -33,6 +33,8 @@ import retrofit2.Response;
 
 public class ConfirmOTPRegisterUserFragment extends Fragment {
 
+    private static final int VERIFY_DIP_CHIP = 2;
+
     private ProgressDialog mProgressDialog;
     private EditText edOTP;
     private TextView txtOTPREF;
@@ -66,7 +68,12 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
         mProgressDialog = ProgressDialog.show(getActivity(),
                 null, "กำลังทำการรตรวจรหัส OTP", true, false);
         RequestOTPForVerify request = new RequestOTPForVerify();
-        request.setPhoneNo(mPhoneNumber);
+        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
+            request.setPhoneNo(((JAppActivity) getActivity()).getMobilePhone());
+
+        } else {
+            request.setPhoneNo(mPhoneNumber);
+        }
         request.setOtp(edOTP.getText().toString());
         request.setOtpRef(mRef);
 
@@ -109,6 +116,8 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
     private void setupUI(View view) {
         // Toolbar
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Confirm OTP");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
 
         edOTP = view.findViewById(R.id.edOTP);
         edOTP.addTextChangedListener(mTextEditorWatcher);

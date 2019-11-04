@@ -94,10 +94,12 @@ public class JAppActivity extends JCompatActivity {
     private boolean mfLoginPage = false;
     private boolean mfStartFromRegister = false;
     private int mfVerifyPerson = 0;
+    private int mVerifyDipChip = 1;
 
     public int isVerifyPerson() {
         return mfVerifyPerson;
     }
+    public int isVerifyDipChip() {return mVerifyDipChip; }
 
     private static Context context;
 
@@ -221,6 +223,9 @@ public class JAppActivity extends JCompatActivity {
     public String mPhone;
     public String mEMail;
 
+    public String getMobilePhone() {return mPhone; }
+
+
     private String mAuthenPinCode;
 
     Toolbar toolbar;
@@ -312,7 +317,8 @@ public class JAppActivity extends JCompatActivity {
                 .replace(R.id.container_view, fragment).addToBackStack(null).commit();
     }
 
-    public void showOTPVerifyFragment() {
+    public void showOTPVerifyFragment(int type) {
+        mVerifyDipChip = type;
         final ConfirmOTPRegisterFragment fragment = new ConfirmOTPRegisterFragment();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container_view, fragment).addToBackStack(null).commit();
@@ -592,6 +598,34 @@ public class JAppActivity extends JCompatActivity {
         createUser(request);
     }
 
+    public void SaveInformationForDipChip(){
+        String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        final RequestCreateUser request = new RequestCreateUser();
+
+        request.setNameTh(generalInformation[THAIFULLNAME]);
+        request.setNameEn(generalInformation[ENGLISHFULLNAME]);
+        request.setBirthdate(generalInformation[BIRTH]);
+        request.setId(generalInformation[CID]);
+        request.setGender(generalInformation[GENDER]);
+        request.setOfficialAddress(generalInformation[ADDRESS]);
+        request.setNationality("Thai");
+        request.setContactNumber(mPhone);
+        request.setPurpose("");
+        request.setCurrentAddress("");
+        request.setMariageStatus("");
+        request.setOccupation("");
+        request.setCompany("");
+        request.setCompanyAddress("");
+        request.setIncome(0.0);
+        request.setVerifyBy(mStrDeviceID);
+        request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
+        //Create user
+
+        Log.d("phoneeeee : ", mPhone);
+        createUser(request);
+
+    }
+
     private void createUser(RequestCreateUser requestCreateUser) {
         User service = RetrofitInstance.getRetrofitInstance().create(User.class);
         Call<ResponseCreateUser> call = service.createUser(requestCreateUser);
@@ -605,7 +639,6 @@ public class JAppActivity extends JCompatActivity {
                 } else {
                     ResponseCreateUser resutl = response.body();
                     Log.d("not success", resutl.getStatusCode().toString());
-//                    sentConfirmOtp(resutl);
                 }
             }
 

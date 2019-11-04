@@ -52,6 +52,8 @@ import static android.content.ContentValues.TAG;
 
 public class ConfirmOTPRegisterFragment extends Fragment {
 
+    private static final int VERIFY_DIP_CHIP = 2;
+
     private ProgressDialog mProgressDialog;
     private EditText edOTP;
     private TextView txtOTPREF;
@@ -63,7 +65,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (s.length()==6) {
+            if (s.length() == 6) {
                 btnNextStep.setEnabled(true);
             }
         }
@@ -71,26 +73,36 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         public void afterTextChanged(Editable s) {
         }
     };
+
     /* ******************************************************* */
 
-    private void requestOTP(){
+    private void requestOTP() {
         mProgressDialog = ProgressDialog.show(getActivity(),
                 null, "กำลังทำการร้องขอรหัส OTP", true, false);
         RequestOTPForRegister request = new RequestOTPForRegister();
-        request.setPhoneNo(mPhoneNumber);
+        //TODO :: fix phonenumner
+        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
+            request.setPhoneNo(((JAppActivity) getActivity()).getMobilePhone());
+
+        } else {
+            request.setPhoneNo(mPhoneNumber);
+        }
+
+        Log.d("phoxx : ", request.getPhoneNo());
+
         Admin service = RetrofitInstance.getRetrofitInstance().create(Admin.class);
         Call<ResponseOTPForRegister> call = service.sentOTP(request);
         call.enqueue(new Callback<ResponseOTPForRegister>() {
             @Override
             public void onResponse(Call<ResponseOTPForRegister> call, Response<ResponseOTPForRegister> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful()) {
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
                     ResponseOTPForRegister result = response.body();
                     String otpRef = result.getOtpRef().getOtpRef();
-                    txtOTPREF.setText("OTP Ref : "+ otpRef);
+                    txtOTPREF.setText("OTP Ref : " + otpRef);
                     mRef = otpRef;
-                }else {
+                } else {
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
                     Toast.makeText(getContext(), "error request", Toast.LENGTH_LONG).show();
@@ -101,18 +113,25 @@ public class ConfirmOTPRegisterFragment extends Fragment {
             public void onFailure(Call<ResponseOTPForRegister> call, Throwable t) {
                 mProgressDialog.dismiss();
                 mProgressDialog = null;
-                Log.d("requestOTP :" , t.toString());
+                Log.d("requestOTP :", t.toString());
             }
         });
     }
 
     /* ******************************************************* */
-    private void verifyOTP(){
+    private void verifyOTP() {
         mProgressDialog = ProgressDialog.show(getActivity(),
                 null, "กำลังทำการรตรวจรหัส OTP", true, false);
 
         RequestOTPForVerify request = new RequestOTPForVerify();
-        request.setPhoneNo(mPhoneNumber);
+
+        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
+            request.setPhoneNo(((JAppActivity) getActivity()).getMobilePhone());
+
+        } else {
+            request.setPhoneNo(mPhoneNumber);
+        }
+
         request.setOtp(edOTP.getText().toString());
         request.setOtpRef(mRef);
 
@@ -123,13 +142,21 @@ public class ConfirmOTPRegisterFragment extends Fragment {
             public void onResponse(Call<ResponseOTPForVerify> call, Response<ResponseOTPForVerify> response) {
                 mProgressDialog.dismiss();
                 mProgressDialog = null;
-                if (response.isSuccessful()){
-                    if (response.body().getAccessToken().length() > 0){
-                        ((JAppActivity)getActivity()).SaveInformation();
+                if (response.isSuccessful()) {
+                    if (response.body().getAccessToken().length() > 0) {
+                        saveUser();
                     }
-                }else {
+                } else {
                     Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
 
+                }
+            }
+
+            private void saveUser() {
+                if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
+                    ((JAppActivity) getActivity()).SaveInformationForDipChip();
+                } else {
+                    ((JAppActivity) getActivity()).SaveInformation();
                 }
             }
 
@@ -137,7 +164,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
             public void onFailure(Call<ResponseOTPForVerify> call, Throwable t) {
                 mProgressDialog.dismiss();
                 mProgressDialog = null;
-                Log.d("requestOTP :" , t.toString());
+                Log.d("requestOTP :", t.toString());
             }
 
         });
@@ -148,7 +175,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_otp_register, container, false);
         setHasOptionsMenu(true);
-        mPhoneNumber = ((JAppActivity)getActivity()).fieldsList[JAppActivity.CONTACT_NUMBER];
+        mPhoneNumber = ((JAppActivity) getActivity()).fieldsList[JAppActivity.CONTACT_NUMBER];
         setupUI(view);
         requestOTP();
         return view;
@@ -156,9 +183,9 @@ public class ConfirmOTPRegisterFragment extends Fragment {
 
     private void setupUI(View view) {
         // Toolbar
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Confirm OTP");
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Confirm OTP");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         btnNextStep = view.findViewById(R.id.btnNextStep);
         btnNextStep.setOnClickListener(new View.OnClickListener() {
@@ -175,7 +202,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             confirmBack();
             return true;
         }
@@ -183,12 +210,16 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     }
 
     private void confirmBack() {
-         new AlertDialog.Builder(getContext())
-                .setMessage("ต้องการหยุดทำรายการ และกลับไปหน้ากรอกข้อมูลใหม่หรือไม่")
+        new AlertDialog.Builder(getContext())
+                .setMessage("ต้องการรยกเลิกการทำรายการหรือไม่")
                 .setCancelable(false)
                 .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        ((JAppActivity) getActivity()).showFormFillFragment();
+                        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
+                            ((JAppActivity) getActivity()).showCardInformation();
+                        }else {
+                            ((JAppActivity) getActivity()).showFormFillFragment();
+                        }
                     }
                 })
                 .setNegativeButton("ยกเลิก", null)

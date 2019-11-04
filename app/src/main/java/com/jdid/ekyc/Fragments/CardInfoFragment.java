@@ -1,6 +1,7 @@
 package com.jdid.ekyc.Fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -61,15 +63,19 @@ public class CardInfoFragment extends Fragment {
 
     private void initialize(View view) {
 //        TODO:: 1
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_EKYC) {
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
-        } else if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_PERSON){
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
-        } else if ((((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_DIP_CHIP)){
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
+        switch (((JAppActivity) getActivity()).isVerifyPerson()) {
+            case VERIFY_EKYC:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
+                break;
+            case VERIFY_PERSON:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
+                break;
+            case VERIFY_DIP_CHIP:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
+                break;
         }
 
 
@@ -99,10 +105,10 @@ public class CardInfoFragment extends Fragment {
 
         imageFromCard = view.findViewById(R.id.imageFromCard);
         imageFromCard.setImageResource(R.drawable.ic_credit_card_black_24dp);
-        byte[] byteImage = ((JAppActivity)getActivity()).getByteImage();
+        byte[] byteImage = ((JAppActivity) getActivity()).getByteImage();
         Bitmap bm = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
         DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager windowManager = (WindowManager) ((JAppActivity)getActivity()).getApplicationContext()
+        WindowManager windowManager = (WindowManager) ((JAppActivity) getActivity()).getApplicationContext()
                 .getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(metrics);
         imageFromCard.setMinimumHeight(metrics.heightPixels);
@@ -111,7 +117,7 @@ public class CardInfoFragment extends Fragment {
     }
 
     private void fillCardInformation() {
-        String[] generalInformation = ((JAppActivity)getActivity()).getGeneralInformation();
+        String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
         edCID.setText(parsingCID(generalInformation[CID]));
         edThaiName.setText(generalInformation[THAIFULLNAME]);
         edEnglishName.setText(generalInformation[ENGLISHFULLNAME]);
@@ -131,7 +137,7 @@ public class CardInfoFragment extends Fragment {
     }
 
     private String parsingSex(String strSex) {
-        if (strSex.charAt(0)=='1') {
+        if (strSex.charAt(0) == '1') {
             return "ชาย";
         } else {
             return "หญิง";
@@ -154,11 +160,24 @@ public class CardInfoFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
-            getActivity().finish();
+        if (item.getItemId() == android.R.id.home) {
+            confirmBack();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void confirmBack() {
+        new AlertDialog.Builder(getContext())
+                .setMessage("ต้องการกลับไปหน้าเมนูหลักหรือไม่")
+                .setCancelable(false)
+                .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ((JAppActivity) getActivity()).showHomeFragment();
+                    }
+                })
+                .setNegativeButton("ยกเลิก", null)
+                .show();
     }
 
 }

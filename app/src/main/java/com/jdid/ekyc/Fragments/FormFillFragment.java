@@ -154,13 +154,17 @@ public class FormFillFragment extends Fragment {
         // ToolBar
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-        if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_EKYC) {
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
-        } else if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_PERSON){
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
-        } else if ((((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_DIP_CHIP)){
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
+
+
+        switch (((JAppActivity) getActivity()).isVerifyPerson()){
+            case VERIFY_EKYC:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
+                break;
+            case VERIFY_PERSON:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
+                break;
         }
+
 
         spPurpose = view.findViewById(R.id.spPurpose);
         spPurpose.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -242,7 +246,7 @@ public class FormFillFragment extends Fragment {
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY_ADDRSS] = edWorkAddress.getText().toString();
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.INCOME] = edIncome.getText().toString();
         hideKeyboard();
-        ((JAppActivity)getActivity()).showOTPVerifyFragment();
+        ((JAppActivity)getActivity()).showOTPVerifyFragment(VERIFY_EKYC);
     }
 
     private boolean finishedFormFill() {

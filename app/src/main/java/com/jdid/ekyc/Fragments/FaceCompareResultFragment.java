@@ -38,7 +38,6 @@ public class FaceCompareResultFragment extends Fragment {
     private TextView txtResult;
     private TextView txtResultDescription;
     private Button btnNextStep;
-    private Button btnBack;
     private byte[] byteImage;
     private boolean mfNextStep = false;
 
@@ -53,18 +52,29 @@ public class FaceCompareResultFragment extends Fragment {
     }
 
 
-
     private void initialize(View view) {
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_EKYC) {
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
-        } else if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_PERSON){
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
-        } else if ((((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_DIP_CHIP)){
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
+        switch (((JAppActivity) getActivity()).isVerifyPerson()) {
+            case VERIFY_EKYC:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
+                break;
+            case VERIFY_PERSON:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
+                break;
+            case VERIFY_DIP_CHIP:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
+                break;
         }
+
+//        if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_EKYC) {
+//            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
+//        } else if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_PERSON) {
+//            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
+//        } else if ((((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_DIP_CHIP)) {
+//            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
+//        }
         btnNextStep = view.findViewById(R.id.btnNextStep);
 
         txtResult = view.findViewById(R.id.txtResult);
@@ -72,12 +82,12 @@ public class FaceCompareResultFragment extends Fragment {
         imageFromCard = view.findViewById(R.id.imageFromCard);
         imageFromCam = view.findViewById(R.id.imageFromCam);
 
-        imageFromCam.setImageURI(((JAppActivity)getActivity()).imageUri);
-        byteImage = ((JAppActivity)getActivity()).getByteImage();
+        imageFromCam.setImageURI(((JAppActivity) getActivity()).imageUri);
+        byteImage = ((JAppActivity) getActivity()).getByteImage();
         Bitmap bm = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
         DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager windowManager = (WindowManager) ((JAppActivity)getActivity()).getAppContext()
-                .getSystemService(((JAppActivity)getActivity()).getAppContext().WINDOW_SERVICE);
+        WindowManager windowManager = (WindowManager) ((JAppActivity) getActivity()).getAppContext()
+                .getSystemService(((JAppActivity) getActivity()).getAppContext().WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(metrics);
 
         imageFromCard.setMinimumHeight(metrics.heightPixels);
@@ -89,15 +99,22 @@ public class FaceCompareResultFragment extends Fragment {
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mfNextStep) {
 
-                    if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_PERSON) {
-                        ((JAppActivity)getActivity()).successFragment();
-                    } else {
-                        ((JAppActivity)getActivity()).showFormFillFragment();
+                if (mfNextStep) {
+                    switch (((JAppActivity) getActivity()).isVerifyPerson()) {
+                        case VERIFY_EKYC:
+                            ((JAppActivity) getActivity()).showFormFillFragment();
+                            break;
+                        case VERIFY_PERSON:
+                            ((JAppActivity) getActivity()).successFragment();
+                            break;
+                        case VERIFY_DIP_CHIP:
+                            //TODO SAVE INFOMATION
+                            ((JAppActivity) getActivity()).showOTPVerifyFragment(VERIFY_DIP_CHIP);
+                            break;
                     }
                 } else {
-                    ((JAppActivity)getActivity()).OpenCameraForCapture();
+                    ((JAppActivity) getActivity()).OpenCameraForCapture();
                 }
             }
         });
@@ -105,11 +122,11 @@ public class FaceCompareResultFragment extends Fragment {
     }
 
     private void checkResult() {
-        JSONObject result = ((JAppActivity)getActivity()).resultCompare;
+        JSONObject result = ((JAppActivity) getActivity()).resultCompare;
         try {
             if ((result != null) && (result.toString().length() != 0)
                     && (result.getInt("rtn") == 0 || result.getInt("rtn") == -6131)
-                    && (result.getInt("pair_verify_similarity")>=95)) {
+                    && (result.getInt("pair_verify_similarity") >= 95)) {
                 txtResult.setText(R.string.compare_success);
                 txtResultDescription.setText(R.string.compare_success_description);
                 txtResultDescription.setTextColor(getResources().getColor(R.color.success_color));
@@ -129,7 +146,7 @@ public class FaceCompareResultFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             confirmBack();
             return true;
         }

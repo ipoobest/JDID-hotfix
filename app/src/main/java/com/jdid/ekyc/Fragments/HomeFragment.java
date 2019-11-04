@@ -58,13 +58,26 @@ public class HomeFragment extends Fragment {
                 int id = v.getId();
                 Log.d(TAG, "resource id : "+id);
                 final String string = ((TextView) v).getText().toString();
-                if (id==R.id.btnRegisterEKYC) {
-                    ((JAppActivity)getActivity()).acquireCardData(VERIFY_EKYC);
-                } else if (id==R.id.btnVerifyPerson) {
-                    ((JAppActivity)getActivity()).acquireCardData(VERIFY_PERSON);
-                } else if (id == R.id.btnVerifyDipChip){
-                    ((JAppActivity)getActivity()).acquireCardData(VERIFY_DIP_CHIP);
+
+                switch (v.getId()){
+                    case R.id.btnRegisterEKYC:
+                        ((JAppActivity)getActivity()).acquireCardData(VERIFY_EKYC);
+                        break;
+                    case R.id.btnVerifyPerson:
+                        ((JAppActivity)getActivity()).acquireCardData(VERIFY_PERSON);
+                        break;
+                    case R.id.btnVerifyDipChip:
+                        ((JAppActivity)getActivity()).acquireCardData(VERIFY_DIP_CHIP);
+                        break;
                 }
+
+//                if (id==R.id.btnRegisterEKYC) {
+//                    ((JAppActivity)getActivity()).acquireCardData(VERIFY_EKYC);
+//                } else if (id==R.id.btnVerifyPerson) {
+//                    ((JAppActivity)getActivity()).acquireCardData(VERIFY_PERSON);
+//                } else if (id == R.id.btnVerifyDipChip){
+//                    ((JAppActivity)getActivity()).acquireCardData(VERIFY_DIP_CHIP);
+//                }
             }
         }
     };
