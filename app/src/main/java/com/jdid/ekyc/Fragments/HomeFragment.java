@@ -20,6 +20,10 @@ public class HomeFragment extends Fragment {
 
     private static final String TAG = "HomeFragment : ";
 
+    private static final int VERIFY_EKYC = 0;
+    private static final int VERIFY_PERSON = 1;
+    private static final int VERIFY_DIP_CHIP = 2;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,11 +59,11 @@ public class HomeFragment extends Fragment {
                 Log.d(TAG, "resource id : "+id);
                 final String string = ((TextView) v).getText().toString();
                 if (id==R.id.btnRegisterEKYC) {
-                    ((JAppActivity)getActivity()).acquireCardData(false);
+                    ((JAppActivity)getActivity()).acquireCardData(VERIFY_EKYC);
                 } else if (id==R.id.btnVerifyPerson) {
-                    ((JAppActivity)getActivity()).acquireCardData(true);
+                    ((JAppActivity)getActivity()).acquireCardData(VERIFY_PERSON);
                 } else if (id == R.id.btnVerifyDipChip){
-                    Toast.makeText(getContext(), "DIPCHIP", Toast.LENGTH_LONG).show();
+                    ((JAppActivity)getActivity()).acquireCardData(VERIFY_DIP_CHIP);
                 }
             }
         }

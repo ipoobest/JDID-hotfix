@@ -93,9 +93,9 @@ public class JAppActivity extends JCompatActivity {
 
     private boolean mfLoginPage = false;
     private boolean mfStartFromRegister = false;
-    private boolean mfVerifyPerson = false;
+    private int mfVerifyPerson = 0;
 
-    public boolean isVerifyPerson() {
+    public int isVerifyPerson() {
         return mfVerifyPerson;
     }
 
@@ -330,9 +330,16 @@ public class JAppActivity extends JCompatActivity {
                 .replace(R.id.container_view, fragment).commit();
     }
 
-    public void acquireCardData(boolean fVerify) {
+//    public void acquireCardData(boolean fVerify) {
+//        mfVerifyPerson = fVerify;
+//        final CardAcquireFragment fragment = new CardAcquireFragment();
+//        mcardAcquireFragment = fragment;
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.container_view, fragment).commit();
+//    }
+    public void acquireCardData(int type) {
         // TODO :: ADD MENU DIP CHIP
-        mfVerifyPerson = fVerify;
+        mfVerifyPerson = type;
         final CardAcquireFragment fragment = new CardAcquireFragment();
         mcardAcquireFragment = fragment;
         getSupportFragmentManager().beginTransaction()
@@ -430,8 +437,6 @@ public class JAppActivity extends JCompatActivity {
 
             @Override
             public void onFailure(Call<ResponVerifyPin> call, Throwable t) {
-//                mProgressDialog.dismiss();
-//                mProgressDialog = null;
                 Log.d("error xx : ", t.toString());
             }
         });

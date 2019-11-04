@@ -22,6 +22,10 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
 
     private static final String TAG = "CardAcquireFragment";
 
+    private static final int VERIFY_EKYC = 0;
+    private static final int VERIFY_PERSON = 1;
+    private static final int VERIFY_DIP_CHIP = 2;
+
     private Button btnNextStep;
 
     private int miCurrentLog;
@@ -38,16 +42,20 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
         final View view = inflater.inflate(R.layout.fragment_card_acquire, container, false);
         setHasOptionsMenu(true);
         initialize(view);
-        ((JAppActivity)getActivity()).initializeCardReader();
+        ((JAppActivity) getActivity()).initializeCardReader();
         return view;
     }
 
     private void initialize(View view) {
-        if (((JAppActivity)getActivity()).isVerifyPerson()==false) {
+
+        if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_EKYC) {
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
-        } else {
+        } else if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_PERSON){
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
+        } else if ((((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_DIP_CHIP)){
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
         }
+
         miCurrentLog = 0;
         mfNextStep = false;
         btnNextStep = view.findViewById(R.id.btnNextStep);
@@ -92,7 +100,6 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
     }
 
 
-
     @Override
     public void updateEventLog(boolean fPass, boolean fShowIcon, String strInformation) {
         if (fShowIcon) {
@@ -107,7 +114,7 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
         }
         tvInfo[miCurrentLog].setText(strInformation);
         miCurrentLog++;
-        if (miCurrentLog==5) {
+        if (miCurrentLog == 5) {
             clearLog();
         }
     }
@@ -134,13 +141,13 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
 
     @Override
     public void startCompareFace() {
-        ((JAppActivity)getActivity()).showFaceCompareResult();
+        ((JAppActivity) getActivity()).showFaceCompareResult();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
-            ((JAppActivity)getActivity()).showHomeFragment();
+        if (item.getItemId() == android.R.id.home) {
+            ((JAppActivity) getActivity()).showHomeFragment();
             return true;
         }
         return super.onOptionsItemSelected(item);

@@ -34,6 +34,11 @@ import static com.jdid.ekyc.JAppActivity.ISSUER;
 import static com.jdid.ekyc.JAppActivity.THAIFULLNAME;
 
 public class CardInfoFragment extends Fragment {
+
+    private static final int VERIFY_EKYC = 0;
+    private static final int VERIFY_PERSON = 1;
+    private static final int VERIFY_DIP_CHIP = 2;
+
     private ImageView imageFromCard;
     private EditText edCID;
     private EditText edThaiName;
@@ -55,14 +60,18 @@ public class CardInfoFragment extends Fragment {
     }
 
     private void initialize(View view) {
+//        TODO:: 1
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        if (((JAppActivity)getActivity()).isVerifyPerson()==false) {
+        if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_EKYC) {
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
-        } else {
+        } else if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_PERSON){
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
+        } else if ((((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_DIP_CHIP)){
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
         }
+
 
         edCID = view.findViewById(R.id.edCID);
         edThaiName = view.findViewById(R.id.edThaiName);
@@ -146,7 +155,7 @@ public class CardInfoFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home){
-            ((JAppActivity) getActivity()).acquireCardData(false);
+            getActivity().finish();
             return true;
         }
         return super.onOptionsItemSelected(item);

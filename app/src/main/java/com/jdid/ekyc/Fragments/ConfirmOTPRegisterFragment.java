@@ -122,14 +122,10 @@ public class ConfirmOTPRegisterFragment extends Fragment {
             @Override
             public void onResponse(Call<ResponseOTPForVerify> call, Response<ResponseOTPForVerify> response) {
                 if (response.isSuccessful()){
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
                     if (response.body().getAccessToken().length() > 0){
                         ((JAppActivity)getActivity()).SaveInformation();
                     }
                 }else {
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
                     Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
 
                 }
@@ -137,11 +133,13 @@ public class ConfirmOTPRegisterFragment extends Fragment {
 
             @Override
             public void onFailure(Call<ResponseOTPForVerify> call, Throwable t) {
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
                 Log.d("requestOTP :" , t.toString());
             }
+
         });
+
+        mProgressDialog.dismiss();
+        mProgressDialog = null;
     }
 
     @Nullable

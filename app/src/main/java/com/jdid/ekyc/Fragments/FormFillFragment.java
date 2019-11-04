@@ -43,6 +43,10 @@ import static android.content.ContentValues.TAG;
 
 public class FormFillFragment extends Fragment {
 
+    private static final int VERIFY_EKYC = 0;
+    private static final int VERIFY_PERSON = 1;
+    private static final int VERIFY_DIP_CHIP = 2;
+
     private Spinner spPurpose;
     private EditText edOtherPurpose;
     private EditText edCurrentAddress;
@@ -150,10 +154,12 @@ public class FormFillFragment extends Fragment {
         // ToolBar
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-        if (((JAppActivity)getActivity()).isVerifyPerson()==false) {
+        if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_EKYC) {
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
-        } else {
+        } else if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_PERSON){
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
+        } else if ((((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_DIP_CHIP)){
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
         }
 
         spPurpose = view.findViewById(R.id.spPurpose);
