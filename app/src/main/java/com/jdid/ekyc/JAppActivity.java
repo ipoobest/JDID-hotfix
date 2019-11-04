@@ -621,7 +621,7 @@ public class JAppActivity extends JCompatActivity {
         String otp = otpRef.getOtpRef();
 //        Log.d("otp", otp);
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
-                null, "กำลังทำการตรวจสอบบันทึกข้อมูล กรุณารอสักครู่", true, false);
+                null, "กำลังส่ง OTP กรุณารอสักครู่", true, false);
         mProgressDialog.dismiss();
         mProgressDialog = null;
         // if save success then show success fragment

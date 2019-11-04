@@ -65,17 +65,22 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
     private void verifyUser(String id) {
         mProgressDialog = ProgressDialog.show(getActivity(),
                 null, "กำลังทำการรตรวจรหัส OTP", true, false);
-
         RequestOTPForVerify request = new RequestOTPForVerify();
         request.setPhoneNo(mPhoneNumber);
         request.setOtp(edOTP.getText().toString());
         request.setOtpRef(mRef);
+
+
+
         User service = RetrofitInstance.getRetrofitInstance().create(User.class);
         Call<ResponseVerifyUser> call = service.verifyUser(id, request);
         call.enqueue(new Callback<ResponseVerifyUser>() {
             @Override
             public void onResponse(Call<ResponseVerifyUser> call, Response<ResponseVerifyUser> response) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
                 if (response.isSuccessful()) {
+
                     ((JAppActivity) getActivity()).successFragment();
                 } else {
                     Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
@@ -84,11 +89,11 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
 
             @Override
             public void onFailure(Call<ResponseVerifyUser> call, Throwable t) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
                 Log.e("error : ", t.toString());
             }
         });
-        mProgressDialog.dismiss();
-        mProgressDialog = null;
     }
 
 

@@ -121,6 +121,8 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         call.enqueue(new Callback<ResponseOTPForVerify>() {
             @Override
             public void onResponse(Call<ResponseOTPForVerify> call, Response<ResponseOTPForVerify> response) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
                 if (response.isSuccessful()){
                     if (response.body().getAccessToken().length() > 0){
                         ((JAppActivity)getActivity()).SaveInformation();
@@ -133,13 +135,12 @@ public class ConfirmOTPRegisterFragment extends Fragment {
 
             @Override
             public void onFailure(Call<ResponseOTPForVerify> call, Throwable t) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
                 Log.d("requestOTP :" , t.toString());
             }
 
         });
-
-        mProgressDialog.dismiss();
-        mProgressDialog = null;
     }
 
     @Nullable
