@@ -1227,8 +1227,7 @@ public class JAppActivity extends JCompatActivity {
                 .setCancelable(false)
                 .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        showHomeFragment();
-//                        finish();
+                        finish();
                     }
                 })
                 .setNegativeButton("ยกเลิก", null)
