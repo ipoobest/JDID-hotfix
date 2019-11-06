@@ -665,15 +665,20 @@ public class JAppActivity extends JCompatActivity {
         call.enqueue(new Callback<ResponseCreateUser>() {
             @Override
             public void onResponse(Call<ResponseCreateUser> call, Response<ResponseCreateUser> response) {
-                // TODO :: FIX THIS xxxxx
-                if (response.body().getStatusCode() == 200) {
+                if (response.isSuccessful()) {
                     ResponseCreateUser resutl = response.body();
-                    Log.d("success xxx : ", resutl.getStatusCode().toString());
-                    Log.d("onResponse: xx ", resutl.toString());
-                    sentConfirmOtp(generalInformation[CID], resutl);
+                    if (resutl.getStatusCode() == 409){
+                        Toast.makeText(getAppContext(), "เบอร์ซ้ำ", Toast.LENGTH_LONG).show();
+                        alertDialogPhone();
+                    }else if (resutl.getStatusCode() == 200){
+                        Log.d("success xxx : ", resutl.getStatusCode().toString());
+                        Log.d("onResponse: xx ", resutl.getMessage());
+                        sentConfirmOtp(generalInformation[CID], resutl);
+                    }
+
                 } else {
-                    ResponseCreateUser resutl = response.body();
-                    Log.d("not success", resutl.getStatusCode().toString());
+                    Log.d("not success", "response ไม่สำเร็จ");
+                    Toast.makeText(getAppContext(), "response ไม่สำเร็จ", Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -1288,6 +1293,19 @@ public class JAppActivity extends JCompatActivity {
 
     /* ******************************************************* */
     /* ******************************************************* */
+
+    private void alertDialogPhone(){
+        new AlertDialog.Builder(this)
+                .setMessage("เบอร์โทรศัพท์นี้ถูกใช้งานแล้ว กรุณาเปลี่ยนใหม่")
+                .setCancelable(false)
+                .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        showFormFillFragment();
+                    }
+                })
+                .show();
+
+    }
 
     @Override
     public void onBackPressed() {
