@@ -1,6 +1,7 @@
 package com.jdid.ekyc;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -35,6 +36,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 
 import com.acs.smartcard.Features;
 import com.acs.smartcard.Reader;
@@ -47,6 +49,7 @@ import com.jdid.ekyc.Fragments.ConfirmOTPRegisterUserFragment;
 import com.jdid.ekyc.Fragments.FaceCompareResultFragment;
 import com.jdid.ekyc.Fragments.FormFillFragment;
 import com.jdid.ekyc.Fragments.HomeFragment;
+import com.jdid.ekyc.Fragments.PhoneNumberDialogFragment;
 import com.jdid.ekyc.Fragments.PinCodeFragment;
 import com.jdid.ekyc.Fragments.SuccessFragment;
 import com.jdid.ekyc.Fragments.WaitForAuthoriseFragment;
@@ -89,6 +92,9 @@ public class JAppActivity extends JCompatActivity {
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
+
+    private static final int VERIFY_PERSON = 1;
+
 
     private PFCodeView mCodeView;
 
@@ -224,6 +230,8 @@ public class JAppActivity extends JCompatActivity {
     public String mPhone;
     public String mEMail;
 
+    //registration person mobile phone
+    public String mPhonePerson;
     public String getMobilePhone() {return mPhone; }
 
 
@@ -234,9 +242,6 @@ public class JAppActivity extends JCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //TODO :: test crash
-//        Crashlytics.getInstance().crash();
 
         JAppActivity.context = getApplicationContext();
         setContentView(R.layout.activity_japp);
@@ -329,8 +334,16 @@ public class JAppActivity extends JCompatActivity {
                 .replace(R.id.container_view, fragment).addToBackStack(null).commit();
     }
 
-    public void showOTPVerifyUserFragment(String id, String otpRef) {
-        final ConfirmOTPRegisterUserFragment fragment = new ConfirmOTPRegisterUserFragment(id, otpRef);
+    public void showOTPVerifyFragment(int type, String mPersonPhone) {
+        mVerifyDipChip = type;
+        mPhonePerson = mPersonPhone;
+        final ConfirmOTPRegisterFragment fragment = new ConfirmOTPRegisterFragment(mPersonPhone);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container_view, fragment).addToBackStack(null).commit();
+    }
+
+    public void showOTPVerifyUserFragment(String id, String otpRef, String mPhonePerson) {
+        final ConfirmOTPRegisterUserFragment fragment = new ConfirmOTPRegisterUserFragment(id, otpRef, mPhonePerson);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container_view, fragment).addToBackStack(null).commit();
     }
@@ -619,7 +632,7 @@ public class JAppActivity extends JCompatActivity {
         createUser(request);
     }
 
-    public void SaveInformationForDipChip(){
+    public void SaveInformationForPerson(){
         String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         RequestCreateUser request = new RequestCreateUser();
 
@@ -630,20 +643,20 @@ public class JAppActivity extends JCompatActivity {
         request.setGender(generalInformation[GENDER]);
         request.setOfficialAddress(generalInformation[ADDRESS]);
         request.setNationality("Thai");
-        request.setContactNumber(mPhone);
+        request.setContactNumber(mPhonePerson);
         request.setPurpose("kyc");
-        // p
+        //TODO :: DELTE THIS
         request.setCurrentAddress("current");
         request.setMariageStatus("mari");
         request.setOccupation("occu");
         request.setCompany("compa");
         request.setCompanyAddress("compaAs");
         request.setIncome(0.0);
-        request.setVerifyBy("ver");
+        request.setVerifyBy(mStrDeviceID);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
         //Create user
 
-        Log.d("phoneeeeexxx : ", mPhone);
+        Log.d("phoneeeeexxx : ", mPhonePerson);
         Log.d("idddddd : ", request.getNameTh());
         Log.d("idddddd : ", request.getNameEn());
         Log.d("idddddd : ", request.getBirthdate());
@@ -673,7 +686,13 @@ public class JAppActivity extends JCompatActivity {
                 if (response.isSuccessful()) {
                     ResponseCreateUser resutl = response.body();
                     if (resutl.getStatusCode() == 409){
-                        alertDialogPhone();
+                        // TODO CHECK THis
+                        if (isVerifyDipChip() == VERIFY_PERSON){
+                            PhoneNumberDialogFragment dialogFragment = new PhoneNumberDialogFragment("หมายเลขนี้ถูกใช้แล้วกรุณา\nกรอกหมายเลขอื่น");
+                            dialogFragment.show(getSupportFragmentManager(), "PhoneNumberDialogFragment");
+                        }else {
+                            alertDialogPhone();
+                        }
                     }else if (resutl.getStatusCode() == 200){
                         Log.d("success xxx : ", resutl.getStatusCode().toString());
                         Log.d("onResponse: xx ", resutl.getMessage());
@@ -703,7 +722,7 @@ public class JAppActivity extends JCompatActivity {
         mProgressDialog = null;
         // if save success then show success fragment
         if (otp != null) {
-            showOTPVerifyUserFragment(id,otp);
+            showOTPVerifyUserFragment(id,otp, mPhonePerson);
         }
     }
     /* ******************************************************* */

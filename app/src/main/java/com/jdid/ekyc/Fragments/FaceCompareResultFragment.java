@@ -68,13 +68,6 @@ public class FaceCompareResultFragment extends Fragment {
                 break;
         }
 
-//        if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_EKYC) {
-//            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
-//        } else if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_PERSON) {
-//            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
-//        } else if ((((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_DIP_CHIP)) {
-//            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
-//        }
         btnNextStep = view.findViewById(R.id.btnNextStep);
 
         txtResult = view.findViewById(R.id.txtResult);
@@ -106,7 +99,9 @@ public class FaceCompareResultFragment extends Fragment {
                             ((JAppActivity) getActivity()).showFormFillFragment();
                             break;
                         case VERIFY_PERSON:
-                            ((JAppActivity) getActivity()).successFragment();
+                            // TODO :: 1 Dialog Fragments
+                            PhoneNumberDialogFragment dialogFragment = new PhoneNumberDialogFragment();
+                            dialogFragment.show(getFragmentManager(), "PhoneNumberDialogFragment");
                             break;
                         case VERIFY_DIP_CHIP:
                             ((JAppActivity) getActivity()).showOTPVerifyFragment(VERIFY_DIP_CHIP);

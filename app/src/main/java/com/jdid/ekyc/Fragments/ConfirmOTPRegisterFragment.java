@@ -2,8 +2,6 @@ package com.jdid.ekyc.Fragments;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,33 +23,20 @@ import androidx.fragment.app.Fragment;
 
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
-import com.jdid.ekyc.RegisterActivity;
 import com.jdid.ekyc.repository.RetrofitInstance;
 import com.jdid.ekyc.repository.api.Admin;
-import com.jdid.ekyc.repository.pojo.ErrorOTP;
-import com.jdid.ekyc.repository.pojo.OtpRef;
 import com.jdid.ekyc.repository.pojo.RequestOTPForRegister;
 import com.jdid.ekyc.repository.pojo.RequestOTPForVerify;
 import com.jdid.ekyc.repository.pojo.ResponseOTPForRegister;
 import com.jdid.ekyc.repository.pojo.ResponseOTPForVerify;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static android.content.ContentValues.TAG;
-
 public class ConfirmOTPRegisterFragment extends Fragment {
 
+    private static final int VERIFY_PERSON = 1;
     private static final int VERIFY_DIP_CHIP = 2;
 
     private ProgressDialog mProgressDialog;
@@ -60,6 +44,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     private TextView txtOTPREF;
     private Button btnNextStep;
     private String mPhoneNumber;
+    private String mPhonePerson;
     private String mRef;
     private final TextWatcher mTextEditorWatcher = new TextWatcher() {
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -75,6 +60,13 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         }
     };
 
+    public ConfirmOTPRegisterFragment() {
+    }
+
+    public ConfirmOTPRegisterFragment(String mPhonePerson) {
+        this.mPhonePerson = mPhonePerson;
+    }
+
     /* ******************************************************* */
 
     private void requestOTP() {
@@ -83,7 +75,8 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         RequestOTPForRegister request = new RequestOTPForRegister();
         if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
             request.setPhoneNo(((JAppActivity) getActivity()).getMobilePhone());
-
+        } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
+            request.setPhoneNo(mPhonePerson);
         } else {
             request.setPhoneNo(mPhoneNumber);
         }
@@ -127,7 +120,8 @@ public class ConfirmOTPRegisterFragment extends Fragment {
 
         if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
             request.setPhoneNo(((JAppActivity) getActivity()).getMobilePhone());
-
+        } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
+            request.setPhoneNo(mPhonePerson);
         } else {
             request.setPhoneNo(mPhoneNumber);
         }
@@ -148,11 +142,12 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 if (response.isSuccessful()) {
                     if (response.body().getStatusCode() == 200) {
                         saveUser();
-                    }else {
+                    } else {
+                        Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
                     }
                 } else {
                     response.errorBody();
-                    Log.d("errrrr : " , response.errorBody().getClass().getName());
+                    Log.d("errrrr : ", response.errorBody().getClass().getName());
                     Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
                 }
             }
@@ -208,9 +203,13 @@ public class ConfirmOTPRegisterFragment extends Fragment {
 
     private void saveUser() {
         if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
-            ((JAppActivity) getActivity()).SaveInformationForDipChip();
+            // TODO DIP CHIP
+//            ((JAppActivity) getActivity()).SaveInformationForPerson();
+        } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
+            ((JAppActivity) getActivity()).SaveInformationForPerson();
         } else {
             ((JAppActivity) getActivity()).SaveInformation();
+
         }
     }
 
@@ -220,9 +219,9 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 .setCancelable(false)
                 .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
+                        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
                             ((JAppActivity) getActivity()).showCardInformation();
-                        }else {
+                        } else {
                             ((JAppActivity) getActivity()).showFormFillFragment();
                         }
                     }

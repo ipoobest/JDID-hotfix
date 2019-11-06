@@ -33,6 +33,7 @@ import retrofit2.Response;
 
 public class ConfirmOTPRegisterUserFragment extends Fragment {
 
+    private static final int VERIFY_PERSON = 1;
     private static final int VERIFY_DIP_CHIP = 2;
 
     private ProgressDialog mProgressDialog;
@@ -42,6 +43,7 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
     private String mPhoneNumber;
     private String mRef;
     private String mId;
+    private String mPhonePerson;
     private final TextWatcher mTextEditorWatcher = new TextWatcher() {
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
         }
@@ -58,9 +60,10 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
         }
     };
 
-    public ConfirmOTPRegisterUserFragment(String id, String otpRef) {
+    public ConfirmOTPRegisterUserFragment(String id, String otpRef, String mPhone) {
         mId = id;
         mRef = otpRef;
+        mPhonePerson = mPhone;
     }
 
     /* ******************************************************* */
@@ -68,9 +71,17 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
         mProgressDialog = ProgressDialog.show(getActivity(),
                 null, "กำลังทำการรตรวจรหัส OTP", true, false);
         RequestOTPForVerify request = new RequestOTPForVerify();
+//        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
+//            request.setPhoneNo(((JAppActivity) getActivity()).getMobilePhone());
+//
+//        } else {
+//            request.setPhoneNo(mPhoneNumber);
+//        }
+
         if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
             request.setPhoneNo(((JAppActivity) getActivity()).getMobilePhone());
-
+        } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
+            request.setPhoneNo(mPhonePerson);
         } else {
             request.setPhoneNo(mPhoneNumber);
         }
