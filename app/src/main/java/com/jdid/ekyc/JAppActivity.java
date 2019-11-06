@@ -612,20 +612,20 @@ public class JAppActivity extends JCompatActivity {
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
 
         Log.d("idddddd : ", request.getNameTh());
-        Log.d("idddddd : ", request.getNameEn());
-        Log.d("idddddd : ", request.getBirthdate());
-        Log.d("idddddd : ", request.getId());
-        Log.d("idddddd : ", request.getGender());
-        Log.d("idddddd : ", request.getOfficialAddress());
-        Log.d("idddddd : ", request.getNationality());
-        Log.d("idddddd : ", request.getContactNumber());
-        Log.d("idddddd : ", request.getPurpose());
-        Log.d("idddddd : ", request.getCurrentAddress());
-        Log.d("idddddd : ", request.getMariageStatus());
-        Log.d("idddddd : ", request.getOccupation());
-        Log.d("idddddd : ", request.getCompany());
-        Log.d("idddddd : ", request.getCompanyAddress());
-        Log.d("idddddd : ", request.getIncome().toString());
+//        Log.d("idddddd : ", request.getNameEn());
+//        Log.d("idddddd : ", request.getBirthdate());
+//        Log.d("idddddd : ", request.getId());
+//        Log.d("idddddd : ", request.getGender());
+//        Log.d("idddddd : ", request.getOfficialAddress());
+//        Log.d("idddddd : ", request.getNationality());
+//        Log.d("idddddd : ", request.getContactNumber());
+//        Log.d("idddddd : ", request.getPurpose());
+//        Log.d("idddddd : ", request.getCurrentAddress());
+//        Log.d("idddddd : ", request.getMariageStatus());
+//        Log.d("idddddd : ", request.getOccupation());
+//        Log.d("idddddd : ", request.getCompany());
+//        Log.d("idddddd : ", request.getCompanyAddress());
+//        Log.d("idddddd : ", request.getIncome().toString());
         Log.d("idddddd : ", request.getVerifyBy());
         //Create user
         Log.d("mStrDeviceID55 : " , request.getVerifyBy());
@@ -648,18 +648,18 @@ public class JAppActivity extends JCompatActivity {
         request.setVerifyBy(mStrDeviceID);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
         //Create user
-
-        Log.d("phoneeeeexxx : ", mPhonePerson);
-        Log.d("idddddd : ", request.getNameTh());
-        Log.d("idddddd : ", request.getNameEn());
-        Log.d("idddddd : ", request.getBirthdate());
-        Log.d("idddddd : ", request.getId());
-        Log.d("idddddd : ", request.getGender());
-        Log.d("idddddd : ", request.getOfficialAddress());
-        Log.d("idddddd : ", request.getNationality());
-        Log.d("idddddd : ", request.getContactNumber());
-        Log.d("idddddd : ", request.getIncome().toString());
-        Log.d("idddddd : ", request.getVerifyBy());
+//
+//        Log.d("phoneeeeexxx : ", mPhonePerson);
+//        Log.d("idddddd : ", request.getNameTh());
+//        Log.d("idddddd : ", request.getNameEn());
+//        Log.d("idddddd : ", request.getBirthdate());
+//        Log.d("idddddd : ", request.getId());
+//        Log.d("idddddd : ", request.getGender());
+//        Log.d("idddddd : ", request.getOfficialAddress());
+//        Log.d("idddddd : ", request.getNationality());
+//        Log.d("idddddd : ", request.getContactNumber());
+//        Log.d("idddddd : ", request.getIncome().toString());
+//        Log.d("idddddd : ", request.getVerifyBy());
 
         createUser(request);
 

@@ -51,7 +51,6 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
     private void initialize(View view) {
 
         if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_EKYC) {
-            Crashlytics.getInstance().crash();
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
         } else if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_PERSON){
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
