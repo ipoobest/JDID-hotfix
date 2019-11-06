@@ -39,6 +39,7 @@ import androidx.annotation.Nullable;
 import com.acs.smartcard.Features;
 import com.acs.smartcard.Reader;
 import com.acs.smartcard.ReaderException;
+import com.crashlytics.android.Crashlytics;
 import com.jdid.ekyc.Fragments.CardAcquireFragment;
 import com.jdid.ekyc.Fragments.CardInfoFragment;
 import com.jdid.ekyc.Fragments.ConfirmOTPRegisterFragment;
@@ -233,6 +234,10 @@ public class JAppActivity extends JCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //TODO :: test crash
+//        Crashlytics.getInstance().crash();
+
         JAppActivity.context = getApplicationContext();
         setContentView(R.layout.activity_japp);
         toolbar = findViewById(R.id.toolbar);

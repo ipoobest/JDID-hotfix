@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.crashlytics.android.Crashlytics;
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
 
@@ -42,6 +43,7 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
         final View view = inflater.inflate(R.layout.fragment_card_acquire, container, false);
         setHasOptionsMenu(true);
         initialize(view);
+
         ((JAppActivity) getActivity()).initializeCardReader();
         return view;
     }
@@ -49,6 +51,7 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
     private void initialize(View view) {
 
         if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_EKYC) {
+            Crashlytics.getInstance().crash();
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
         } else if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_PERSON){
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
