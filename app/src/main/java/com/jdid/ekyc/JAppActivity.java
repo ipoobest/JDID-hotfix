@@ -644,13 +644,6 @@ public class JAppActivity extends JCompatActivity {
         request.setOfficialAddress(generalInformation[ADDRESS]);
         request.setNationality("Thai");
         request.setContactNumber(mPhonePerson);
-        request.setPurpose("kyc");
-        //TODO :: DELTE THIS
-        request.setCurrentAddress("current");
-        request.setMariageStatus("mari");
-        request.setOccupation("occu");
-        request.setCompany("compa");
-        request.setCompanyAddress("compaAs");
         request.setIncome(0.0);
         request.setVerifyBy(mStrDeviceID);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
@@ -665,11 +658,6 @@ public class JAppActivity extends JCompatActivity {
         Log.d("idddddd : ", request.getOfficialAddress());
         Log.d("idddddd : ", request.getNationality());
         Log.d("idddddd : ", request.getContactNumber());
-        Log.d("idddddd : ", request.getCurrentAddress());
-        Log.d("idddddd : ", request.getMariageStatus());
-        Log.d("idddddd : ", request.getOccupation());
-        Log.d("idddddd : ", request.getCompany());
-        Log.d("idddddd : ", request.getCompanyAddress());
         Log.d("idddddd : ", request.getIncome().toString());
         Log.d("idddddd : ", request.getVerifyBy());
 
