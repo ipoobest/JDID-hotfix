@@ -668,7 +668,6 @@ public class JAppActivity extends JCompatActivity {
                 if (response.isSuccessful()) {
                     ResponseCreateUser resutl = response.body();
                     if (resutl.getStatusCode() == 409){
-                        Toast.makeText(getAppContext(), "เบอร์ซ้ำ", Toast.LENGTH_LONG).show();
                         alertDialogPhone();
                     }else if (resutl.getStatusCode() == 200){
                         Log.d("success xxx : ", resutl.getStatusCode().toString());
@@ -690,7 +689,6 @@ public class JAppActivity extends JCompatActivity {
     }
 
     private void sentConfirmOtp(String id, ResponseCreateUser result) {
-        //TODO THIS
         OtpRef otpRef = result.getOtpRef();
         String otp = otpRef.getOtpRef();
 //        Log.d("otp", otp);
