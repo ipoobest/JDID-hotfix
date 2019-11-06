@@ -644,6 +644,12 @@ public class JAppActivity extends JCompatActivity {
         request.setOfficialAddress(generalInformation[ADDRESS]);
         request.setNationality("Thai");
         request.setContactNumber(mPhonePerson);
+        request.setPurpose(" ");
+        request.setCurrentAddress(" ");
+        request.setMariageStatus(" ");
+        request.setOccupation(" ");
+        request.setCompany(" ");
+        request.setCompanyAddress(" ");
         request.setIncome(0.0);
         request.setVerifyBy(mStrDeviceID);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
