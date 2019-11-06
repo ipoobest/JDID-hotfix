@@ -109,7 +109,6 @@ public class FaceCompareResultFragment extends Fragment {
                             ((JAppActivity) getActivity()).successFragment();
                             break;
                         case VERIFY_DIP_CHIP:
-                            //TODO SAVE INFOMATION
                             ((JAppActivity) getActivity()).showOTPVerifyFragment(VERIFY_DIP_CHIP);
                             break;
                     }

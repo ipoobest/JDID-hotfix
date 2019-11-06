@@ -29,6 +29,7 @@ import com.jdid.ekyc.R;
 import com.jdid.ekyc.RegisterActivity;
 import com.jdid.ekyc.repository.RetrofitInstance;
 import com.jdid.ekyc.repository.api.Admin;
+import com.jdid.ekyc.repository.pojo.ErrorOTP;
 import com.jdid.ekyc.repository.pojo.OtpRef;
 import com.jdid.ekyc.repository.pojo.RequestOTPForRegister;
 import com.jdid.ekyc.repository.pojo.RequestOTPForVerify;
@@ -80,7 +81,6 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         mProgressDialog = ProgressDialog.show(getActivity(),
                 null, "กำลังทำการร้องขอรหัส OTP", true, false);
         RequestOTPForRegister request = new RequestOTPForRegister();
-        //TODO :: fix phonenumner
         if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
             request.setPhoneNo(((JAppActivity) getActivity()).getMobilePhone());
 
@@ -135,6 +135,9 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         request.setOtp(edOTP.getText().toString());
         request.setOtpRef(mRef);
 
+        //TODO :: LOG REQUEST
+        Log.d("requesttt", request.getPhoneNo() + " " + request.getOtp() + " " + request.getOtpRef());
+
         Admin service = RetrofitInstance.getRetrofitInstance().create(Admin.class);
         Call<ResponseOTPForVerify> call = service.verifyOTP(request);
         call.enqueue(new Callback<ResponseOTPForVerify>() {
@@ -143,20 +146,14 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 mProgressDialog.dismiss();
                 mProgressDialog = null;
                 if (response.isSuccessful()) {
-                    if (response.body().getAccessToken().length() > 0) {
+                    if (response.body().getStatusCode() == 200) {
                         saveUser();
+                    }else {
                     }
                 } else {
+                    response.errorBody();
+                    Log.d("errrrr : " , response.errorBody().getClass().getName());
                     Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
-
-                }
-            }
-
-            private void saveUser() {
-                if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
-                    ((JAppActivity) getActivity()).SaveInformationForDipChip();
-                } else {
-                    ((JAppActivity) getActivity()).SaveInformation();
                 }
             }
 
@@ -207,6 +204,14 @@ public class ConfirmOTPRegisterFragment extends Fragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void saveUser() {
+        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
+            ((JAppActivity) getActivity()).SaveInformationForDipChip();
+        } else {
+            ((JAppActivity) getActivity()).SaveInformation();
+        }
     }
 
     private void confirmBack() {

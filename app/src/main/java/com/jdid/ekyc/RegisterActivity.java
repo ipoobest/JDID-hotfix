@@ -2,6 +2,7 @@ package com.jdid.ekyc;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -46,6 +47,7 @@ public class RegisterActivity extends JCompatActivity {
     public String mName;
     public String mBranch;
     public String mEMail;
+    Toolbar toolbar;
 
     /* ******************************************************* */
     /* ******************************************************* */
@@ -154,7 +156,6 @@ public class RegisterActivity extends JCompatActivity {
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
-//            conn.setRequestProperty("Authorization", "Basic ZWt5Y2Rldjpla3ljZGV2");
             conn.setRequestProperty("X-API-KEY", "3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb");
 
 
@@ -181,6 +182,8 @@ public class RegisterActivity extends JCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         imei = getIntent().getStringExtra("imei");
         showRegisterFragment();
     }

@@ -50,7 +50,6 @@ public class PinCodeFragment extends Fragment {
         ((AppCompatActivity)getActivity()).getSupportActionBar().show();
     }
 
-
     private void initialize(View view) {
         tvTitle = view.findViewById(R.id.title_text_view);
         switch (mPinState) {
@@ -105,7 +104,9 @@ public class PinCodeFragment extends Fragment {
                         ((RegisterActivity)getActivity()).showConfirmPinRegisterFragment(mCodeView.getCode());
                     } else if (mPinState==CONFIRM_PIN) {
                         ((RegisterActivity)getActivity()).confirmPinRegister(mCodeView.getCode());
+                        getActivity().finish();
                     } else if (mPinState==AUTHEN_PIN) {
+                        //TODO hide toolbar pin
                         ((JAppActivity)getActivity()).authenPinCode(mCodeView.getCode());
                     }
                 }

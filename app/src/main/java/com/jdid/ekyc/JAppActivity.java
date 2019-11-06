@@ -270,7 +270,7 @@ public class JAppActivity extends JCompatActivity {
     private void showWaitForAuthorise() {
         final WaitForAuthoriseFragment fragment = new WaitForAuthoriseFragment();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container_view, fragment).commit();
+                .replace(R.id.container_view, fragment).addToBackStack(null).commit();
     }
 
     private void _showPinRegisterFragment() {
@@ -344,7 +344,6 @@ public class JAppActivity extends JCompatActivity {
 //                .replace(R.id.container_view, fragment).commit();
 //    }
     public void acquireCardData(int type) {
-        // TODO :: ADD MENU DIP CHIP
         mfVerifyPerson = type;
         final CardAcquireFragment fragment = new CardAcquireFragment();
         mcardAcquireFragment = fragment;
@@ -566,7 +565,7 @@ public class JAppActivity extends JCompatActivity {
 
     public void SaveInformation() {
         Log.d("save", "SaveInformation");
-        final RequestCreateUser request = new RequestCreateUser();
+        RequestCreateUser request = new RequestCreateUser();
         double income;
         String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -593,6 +592,23 @@ public class JAppActivity extends JCompatActivity {
         request.setIncome(income);
         request.setVerifyBy(mStrDeviceID);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
+
+        Log.d("idddddd : ", request.getNameTh());
+        Log.d("idddddd : ", request.getNameEn());
+        Log.d("idddddd : ", request.getBirthdate());
+        Log.d("idddddd : ", request.getId());
+        Log.d("idddddd : ", request.getGender());
+        Log.d("idddddd : ", request.getOfficialAddress());
+        Log.d("idddddd : ", request.getNationality());
+        Log.d("idddddd : ", request.getContactNumber());
+        Log.d("idddddd : ", request.getPurpose());
+        Log.d("idddddd : ", request.getCurrentAddress());
+        Log.d("idddddd : ", request.getMariageStatus());
+        Log.d("idddddd : ", request.getOccupation());
+        Log.d("idddddd : ", request.getCompany());
+        Log.d("idddddd : ", request.getCompanyAddress());
+        Log.d("idddddd : ", request.getIncome().toString());
+        Log.d("idddddd : ", request.getVerifyBy());
         //Create user
         Log.d("mStrDeviceID55 : " , request.getVerifyBy());
         createUser(request);
@@ -600,7 +616,7 @@ public class JAppActivity extends JCompatActivity {
 
     public void SaveInformationForDipChip(){
         String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        final RequestCreateUser request = new RequestCreateUser();
+        RequestCreateUser request = new RequestCreateUser();
 
         request.setNameTh(generalInformation[THAIFULLNAME]);
         request.setNameEn(generalInformation[ENGLISHFULLNAME]);
@@ -610,18 +626,35 @@ public class JAppActivity extends JCompatActivity {
         request.setOfficialAddress(generalInformation[ADDRESS]);
         request.setNationality("Thai");
         request.setContactNumber(mPhone);
-        request.setPurpose("");
-        request.setCurrentAddress("");
-        request.setMariageStatus("");
-        request.setOccupation("");
-        request.setCompany("");
-        request.setCompanyAddress("");
+        request.setPurpose("kyc");
+        // p
+        request.setCurrentAddress("current");
+        request.setMariageStatus("mari");
+        request.setOccupation("occu");
+        request.setCompany("compa");
+        request.setCompanyAddress("compaAs");
         request.setIncome(0.0);
-        request.setVerifyBy(mStrDeviceID);
+        request.setVerifyBy("ver");
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
         //Create user
 
-        Log.d("phoneeeee : ", mPhone);
+        Log.d("phoneeeeexxx : ", mPhone);
+        Log.d("idddddd : ", request.getNameTh());
+        Log.d("idddddd : ", request.getNameEn());
+        Log.d("idddddd : ", request.getBirthdate());
+        Log.d("idddddd : ", request.getId());
+        Log.d("idddddd : ", request.getGender());
+        Log.d("idddddd : ", request.getOfficialAddress());
+        Log.d("idddddd : ", request.getNationality());
+        Log.d("idddddd : ", request.getContactNumber());
+        Log.d("idddddd : ", request.getCurrentAddress());
+        Log.d("idddddd : ", request.getMariageStatus());
+        Log.d("idddddd : ", request.getOccupation());
+        Log.d("idddddd : ", request.getCompany());
+        Log.d("idddddd : ", request.getCompanyAddress());
+        Log.d("idddddd : ", request.getIncome().toString());
+        Log.d("idddddd : ", request.getVerifyBy());
+
         createUser(request);
 
     }
@@ -632,10 +665,12 @@ public class JAppActivity extends JCompatActivity {
         call.enqueue(new Callback<ResponseCreateUser>() {
             @Override
             public void onResponse(Call<ResponseCreateUser> call, Response<ResponseCreateUser> response) {
-                if (response.isSuccessful()) {
+                // TODO :: FIX THIS xxxxx
+                if (response.body().getStatusCode() == 200) {
                     ResponseCreateUser resutl = response.body();
-                    Log.d("success : ", resutl.getStatusCode().toString());
-                    sentConfirmOtp(generalInformation[CID],resutl);
+                    Log.d("success xxx : ", resutl.getStatusCode().toString());
+                    Log.d("onResponse: xx ", resutl.toString());
+                    sentConfirmOtp(generalInformation[CID], resutl);
                 } else {
                     ResponseCreateUser resutl = response.body();
                     Log.d("not success", resutl.getStatusCode().toString());
@@ -650,6 +685,7 @@ public class JAppActivity extends JCompatActivity {
     }
 
     private void sentConfirmOtp(String id, ResponseCreateUser result) {
+        //TODO THIS
         OtpRef otpRef = result.getOtpRef();
         String otp = otpRef.getOtpRef();
 //        Log.d("otp", otp);

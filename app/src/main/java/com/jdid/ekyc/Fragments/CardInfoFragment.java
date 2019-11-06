@@ -62,7 +62,6 @@ public class CardInfoFragment extends Fragment {
     }
 
     private void initialize(View view) {
-//        TODO:: 1
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
 
