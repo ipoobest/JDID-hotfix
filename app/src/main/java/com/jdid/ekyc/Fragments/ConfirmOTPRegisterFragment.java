@@ -129,9 +129,6 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         request.setOtp(edOTP.getText().toString());
         request.setOtpRef(mRef);
 
-        //TODO :: LOG REQUEST
-        Log.d("requesttt", request.getPhoneNo() + " " + request.getOtp() + " " + request.getOtpRef());
-
         Admin service = RetrofitInstance.getRetrofitInstance().create(Admin.class);
         Call<ResponseOTPForVerify> call = service.verifyOTP(request);
         call.enqueue(new Callback<ResponseOTPForVerify>() {

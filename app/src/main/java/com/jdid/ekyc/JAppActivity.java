@@ -108,7 +108,10 @@ public class JAppActivity extends JCompatActivity {
     public int isVerifyPerson() {
         return mfVerifyPerson;
     }
-    public int isVerifyDipChip() {return mVerifyDipChip; }
+
+    public int isVerifyDipChip() {
+        return mVerifyDipChip;
+    }
 
     private static Context context;
 
@@ -234,7 +237,10 @@ public class JAppActivity extends JCompatActivity {
 
     //registration person mobile phone
     public String mPhonePerson;
-    public String getMobilePhone() {return mPhone; }
+
+    public String getMobilePhone() {
+        return mPhone;
+    }
 
 
     private String mAuthenPinCode;
@@ -356,7 +362,7 @@ public class JAppActivity extends JCompatActivity {
                 .replace(R.id.container_view, fragment).commit();
     }
 
-//    public void acquireCardData(boolean fVerify) {
+    //    public void acquireCardData(boolean fVerify) {
 //        mfVerifyPerson = fVerify;
 //        final CardAcquireFragment fragment = new CardAcquireFragment();
 //        mcardAcquireFragment = fragment;
@@ -432,7 +438,7 @@ public class JAppActivity extends JCompatActivity {
     /* Authenticate PIN Code                                   */
     /* ******************************************************* */
 
-    public void AuthenPinCode(){
+    public void AuthenPinCode() {
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
                 null, "กำลังทำการขออนุญาตเข้าระบบ", true, false);
 
@@ -446,16 +452,16 @@ public class JAppActivity extends JCompatActivity {
         call.enqueue(new Callback<ResponVerifyPin>() {
             @Override
             public void onResponse(Call<ResponVerifyPin> call, Response<ResponVerifyPin> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful()) {
                     ResponVerifyPin result = response.body();
-                    if (result.getVerified()){
+                    if (result.getVerified()) {
                         showHomeFragment();
-                    }else {
-                        Toast.makeText(getAppContext(),"รหัสผ่านผิดกรุณากรอกใหม่", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getAppContext(), "รหัสผ่านผิดกรุณากรอกใหม่", Toast.LENGTH_SHORT).show();
                         showPinRegisterFragment();
                     }
-                }else {
-                    Toast.makeText(getAppContext(),"รหัสผ่านผิดกรุณากรอกใหม่", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getAppContext(), "รหัสผ่านผิดกรุณากรอกใหม่", Toast.LENGTH_SHORT).show();
 
                     showPinRegisterFragment();
                 }
@@ -614,28 +620,11 @@ public class JAppActivity extends JCompatActivity {
         request.setVerifyBy(mStrDeviceID);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
 
-        Log.d("idddddd : ", request.getNameTh());
-//        Log.d("idddddd : ", request.getNameEn());
-//        Log.d("idddddd : ", request.getBirthdate());
-//        Log.d("idddddd : ", request.getId());
-//        Log.d("idddddd : ", request.getGender());
-//        Log.d("idddddd : ", request.getOfficialAddress());
-//        Log.d("idddddd : ", request.getNationality());
-//        Log.d("idddddd : ", request.getContactNumber());
-//        Log.d("idddddd : ", request.getPurpose());
-//        Log.d("idddddd : ", request.getCurrentAddress());
-//        Log.d("idddddd : ", request.getMariageStatus());
-//        Log.d("idddddd : ", request.getOccupation());
-//        Log.d("idddddd : ", request.getCompany());
-//        Log.d("idddddd : ", request.getCompanyAddress());
-//        Log.d("idddddd : ", request.getIncome().toString());
-        Log.d("idddddd : ", request.getVerifyBy());
-        //Create user
-        Log.d("mStrDeviceID55 : " , request.getVerifyBy());
         createUser(request);
+
     }
 
-    public void PutInformationForPerson(){
+    public void PutInformationForPerson() {
         String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         RequestPutUser request = new RequestPutUser();
 
@@ -648,21 +637,8 @@ public class JAppActivity extends JCompatActivity {
         request.setNationality("Thai");
         request.setVerifyBy(mStrDeviceID);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
-//
-//        Log.d("phoneeeeexxx : ", mPhonePerson);
-//        Log.d("idddddd : ", request.getNameTh());
-//        Log.d("idddddd : ", request.getNameEn());
-//        Log.d("idddddd : ", request.getBirthdate());
-//        Log.d("idddddd : ", request.getId());
-//        Log.d("idddddd : ", request.getGender());
-//        Log.d("idddddd : ", request.getOfficialAddress());
-//        Log.d("idddddd : ", request.getNationality());
-//        Log.d("idddddd : ", request.getContactNumber());
-//        Log.d("idddddd : ", request.getIncome().toString());
-//        Log.d("idddddd : ", request.getVerifyBy());
 
         putUser(request);
-
     }
 
     private void createUser(RequestCreateUser requestCreateUser) {
@@ -673,14 +649,9 @@ public class JAppActivity extends JCompatActivity {
             public void onResponse(Call<ResponseCreateUser> call, Response<ResponseCreateUser> response) {
                 if (response.isSuccessful()) {
                     ResponseCreateUser resutl = response.body();
-                    if (resutl.getStatusCode() == 409){
-                        if (isVerifyDipChip() == VERIFY_PERSON){
-                            PhoneNumberDialogFragment dialogFragment = new PhoneNumberDialogFragment("หมายเลขนี้ถูกใช้แล้วกรุณา\nกรอกหมายเลขอื่น");
-                            dialogFragment.show(getSupportFragmentManager(), "PhoneNumberDialogFragment");
-                        }else {
-                            alertDialogPhone();
-                        }
-                    }else if (resutl.getStatusCode() == 200){
+                    if (resutl.getStatusCode() == 409) {
+                        alertDialogPhone();
+                    } else if (resutl.getStatusCode() == 200) {
                         Log.d("success xxx : ", resutl.getStatusCode().toString());
                         Log.d("onResponse: xx ", resutl.getMessage());
                         sentConfirmOtp(generalInformation[CID], resutl);
@@ -699,22 +670,23 @@ public class JAppActivity extends JCompatActivity {
         });
     }
 
-    private void putUser(RequestPutUser requestPutUser){
+    private void putUser(RequestPutUser requestPutUser) {
         User service = RetrofitInstance.getRetrofitInstance().create(User.class);
         Call<ResponseVerifyUser> call = service.editteUser(requestPutUser.getId(), requestPutUser);
         call.enqueue(new Callback<ResponseVerifyUser>() {
             @Override
             public void onResponse(Call<ResponseVerifyUser> call, Response<ResponseVerifyUser> response) {
-                if (response.isSuccessful()){
-                    if (response.code() == 404){
+                if (response.isSuccessful()) {
+                    if (response.code() == 404) {
                         Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
                         alertDialogPutUser();
                     } else {
-                        Toast.makeText(getAppContext(), "สำเร็จๆๆ", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getAppContext(), "ยืนยันสำเร็จ", Toast.LENGTH_SHORT).show();
                         successFragment();
                     }
                 } else {
-                    Toast.makeText(getAppContext(), "ปปปปป", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
+                    alertDialogPutUser();
                 }
             }
 
@@ -728,14 +700,13 @@ public class JAppActivity extends JCompatActivity {
     private void sentConfirmOtp(String id, ResponseCreateUser result) {
         OtpRef otpRef = result.getOtpRef();
         String otp = otpRef.getOtpRef();
-//        Log.d("otp", otp);
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
                 null, "กำลังส่ง OTP กรุณารอสักครู่", true, false);
         mProgressDialog.dismiss();
         mProgressDialog = null;
         // if save success then show success fragment
         if (otp != null) {
-            showOTPVerifyUserFragment(id,otp, mPhonePerson);
+            showOTPVerifyUserFragment(id, otp, mPhonePerson);
         }
     }
     /* ******************************************************* */
@@ -1329,7 +1300,7 @@ public class JAppActivity extends JCompatActivity {
     /* ******************************************************* */
     /* ******************************************************* */
 
-    private void alertDialogPhone(){
+    private void alertDialogPhone() {
         new AlertDialog.Builder(this)
                 .setMessage("เบอร์โทรศัพท์นี้ถูกใช้งานแล้ว กรุณาเปลี่ยนใหม่")
                 .setCancelable(false)
@@ -1342,7 +1313,7 @@ public class JAppActivity extends JCompatActivity {
 
     }
 
-    private void alertDialogPutUser(){
+    private void alertDialogPutUser() {
         new AlertDialog.Builder(this)
                 .setMessage("กรุณาทำ ekyc ก่อน")
                 .setCancelable(false)

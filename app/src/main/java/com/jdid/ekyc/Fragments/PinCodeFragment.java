@@ -106,7 +106,6 @@ public class PinCodeFragment extends Fragment {
                         ((RegisterActivity)getActivity()).confirmPinRegister(mCodeView.getCode());
                         getActivity().finish();
                     } else if (mPinState==AUTHEN_PIN) {
-                        //TODO hide toolbar pin
                         ((JAppActivity)getActivity()).authenPinCode(mCodeView.getCode());
                     }
                 }
