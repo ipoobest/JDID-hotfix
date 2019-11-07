@@ -36,12 +36,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 
 import com.acs.smartcard.Features;
 import com.acs.smartcard.Reader;
 import com.acs.smartcard.ReaderException;
-import com.crashlytics.android.Crashlytics;
 import com.jdid.ekyc.Fragments.CardAcquireFragment;
 import com.jdid.ekyc.Fragments.CardInfoFragment;
 import com.jdid.ekyc.Fragments.ConfirmOTPRegisterFragment;
@@ -49,7 +47,6 @@ import com.jdid.ekyc.Fragments.ConfirmOTPRegisterUserFragment;
 import com.jdid.ekyc.Fragments.FaceCompareResultFragment;
 import com.jdid.ekyc.Fragments.FormFillFragment;
 import com.jdid.ekyc.Fragments.HomeFragment;
-import com.jdid.ekyc.Fragments.PhoneNumberDialogFragment;
 import com.jdid.ekyc.Fragments.PinCodeFragment;
 import com.jdid.ekyc.Fragments.SuccessFragment;
 import com.jdid.ekyc.Fragments.WaitForAuthoriseFragment;
@@ -67,12 +64,14 @@ import com.jdid.ekyc.repository.pojo.ResponseVerifyUser;
 import com.jdid.ekyc.repository.pojo.UserInformation;
 import com.jdid.ekyc.views.PFCodeView;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,8 +79,14 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Arrays;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
 
@@ -494,7 +499,7 @@ public class JAppActivity extends JCompatActivity {
             JSONObject result = new JSONObject();
             try {
                 result = _compareImage(Base64.encodeToString(byteImage, Base64.NO_WRAP),
-                        Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
+                        Base64.encodeToString(byteImage, Base64.NO_WRAP)); //TODO TEST THIS
             } catch (TimeoutException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -520,6 +525,7 @@ public class JAppActivity extends JCompatActivity {
             }
         }
     }
+
 
     private Bitmap convertImageViewToBitmap(ImageView v) {
         Bitmap bm = ((BitmapDrawable) v.getDrawable()).getBitmap();
@@ -671,28 +677,112 @@ public class JAppActivity extends JCompatActivity {
         });
     }
 
-    public void getUser(String id){
+    public void getUser(String id) {
         User service = RetrofitInstance.getRetrofitInstance().create(User.class);
         Call<UserInformation> call = service.getUser(id);
         call.enqueue(new Callback<UserInformation>() {
             @Override
             public void onResponse(Call<UserInformation> call, Response<UserInformation> response) {
-                if (response.isSuccessful() && response.code() == 200){
+                if (response.isSuccessful() && response.code() == 200) {
                     UserInformation result = response.body();
-                        //TODO GET ID AND COMPARE IMAGE
-
-                        // TODO convert IMAGE_UTL to String baer64
-
-                    }else {
-                        // TODO THOS ไม่พบ user ทำ ekyc มาก่อน
+                    String imageUrl = result.getPortraitUrl();
+//                    String image = getByteArrayFromURL(imageUrl);
+                    byte[] image = new byte[0];
+                    try {
+                        image = recoverImageFromUrl(imageUrl);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
+                    if (compareImageUrl(image)) {
+                        Toast.makeText(getAppContext(), "เหมี้ยนหมาา", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getAppContext(), "ไม่เหมียน", Toast.LENGTH_SHORT).show();
+
+                    }
+
+                } else {
+                    // TODO THOS ไม่พบ user ทำ ekyc มาก่อน
+                    Toast.makeText(getAppContext(), "user ทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
                 }
+            }
+
 
             @Override
             public void onFailure(Call<UserInformation> call, Throwable t) {
 
             }
         });
+    }
+
+    public byte[] recoverImageFromUrl(String urlText) throws Exception {
+        URL url = new URL(urlText);
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+        try (InputStream inputStream = url.openStream()) {
+            int n = 0;
+            byte [] buffer = new byte[ 1024 ];
+            while (-1 != (n = inputStream.read(buffer))) {
+                output.write(buffer, 0, n);
+            }
+        }
+
+        return output.toByteArray();
+    }
+
+
+    private boolean compareImageUrl(byte[] image) {
+        mProgressDialog = ProgressDialog.show(JAppActivity.this,
+                null, "กำลังส่ง OTP กรุณารอสักครู่", true, false);
+
+        String imageDB = Base64.encodeToString(byteImage, Base64.NO_WRAP);
+        String imageURL = Base64.encodeToString(image, Base64.NO_WRAP);
+//        String imageURL = image;
+        Log.d("compareImageUrl: xx ", imageURL + " " + image.getClass().getName());
+        Log.d("compareImageUrl: xx", imageDB + " " + imageDB.getClass().getName());
+        JSONObject result = new JSONObject();
+        try {
+            result = _compareImage(imageDB, imageURL);
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if ((result != null) && (result.toString().length() != 0)
+                    && (result.getInt("rtn") == 0 || result.getInt("rtn") == -6131)
+                    && (result.getInt("pair_verify_similarity") >= 95)) {
+
+            }
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+            return true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mProgressDialog.dismiss();
+        mProgressDialog = null;
+        return true;
+    }
+
+    private String getByteArrayFromImageURL(String url) {
+
+        try {
+            URL imageUrl = new URL(url);
+            URLConnection ucon = imageUrl.openConnection();
+            InputStream is = ucon.getInputStream();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int read = 0;
+            while ((read = is.read(buffer, 0, buffer.length)) != -1) {
+                baos.write(buffer, 0, read);
+            }
+            baos.flush();
+            return Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP);
+        } catch (Exception e) {
+            Log.d("Error", e.toString());
+        }
+        return null;
     }
 
     private void putUser(RequestPutUser requestPutUser) {

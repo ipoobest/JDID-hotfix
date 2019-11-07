@@ -92,7 +92,7 @@ public class CardInfoFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
-                if (((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP){
+                if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_DIP_CHIP){
                     ((JAppActivity) getActivity()).getUser(generalInformation[CID]);
                 }else {
                     ((JAppActivity) getActivity()).captureFragment();

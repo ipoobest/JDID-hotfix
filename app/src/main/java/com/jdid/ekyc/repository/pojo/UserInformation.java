@@ -63,7 +63,7 @@ public class UserInformation {
     private String photo;
     @SerializedName("portrait_url")
     @Expose
-    private Object portraitUrl;
+    private String portraitUrl;
     @SerializedName("verified")
     @Expose
     private Boolean verified;
@@ -235,11 +235,11 @@ public class UserInformation {
         this.photo = photo;
     }
 
-    public Object getPortraitUrl() {
+    public String getPortraitUrl() {
         return portraitUrl;
     }
 
-    public void setPortraitUrl(Object portraitUrl) {
+    public void setPortraitUrl(String portraitUrl) {
         this.portraitUrl = portraitUrl;
     }
 
