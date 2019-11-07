@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Path;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -90,7 +91,12 @@ public class CardInfoFragment extends Fragment {
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((JAppActivity) getActivity()).captureFragment();
+                if (((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP){
+                    // TODO THIS GET ID AND SEND IN GET USER
+                    ((JAppActivity) getActivity()).getUser();
+                }else {
+                    ((JAppActivity) getActivity()).captureFragment();
+                }
             }
         });
 

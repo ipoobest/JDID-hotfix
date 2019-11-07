@@ -64,6 +64,7 @@ import com.jdid.ekyc.repository.pojo.RequestCreateUser;
 import com.jdid.ekyc.repository.pojo.ResponVerifyPin;
 import com.jdid.ekyc.repository.pojo.ResponseCreateUser;
 import com.jdid.ekyc.repository.pojo.ResponseVerifyUser;
+import com.jdid.ekyc.repository.pojo.UserInformation;
 import com.jdid.ekyc.views.PFCodeView;
 
 import org.json.JSONException;
@@ -666,6 +667,29 @@ public class JAppActivity extends JCompatActivity {
             @Override
             public void onFailure(Call<ResponseCreateUser> call, Throwable t) {
                 Log.d("onFailure", t.toString());
+            }
+        });
+    }
+
+    public void getUser(String id){
+        User service = RetrofitInstance.getRetrofitInstance().create(User.class);
+        Call<UserInformation> call = service.getUser(id);
+        call.enqueue(new Callback<UserInformation>() {
+            @Override
+            public void onResponse(Call<UserInformation> call, Response<UserInformation> response) {
+                if (response.isSuccessful()){
+                    UserInformation result = response.body();
+                    if (response.code() == 200){
+                        //TODO GET ID AND COMPARE IMAGE
+                    }else {
+                        // TODO THOS ไม่พบ user ทำ ekyc มาก่อน
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserInformation> call, Throwable t) {
+
             }
         });
     }
