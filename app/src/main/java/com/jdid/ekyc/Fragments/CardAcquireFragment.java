@@ -74,13 +74,7 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
                 }
             }
         });
-//        btnBack = view.findViewById(R.id.btnBack);
-//        btnBack.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ((JAppActivity)getActivity()).showHomeFragment();
-//            }
-//        });
+
         tvInfo[0] = view.findViewById(R.id.txtLog1);
         tvInfo[0].setText("");
         tvInfo[1] = view.findViewById(R.id.txtLog2);

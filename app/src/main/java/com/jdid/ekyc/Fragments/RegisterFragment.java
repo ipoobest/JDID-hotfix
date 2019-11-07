@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -157,9 +158,13 @@ public class RegisterFragment extends Fragment {
     private final View.OnClickListener mOnButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            hideKeyboard();
-            ProcessVerifyDevice verify = new ProcessVerifyDevice();
-            verify.execute();
+            ((RegisterActivity) getActivity()).hideKeyboard();
+            if (finishedFormFill()){
+                ProcessVerifyDevice verify = new ProcessVerifyDevice();
+                verify.execute();
+            }else {
+                Toast.makeText(getContext(), "กรุณากรอกข้อมูลให้ครบทุกช่อง", Toast.LENGTH_LONG).show();
+            }
         }
 
 
@@ -214,9 +219,32 @@ public class RegisterFragment extends Fragment {
         return strReturn;
     }
 
-    private void hideKeyboard() {
-        InputMethodManager inputManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
-                0);
+    private boolean finishedFormFill() {
+        if (edPhone.getText().length()==0) {
+            edPhone.requestFocus();
+            return false;
+        }
+
+        if (edCompanyName.getText().length()==0) {
+            edCompanyName.requestFocus();
+            return false;
+        }
+        if (edName.getText().length()==0) {
+            edName.requestFocus();
+            return false;
+        }
+        if (edBranch.getText().length()==0) {
+            edBranch.requestFocus();
+            return false;
+        }
+        if (edPhone.getText().length()==0) {
+            edPhone.requestFocus();
+            return false;
+        }
+        if (edEmail.getText().length()==0) {
+            edEmail.requestFocus();
+            return false;
+        }
+        return true;
     }
 }

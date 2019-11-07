@@ -136,7 +136,7 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                hideKeyboard();
+                ((JAppActivity) getActivity()).hideKeyboard();
                 verifyUser(mId);
             }
 
@@ -145,10 +145,5 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
 
     }
 
-    private void hideKeyboard() {
-        InputMethodManager inputManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
-    }
 
 }

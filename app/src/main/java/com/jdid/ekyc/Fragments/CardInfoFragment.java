@@ -100,14 +100,6 @@ public class CardInfoFragment extends Fragment {
             }
         });
 
-//        btnBack = view.findViewById(R.id.btnBack);
-//        btnBack.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ((JAppActivity)getActivity()).acquireCardData(((JAppActivity)getActivity()).isVerifyPerson());
-//            }
-//        });
-
         imageFromCard = view.findViewById(R.id.imageFromCard);
         imageFromCard.setImageResource(R.drawable.ic_credit_card_black_24dp);
         byte[] byteImage = ((JAppActivity) getActivity()).getByteImage();

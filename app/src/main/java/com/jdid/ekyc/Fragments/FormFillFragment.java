@@ -226,7 +226,7 @@ public class FormFillFragment extends Fragment {
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY] = edWork.getText().toString();
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY_ADDRSS] = edWorkAddress.getText().toString();
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.INCOME] = edIncome.getText().toString();
-        hideKeyboard();
+        ((JAppActivity) getActivity()).hideKeyboard();
         ((JAppActivity)getActivity()).SaveInformation();
     }
 
@@ -245,7 +245,7 @@ public class FormFillFragment extends Fragment {
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY] = edWork.getText().toString();
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY_ADDRSS] = edWorkAddress.getText().toString();
         ((JAppActivity)getActivity()).fieldsList[JAppActivity.INCOME] = edIncome.getText().toString();
-        hideKeyboard();
+        ((JAppActivity) getActivity()).hideKeyboard();
         ((JAppActivity)getActivity()).showOTPVerifyFragment(VERIFY_EKYC);
     }
 
@@ -280,11 +280,6 @@ public class FormFillFragment extends Fragment {
             return false;
         }
         return true;
-    }
-    private void hideKeyboard() {
-        InputMethodManager inputManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     @Override

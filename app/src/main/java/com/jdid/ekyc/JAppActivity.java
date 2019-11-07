@@ -27,7 +27,9 @@ import android.provider.Settings;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -691,11 +693,13 @@ public class JAppActivity extends JCompatActivity {
                         String imageUrl = result.getPortraitUrl();
                         Log.d("onResponse: ",imageUrl);
                         byte[] image = new byte[0];
+
                         try {
                             image = recoverImageFromUrl(imageUrl);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+
                         if (compareImageUrl(image)) {
                             Toast.makeText(getAppContext(), "สำเร็จ", Toast.LENGTH_SHORT).show();
                             PutInformationForPerson();
@@ -741,7 +745,7 @@ public class JAppActivity extends JCompatActivity {
         String imageDB = Base64.encodeToString(byteImage, Base64.NO_WRAP);
         String imageURL = Base64.encodeToString(image, Base64.NO_WRAP);
 //        String imageURL = image;
-        Log.d("compareImageUrl: xx ", imageURL + " " + image.getClass().getName());
+        Log.d("ssss: xx ", imageURL + " " + image.getClass().getName());
         Log.d("compareImageUrl: xx", imageDB + " " + imageDB.getClass().getName());
         JSONObject result = new JSONObject();
         try {
@@ -1398,6 +1402,16 @@ public class JAppActivity extends JCompatActivity {
 
     /* ******************************************************* */
     /* ******************************************************* */
+
+    public void hideKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        View focusedView = getCurrentFocus();
+
+        if (focusedView != null) {
+            inputManager.hideSoftInputFromWindow(focusedView.getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
 
     private void alertDialogPhone() {
         new AlertDialog.Builder(this)
