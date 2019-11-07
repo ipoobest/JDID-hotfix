@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -99,9 +100,12 @@ public class FaceCompareResultFragment extends Fragment {
                             ((JAppActivity) getActivity()).showFormFillFragment();
                             break;
                         case VERIFY_PERSON:
-                            // TODO :: 1 Dialog Fragments
-                            PhoneNumberDialogFragment dialogFragment = new PhoneNumberDialogFragment();
-                            dialogFragment.show(getFragmentManager(), "PhoneNumberDialogFragment");
+                            // TODO :: PUT HERE
+//                            PhoneNumberDialogFragment dialogFragment = new PhoneNumberDialogFragment();
+//                            dialogFragment.show(getFragmentManager(), "PhoneNumberDialogFragment");
+//                            ((JAppActivity) getActivity()).showOTPVerifyFragment(VERIFY_PERSON);
+                            Toast.makeText(getContext(), "verify xxx", Toast.LENGTH_SHORT).show();
+                            ((JAppActivity) getActivity()).PutInformationForPerson();
                             break;
                         case VERIFY_DIP_CHIP:
                             ((JAppActivity) getActivity()).showOTPVerifyFragment(VERIFY_DIP_CHIP);

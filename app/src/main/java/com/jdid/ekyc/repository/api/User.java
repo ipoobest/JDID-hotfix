@@ -2,6 +2,7 @@ package com.jdid.ekyc.repository.api;
 
 import com.jdid.ekyc.repository.pojo.RequestOTPForVerify;
 import com.jdid.ekyc.repository.pojo.RequestCreateUser;
+import com.jdid.ekyc.repository.pojo.RequestPutUser;
 import com.jdid.ekyc.repository.pojo.ResponseVerifyUser;
 import com.jdid.ekyc.repository.pojo.ResponseCreateUser;
 
@@ -23,5 +24,10 @@ public interface User {
     @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
     @PUT("/user/verify/{id}")
     Call<ResponseVerifyUser> verifyUser(@Path("id") String id, @Body RequestOTPForVerify requestOTPForVerify);
+
+    @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
+    @PUT("/user/{id}")
+    Call<ResponseVerifyUser> editteUser(@Path("id") String id,@Body RequestPutUser user);
+
 
 }

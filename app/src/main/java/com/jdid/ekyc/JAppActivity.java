@@ -58,10 +58,12 @@ import com.jdid.ekyc.repository.RetrofitInstance;
 import com.jdid.ekyc.repository.api.User;
 import com.jdid.ekyc.repository.api.Device;
 import com.jdid.ekyc.repository.pojo.OtpRef;
+import com.jdid.ekyc.repository.pojo.RequestPutUser;
 import com.jdid.ekyc.repository.pojo.RequestVrifyPin;
 import com.jdid.ekyc.repository.pojo.RequestCreateUser;
 import com.jdid.ekyc.repository.pojo.ResponVerifyPin;
 import com.jdid.ekyc.repository.pojo.ResponseCreateUser;
+import com.jdid.ekyc.repository.pojo.ResponseVerifyUser;
 import com.jdid.ekyc.views.PFCodeView;
 
 import org.json.JSONException;
@@ -401,6 +403,7 @@ public class JAppActivity extends JCompatActivity {
         startActivityForResult(cameraIntent, IMAGE_CAPTURE_CODE);
     }
 
+    @SuppressLint("MissingSuperCall")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent resultIntent) {
         if ((resultCode == RESULT_OK) && (requestCode == IMAGE_CAPTURE_CODE)) {
@@ -632,9 +635,9 @@ public class JAppActivity extends JCompatActivity {
         createUser(request);
     }
 
-    public void SaveInformationForPerson(){
+    public void PutInformationForPerson(){
         String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        RequestCreateUser request = new RequestCreateUser();
+        RequestPutUser request = new RequestPutUser();
 
         request.setNameTh(generalInformation[THAIFULLNAME]);
         request.setNameEn(generalInformation[ENGLISHFULLNAME]);
@@ -643,17 +646,8 @@ public class JAppActivity extends JCompatActivity {
         request.setGender(generalInformation[GENDER]);
         request.setOfficialAddress(generalInformation[ADDRESS]);
         request.setNationality("Thai");
-        request.setContactNumber(mPhonePerson);
-        request.setPurpose(" ");
-        request.setCurrentAddress(" ");
-        request.setMariageStatus(" ");
-        request.setOccupation(" ");
-        request.setCompany(" ");
-        request.setCompanyAddress(" ");
-        request.setIncome(0.0);
         request.setVerifyBy(mStrDeviceID);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
-        //Create user
 //
 //        Log.d("phoneeeeexxx : ", mPhonePerson);
 //        Log.d("idddddd : ", request.getNameTh());
@@ -667,7 +661,7 @@ public class JAppActivity extends JCompatActivity {
 //        Log.d("idddddd : ", request.getIncome().toString());
 //        Log.d("idddddd : ", request.getVerifyBy());
 
-        createUser(request);
+        putUser(request);
 
     }
 
@@ -680,7 +674,6 @@ public class JAppActivity extends JCompatActivity {
                 if (response.isSuccessful()) {
                     ResponseCreateUser resutl = response.body();
                     if (resutl.getStatusCode() == 409){
-                        // TODO CHECK THis
                         if (isVerifyDipChip() == VERIFY_PERSON){
                             PhoneNumberDialogFragment dialogFragment = new PhoneNumberDialogFragment("หมายเลขนี้ถูกใช้แล้วกรุณา\nกรอกหมายเลขอื่น");
                             dialogFragment.show(getSupportFragmentManager(), "PhoneNumberDialogFragment");
@@ -702,6 +695,32 @@ public class JAppActivity extends JCompatActivity {
             @Override
             public void onFailure(Call<ResponseCreateUser> call, Throwable t) {
                 Log.d("onFailure", t.toString());
+            }
+        });
+    }
+
+    private void putUser(RequestPutUser requestPutUser){
+        User service = RetrofitInstance.getRetrofitInstance().create(User.class);
+        Call<ResponseVerifyUser> call = service.editteUser(requestPutUser.getId(), requestPutUser);
+        call.enqueue(new Callback<ResponseVerifyUser>() {
+            @Override
+            public void onResponse(Call<ResponseVerifyUser> call, Response<ResponseVerifyUser> response) {
+                if (response.isSuccessful()){
+                    if (response.code() == 404){
+                        Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
+                        alertDialogPutUser();
+                    } else {
+                        Toast.makeText(getAppContext(), "สำเร็จๆๆ", Toast.LENGTH_SHORT).show();
+                        successFragment();
+                    }
+                } else {
+                    Toast.makeText(getAppContext(), "ปปปปป", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseVerifyUser> call, Throwable t) {
+                Toast.makeText(getAppContext(), "ปปปหหหหหหปป", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -1317,6 +1336,19 @@ public class JAppActivity extends JCompatActivity {
                 .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         showFormFillFragment();
+                    }
+                })
+                .show();
+
+    }
+
+    private void alertDialogPutUser(){
+        new AlertDialog.Builder(this)
+                .setMessage("กรุณาทำ ekyc ก่อน")
+                .setCancelable(false)
+                .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        showHomeFragment();
                     }
                 })
                 .show();

@@ -204,9 +204,9 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     private void saveUser() {
         if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
             // TODO DIP CHIP
-//            ((JAppActivity) getActivity()).SaveInformationForPerson();
+//            ((JAppActivity) getActivity()).PutInformationForPerson();
         } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
-            ((JAppActivity) getActivity()).SaveInformationForPerson();
+            ((JAppActivity) getActivity()).PutInformationForPerson();
         } else {
             ((JAppActivity) getActivity()).SaveInformation();
 
