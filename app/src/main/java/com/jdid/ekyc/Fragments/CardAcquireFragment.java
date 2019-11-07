@@ -49,6 +49,8 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
     }
 
     private void initialize(View view) {
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         if (((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_EKYC) {
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
