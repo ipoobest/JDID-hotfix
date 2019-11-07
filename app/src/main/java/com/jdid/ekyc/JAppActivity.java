@@ -677,15 +677,16 @@ public class JAppActivity extends JCompatActivity {
         call.enqueue(new Callback<UserInformation>() {
             @Override
             public void onResponse(Call<UserInformation> call, Response<UserInformation> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful() && response.code() == 200){
                     UserInformation result = response.body();
-                    if (response.code() == 200){
                         //TODO GET ID AND COMPARE IMAGE
+
+                        // TODO convert IMAGE_UTL to String baer64
+
                     }else {
                         // TODO THOS ไม่พบ user ทำ ekyc มาก่อน
                     }
                 }
-            }
 
             @Override
             public void onFailure(Call<UserInformation> call, Throwable t) {
