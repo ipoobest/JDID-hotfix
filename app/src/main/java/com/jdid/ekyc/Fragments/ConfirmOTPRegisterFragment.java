@@ -138,7 +138,8 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 mProgressDialog = null;
                 if (response.isSuccessful()) {
                     if (response.body().getStatusCode() == 200) {
-                        saveUser();
+//                        saveUser();
+                        ((JAppActivity) getActivity()).SaveInformation();
                     } else {
                         Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
                     }
@@ -198,17 +199,6 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void saveUser() {
-        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
-            // TODO DIP CHIP
-//            ((JAppActivity) getActivity()).PutInformationForPerson();
-        } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
-            ((JAppActivity) getActivity()).PutInformationForPerson();
-        } else {
-            ((JAppActivity) getActivity()).SaveInformation();
-
-        }
-    }
 
     private void confirmBack() {
         new AlertDialog.Builder(getContext())

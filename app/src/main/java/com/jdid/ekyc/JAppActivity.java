@@ -498,7 +498,7 @@ public class JAppActivity extends JCompatActivity {
             JSONObject result = new JSONObject();
             try {
                 result = _compareImage(Base64.encodeToString(byteImage, Base64.NO_WRAP),
-                        Base64.encodeToString(byteImage, Base64.NO_WRAP)); //TODO TEST THIS
+                        Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
             } catch (TimeoutException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -574,6 +574,7 @@ public class JAppActivity extends JCompatActivity {
             String requestContent;
             requestContent = requestParams.toString();
 
+            // TODO : THIS
             OutputStream os = conn.getOutputStream();
             os.write(requestContent.getBytes());
             os.close();
@@ -684,23 +685,28 @@ public class JAppActivity extends JCompatActivity {
             public void onResponse(Call<UserInformation> call, Response<UserInformation> response) {
                 if (response.isSuccessful() && response.code() == 200) {
                     UserInformation result = response.body();
-                    String imageUrl = result.getPortraitUrl();
-                    byte[] image = new byte[0];
-                    try {
-                        image = recoverImageFromUrl(imageUrl);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    if (compareImageUrl(image)) {
-                        Toast.makeText(getAppContext(), "สำเร็จ", Toast.LENGTH_SHORT).show();
-                        PutInformationForPerson();
-                    } else {
-                        alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำราย ekyc ก่อน");
+                    if (result.getPortraitUrl() == null){
+                        alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำรายการ ekyc ก่อน");
+                    }else {
+                        String imageUrl = result.getPortraitUrl();
+                        Log.d("onResponse: ",imageUrl);
+                        byte[] image = new byte[0];
+                        try {
+                            image = recoverImageFromUrl(imageUrl);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        if (compareImageUrl(image)) {
+                            Toast.makeText(getAppContext(), "สำเร็จ", Toast.LENGTH_SHORT).show();
+                            PutInformationForPerson();
+                        } else {
+                            alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำ ekyc ก่อน");
+                        }
                     }
 
                 } else {
-                    Toast.makeText(getAppContext(), "ไม่สามารถยินยันได้ กรุณายทำราย ekyc ก่อน", Toast.LENGTH_SHORT).show();
-                    alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำราย ekyc ก่อน");
+                    Toast.makeText(getAppContext(), "ไม่สามารถยินยันได้ กรุณายทำ ekyc ก่อน", Toast.LENGTH_SHORT).show();
+                    alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำ ekyc ก่อน");
                 }
             }
 
@@ -760,7 +766,7 @@ public class JAppActivity extends JCompatActivity {
         }
         mProgressDialog.dismiss();
         mProgressDialog = null;
-        return true;
+        return false;
     }
 
     private void putUser(RequestPutUser requestPutUser) {
