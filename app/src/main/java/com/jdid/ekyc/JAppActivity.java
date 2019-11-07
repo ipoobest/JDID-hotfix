@@ -468,7 +468,6 @@ public class JAppActivity extends JCompatActivity {
                     }
                 } else {
                     Toast.makeText(getAppContext(), "รหัสผ่านผิดกรุณากรอกใหม่", Toast.LENGTH_SHORT).show();
-
                     showPinRegisterFragment();
                 }
             }
@@ -686,7 +685,6 @@ public class JAppActivity extends JCompatActivity {
                 if (response.isSuccessful() && response.code() == 200) {
                     UserInformation result = response.body();
                     String imageUrl = result.getPortraitUrl();
-//                    String image = getByteArrayFromURL(imageUrl);
                     byte[] image = new byte[0];
                     try {
                         image = recoverImageFromUrl(imageUrl);
@@ -694,15 +692,15 @@ public class JAppActivity extends JCompatActivity {
                         e.printStackTrace();
                     }
                     if (compareImageUrl(image)) {
-                        Toast.makeText(getAppContext(), "เหมี้ยนหมาา", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getAppContext(), "สำเร็จ", Toast.LENGTH_SHORT).show();
+                        PutInformationForPerson();
                     } else {
-                        Toast.makeText(getAppContext(), "ไม่เหมียน", Toast.LENGTH_SHORT).show();
-
+                        alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำราย ekyc ก่อน");
                     }
 
                 } else {
-                    // TODO THOS ไม่พบ user ทำ ekyc มาก่อน
-                    Toast.makeText(getAppContext(), "user ทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getAppContext(), "ไม่สามารถยินยันได้ กรุณายทำราย ekyc ก่อน", Toast.LENGTH_SHORT).show();
+                    alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำราย ekyc ก่อน");
                 }
             }
 
@@ -765,26 +763,6 @@ public class JAppActivity extends JCompatActivity {
         return true;
     }
 
-    private String getByteArrayFromImageURL(String url) {
-
-        try {
-            URL imageUrl = new URL(url);
-            URLConnection ucon = imageUrl.openConnection();
-            InputStream is = ucon.getInputStream();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int read = 0;
-            while ((read = is.read(buffer, 0, buffer.length)) != -1) {
-                baos.write(buffer, 0, read);
-            }
-            baos.flush();
-            return Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP);
-        } catch (Exception e) {
-            Log.d("Error", e.toString());
-        }
-        return null;
-    }
-
     private void putUser(RequestPutUser requestPutUser) {
         User service = RetrofitInstance.getRetrofitInstance().create(User.class);
         Call<ResponseVerifyUser> call = service.editteUser(requestPutUser.getId(), requestPutUser);
@@ -794,14 +772,14 @@ public class JAppActivity extends JCompatActivity {
                 if (response.isSuccessful()) {
                     if (response.code() == 404) {
                         Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
-                        alertDialogPutUser();
+                        alertDialogPutUser("กรุณาทำ ekyc มาก่อน");
                     } else {
                         Toast.makeText(getAppContext(), "ยืนยันสำเร็จ", Toast.LENGTH_SHORT).show();
                         successFragment();
                     }
                 } else {
                     Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
-                    alertDialogPutUser();
+                    alertDialogPutUser("กรุณาทำ ekyc มาก่อน");
                 }
             }
 
@@ -1428,9 +1406,9 @@ public class JAppActivity extends JCompatActivity {
 
     }
 
-    private void alertDialogPutUser() {
+    private void alertDialogPutUser(String text) {
         new AlertDialog.Builder(this)
-                .setMessage("กรุณาทำ ekyc ก่อน")
+                .setMessage(text)
                 .setCancelable(false)
                 .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -1440,6 +1418,7 @@ public class JAppActivity extends JCompatActivity {
                 .show();
 
     }
+
 
     @Override
     public void onBackPressed() {
