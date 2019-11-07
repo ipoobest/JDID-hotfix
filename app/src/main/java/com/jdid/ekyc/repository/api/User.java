@@ -5,9 +5,11 @@ import com.jdid.ekyc.repository.pojo.RequestCreateUser;
 import com.jdid.ekyc.repository.pojo.RequestPutUser;
 import com.jdid.ekyc.repository.pojo.ResponseVerifyUser;
 import com.jdid.ekyc.repository.pojo.ResponseCreateUser;
+import com.jdid.ekyc.repository.pojo.UserInformation;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -25,9 +27,14 @@ public interface User {
     @PUT("/user/verify/{id}")
     Call<ResponseVerifyUser> verifyUser(@Path("id") String id, @Body RequestOTPForVerify requestOTPForVerify);
 
+    // EDIT USER
     @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
     @PUT("/user/{id}")
     Call<ResponseVerifyUser> editteUser(@Path("id") String id,@Body RequestPutUser user);
 
+    //GET USRT
+    @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
+    @GET("/user/{id}")
+    Call<UserInformation> getUser(@Path("id") String id);
 
 }
