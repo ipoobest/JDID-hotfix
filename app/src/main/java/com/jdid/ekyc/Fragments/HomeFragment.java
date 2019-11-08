@@ -46,7 +46,9 @@ public class HomeFragment extends Fragment {
         view.findViewById(R.id.btnRegisterEKYC).setOnClickListener(mOnKeyClickListener);
         view.findViewById(R.id.btnVerifyPerson).setOnClickListener(mOnKeyClickListener);
         view.findViewById(R.id.btnVerifyDipChip).setOnClickListener(mOnKeyClickListener);
+        ((TextView)view.findViewById(R.id.tvAppVersion)).setText("อัพเดทเมื่อ " + ((JAppActivity)getActivity()).APP_DATE_UPDATE + "VERSION : " +((JAppActivity)getActivity()).APP_VERSION);
         ((TextView)view.findViewById(R.id.txtBranch)).setText("JDID สาขา "+((JAppActivity)getActivity()).mBranch);
+
 
     }
 
