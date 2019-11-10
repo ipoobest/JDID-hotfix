@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Path;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,6 +42,8 @@ public class CardInfoFragment extends Fragment {
     private static final int VERIFY_EKYC = 0;
     private static final int VERIFY_PERSON = 1;
     private static final int VERIFY_DIP_CHIP = 2;
+
+    private static final String TAG = "CardInforxxx : ";
 
     private ImageView imageFromCard;
     private EditText edCID;
@@ -104,13 +107,20 @@ public class CardInfoFragment extends Fragment {
         imageFromCard.setImageResource(R.drawable.ic_credit_card_black_24dp);
         byte[] byteImage = ((JAppActivity) getActivity()).getByteImage();
         Bitmap bm = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
-        DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager windowManager = (WindowManager) ((JAppActivity) getActivity()).getApplicationContext()
-                .getSystemService(Context.WINDOW_SERVICE);
-        windowManager.getDefaultDisplay().getMetrics(metrics);
-        imageFromCard.setMinimumHeight(metrics.heightPixels);
-        imageFromCard.setMinimumWidth(metrics.widthPixels);
-        imageFromCard.setImageBitmap(bm);
+        // todo:: fixed imageFormCard
+        if (bm == null){
+            alertDialogImageNull("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณา ถอดบัตร แล้วทำรายการใหม่อีกครั้ง");
+            btnNextStep.setEnabled(false);
+        }else {
+            Log.d(TAG, bm.toString());
+            DisplayMetrics metrics = new DisplayMetrics();
+            WindowManager windowManager = (WindowManager) ((JAppActivity) getActivity()).getApplicationContext()
+                    .getSystemService(Context.WINDOW_SERVICE);
+            windowManager.getDefaultDisplay().getMetrics(metrics);
+            imageFromCard.setMinimumHeight(metrics.heightPixels);
+            imageFromCard.setMinimumWidth(metrics.widthPixels);
+            imageFromCard.setImageBitmap(bm);
+        }
     }
 
     private void fillCardInformation() {
@@ -175,6 +185,19 @@ public class CardInfoFragment extends Fragment {
                 })
                 .setNegativeButton("ยกเลิก", null)
                 .show();
+    }
+
+    private void alertDialogImageNull(String text) {
+        new AlertDialog.Builder(getContext())
+                .setMessage(text)
+                .setCancelable(false)
+                .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ((JAppActivity) getActivity()).showHomeFragment();
+                    }
+                })
+                .show();
+
     }
 
 }
