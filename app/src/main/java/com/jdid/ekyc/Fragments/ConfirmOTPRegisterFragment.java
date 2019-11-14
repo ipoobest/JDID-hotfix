@@ -146,7 +146,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 } else {
                     response.errorBody();
                     Log.d("errrrr : ", response.errorBody().getClass().getName());
-                    Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "ผิดพลาด กรุณาติดต่อเจ้าหน้าที่", Toast.LENGTH_LONG).show();
                 }
             }
 
