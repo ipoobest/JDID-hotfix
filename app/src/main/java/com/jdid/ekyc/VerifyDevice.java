@@ -67,10 +67,10 @@ public class VerifyDevice extends AppCompatActivity {
         @Override
         protected void onPostExecute(JSONObject result) {
 
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
 
             if (result == null) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
                 finish();
                 return;
             }
@@ -102,10 +102,14 @@ public class VerifyDevice extends AppCompatActivity {
                     intent.putExtra("email", result.getString("email"));
                     intent.putExtra("from_register", false);
                     intent.putExtra("IMEI_VALIDATED", result.getBoolean("verified"));
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
                     startActivity(intent);
                 } else {
                     intent = new Intent(getApplicationContext(), RegisterActivity.class);
                     intent.putExtra("imei", mStrDeviceID);
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
                     startActivity(intent);
                 }
 

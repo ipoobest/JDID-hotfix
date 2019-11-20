@@ -1,5 +1,7 @@
 package com.jdid.ekyc.Fragments;
 
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,9 +11,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -43,7 +47,6 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
         final View view = inflater.inflate(R.layout.fragment_card_acquire, container, false);
         setHasOptionsMenu(true);
         initialize(view);
-
         ((JAppActivity) getActivity()).initializeCardReader();
         return view;
     }
@@ -150,4 +153,6 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }

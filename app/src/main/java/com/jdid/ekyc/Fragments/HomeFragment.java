@@ -1,11 +1,14 @@
 package com.jdid.ekyc.Fragments;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,6 +52,8 @@ public class HomeFragment extends Fragment {
         ((TextView)view.findViewById(R.id.tvAppVersion)).setText("อัพเดทเมื่อ " + ((JAppActivity)getActivity()).APP_DATE_UPDATE + "VERSION : " +((JAppActivity)getActivity()).APP_VERSION);
         ((TextView)view.findViewById(R.id.txtBranch)).setText(" JDID สาขา "+((JAppActivity)getActivity()).mBranch);
 
+        Log.d("hasUsbHostFeature: ", hasUsbHostFeature(getContext()) + "");
+
 
     }
 
@@ -82,5 +87,9 @@ public class HomeFragment extends Fragment {
             }
         }
     };
+
+    public static boolean hasUsbHostFeature(Context context) {
+        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_USB_HOST);
+    }
 
 }
