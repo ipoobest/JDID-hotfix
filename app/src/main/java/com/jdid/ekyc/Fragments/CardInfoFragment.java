@@ -152,6 +152,7 @@ public class CardInfoFragment extends Fragment {
     }
 
     private String parsingCID(String strCID) {
+        //TODO :: 2 this Attempt to invoke virtual method 'java.lang.String java.lang.String.substring(int, int)' on a null object reference
         String strReturn = strCID.substring(0, 1);
         strReturn += "-";
         strReturn += strCID.substring(1, 5);
@@ -160,7 +161,8 @@ public class CardInfoFragment extends Fragment {
         strReturn += "-";
         strReturn += strCID.substring(10, 12);
         strReturn += "-";
-        strReturn += strCID.substring(12, 13);
+        strReturn += strCID.substring(12);
+        Log.d( "parsingCID: ", strReturn);
         return strReturn;
     }
 
