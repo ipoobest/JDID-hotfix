@@ -60,6 +60,8 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
         }
     };
 
+    public ConfirmOTPRegisterUserFragment() { }
+
     public ConfirmOTPRegisterUserFragment(String id, String otpRef, String mPhone) {
         mId = id;
         mRef = otpRef;

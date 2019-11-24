@@ -976,6 +976,7 @@ public class JAppActivity extends JCompatActivity {
                 actionNum = Reader.CARD_WARM_RESET;
             }
             try {
+                //TODO : 1 ERROR this
                 atr = mReader.power(iSlotNum, actionNum);
             } catch (ReaderException e1) {
                 e1.printStackTrace();
