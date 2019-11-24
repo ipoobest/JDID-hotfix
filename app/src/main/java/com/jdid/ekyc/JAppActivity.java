@@ -100,8 +100,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.0.6";
-    public static final String APP_DATE_UPDATE = "14/11/62";
+    public static final String APP_VERSION = "release 1.0.7";
+    public static final String APP_DATE_UPDATE = "24/11/62";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -972,29 +972,42 @@ public class JAppActivity extends JCompatActivity {
         int activeProtocol = 0;
 
         if (iSlotNum >= 0) {
+            //TODO :: fix here
+            Log.d("vPowerOnCard: ", "1");
             if (actionNum < Reader.CARD_POWER_DOWN || actionNum > Reader.CARD_WARM_RESET) {
+                Log.d("vPowerOnCard: ", "1.1");
                 actionNum = Reader.CARD_WARM_RESET;
             }
             try {
-                //TODO : 1 ERROR this
+                Log.d("vPowerOnCard: ", "1.2");
                 atr = mReader.power(iSlotNum, actionNum);
             } catch (ReaderException e1) {
+                Log.d("vPowerOnCard: ", "2");
+
                 e1.printStackTrace();
             }
 
             if (atr != null) {
                 try {
+                    Log.d("vPowerOnCard: ", "3");
+
 //                    TextCard.setText(getHexString(atr, atr.length));
 //                    icoCard.setImageResource(R.drawable.ic_icc_on);
 //                    mSendAPDUButton.setEnabled(true);
                 } catch (Exception e) {
+                    Log.d("vPowerOnCard: ", "4");
+
                     e.printStackTrace();
                 }
             }
 
             try {
+                Log.d("vPowerOnCard: ", "5");
+
                 activeProtocol = mReader.setProtocol(iSlotNum, preferredProtocols);
             } catch (ReaderException e) {
+                Log.d("vPowerOnCard: ", "6");
+
                 e.printStackTrace();
             }
             String activeProtocolString = "Transmission Protocol ";

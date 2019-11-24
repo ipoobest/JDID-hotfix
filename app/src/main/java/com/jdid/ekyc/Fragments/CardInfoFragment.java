@@ -107,7 +107,6 @@ public class CardInfoFragment extends Fragment {
         imageFromCard.setImageResource(R.drawable.ic_credit_card_black_24dp);
         byte[] byteImage = ((JAppActivity) getActivity()).getByteImage();
         Bitmap bm = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
-        // todo:: fixed imageFormCard
         if (bm == null){
             alertDialogImageNull("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณา ถอดบัตร แล้วทำรายการใหม่อีกครั้ง");
             btnNextStep.setEnabled(false);
@@ -152,7 +151,6 @@ public class CardInfoFragment extends Fragment {
     }
 
     private String parsingCID(String strCID) {
-        //TODO :: 2 this Attempt to invoke virtual method 'java.lang.String java.lang.String.substring(int, int)' on a null object reference
         String strReturn = strCID.substring(0, 1);
         strReturn += "-";
         strReturn += strCID.substring(1, 5);
