@@ -163,7 +163,7 @@ public class FaceCompareResultFragment extends Fragment {
                 txtResultDescription.setText(R.string.compare_fail_description);
                 txtResultDescription.setTextColor(getResources().getColor(R.color.error_color));
                 txtScore.setText(score);
-                btnNextStep.setText(R.string.try_again);
+               btnNextStep.setText(R.string.try_again);
                 mfNextStep = false;
             }
         } catch (JSONException e) {
