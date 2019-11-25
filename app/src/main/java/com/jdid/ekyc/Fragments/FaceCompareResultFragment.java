@@ -99,8 +99,8 @@ public class FaceCompareResultFragment extends Fragment {
         imageFromCard.setMinimumWidth(metrics.widthPixels);
         imageFromCard.setImageBitmap(bm);
 
-//        checkResult();
-        checkResultBuidu(result);
+        checkResult();
+//        checkResultBuidu(result);
 
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,18 +148,21 @@ public class FaceCompareResultFragment extends Fragment {
     private void checkResult() {
         JSONObject result = ((JAppActivity) getActivity()).resultCompare;
         try {
+            String score = String.valueOf(result.getInt("pair_verify_similarity"));
             if ((result != null) && (result.toString().length() != 0)
                     && (result.getInt("rtn") == 0 || result.getInt("rtn") == -6131)
                     && (result.getInt("pair_verify_similarity") >= 95)) {
                 txtResult.setText(R.string.compare_success);
                 txtResultDescription.setText(R.string.compare_success_description);
                 txtResultDescription.setTextColor(getResources().getColor(R.color.success_color));
+                txtScore.setText(score);
                 btnNextStep.setText(R.string.next_step);
                 mfNextStep = true;
             } else {
                 txtResult.setText(R.string.compare_fail);
                 txtResultDescription.setText(R.string.compare_fail_description);
                 txtResultDescription.setTextColor(getResources().getColor(R.color.error_color));
+                txtScore.setText(score);
                 btnNextStep.setText(R.string.try_again);
                 mfNextStep = false;
             }

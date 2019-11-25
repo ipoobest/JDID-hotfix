@@ -447,9 +447,9 @@ public class JAppActivity extends JCompatActivity {
             }
 
             // Start image compare
-//            CompareImage compare = new CompareImage();
-//            compare.execute();
-            CompareImageBuidu();
+            CompareImage compare = new CompareImage();
+            compare.execute();
+//            CompareImageBuidu();
 
         }
     }
