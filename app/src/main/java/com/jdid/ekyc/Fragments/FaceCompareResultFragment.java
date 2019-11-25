@@ -38,9 +38,19 @@ public class FaceCompareResultFragment extends Fragment {
     private ImageView imageFromCam;
     private TextView txtResult;
     private TextView txtResultDescription;
+    private TextView txtScore;
     private Button btnNextStep;
     private byte[] byteImage;
     private boolean mfNextStep = false;
+
+    double result;
+
+
+    public FaceCompareResultFragment(){}
+
+    public FaceCompareResultFragment(double result){
+        this.result = result;
+    }
 
 
     @Nullable
@@ -71,8 +81,9 @@ public class FaceCompareResultFragment extends Fragment {
 
         btnNextStep = view.findViewById(R.id.btnNextStep);
 
-        txtResult = view.findViewById(R.id.txtResult);
+        txtResult = view.findViewById(R.id.tvResult);
         txtResultDescription = view.findViewById(R.id.txtResultDescription);
+        txtScore = view.findViewById(R.id.tvScore);
         imageFromCard = view.findViewById(R.id.imageFromCard);
         imageFromCam = view.findViewById(R.id.imageFromCam);
 
@@ -88,7 +99,8 @@ public class FaceCompareResultFragment extends Fragment {
         imageFromCard.setMinimumWidth(metrics.widthPixels);
         imageFromCard.setImageBitmap(bm);
 
-        checkResult();
+//        checkResult();
+        checkResultBuidu(result);
 
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,6 +124,25 @@ public class FaceCompareResultFragment extends Fragment {
             }
         });
 
+    }
+
+    private void checkResultBuidu(double result){
+        String re = String.valueOf(result);
+        if (result >= 70){
+            txtResult.setText(R.string.compare_success);
+            txtResultDescription.setText(R.string.compare_success_description);
+            txtScore.setText(re);
+            txtResultDescription.setTextColor(getResources().getColor(R.color.success_color));
+            btnNextStep.setText(R.string.next_step);
+            mfNextStep = true;
+        }else {
+            txtResult.setText(R.string.compare_fail);
+            txtResultDescription.setText(R.string.compare_fail_description);
+            txtResultDescription.setTextColor(getResources().getColor(R.color.error_color));
+            txtScore.setText(re);
+            btnNextStep.setText(R.string.try_again);
+            mfNextStep = false;
+        }
     }
 
     private void checkResult() {

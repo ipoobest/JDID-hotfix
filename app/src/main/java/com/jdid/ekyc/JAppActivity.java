@@ -53,27 +53,30 @@ import com.jdid.ekyc.Fragments.PinCodeFragment;
 import com.jdid.ekyc.Fragments.SuccessFragment;
 import com.jdid.ekyc.Fragments.WaitForAuthoriseFragment;
 import com.jdid.ekyc.base.JCompatActivity;
+import com.jdid.ekyc.repository.RetrofitFaceInstance;
 import com.jdid.ekyc.repository.RetrofitInstance;
+import com.jdid.ekyc.repository.api.FaceCompare;
 import com.jdid.ekyc.repository.api.User;
 import com.jdid.ekyc.repository.api.Device;
 import com.jdid.ekyc.repository.pojo.OtpRef;
+import com.jdid.ekyc.repository.pojo.RequestFaceCompare;
 import com.jdid.ekyc.repository.pojo.RequestPutUser;
 import com.jdid.ekyc.repository.pojo.RequestVrifyPin;
 import com.jdid.ekyc.repository.pojo.RequestCreateUser;
 import com.jdid.ekyc.repository.pojo.ResponVerifyPin;
 import com.jdid.ekyc.repository.pojo.ResponseCreateUser;
+import com.jdid.ekyc.repository.pojo.ResponseFaceCompare;
 import com.jdid.ekyc.repository.pojo.ResponseVerifyUser;
+import com.jdid.ekyc.repository.pojo.ResultFaceCompare;
 import com.jdid.ekyc.repository.pojo.UserInformation;
 import com.jdid.ekyc.views.PFCodeView;
 
-import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,14 +84,10 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 
@@ -332,6 +331,13 @@ public class JAppActivity extends JCompatActivity {
                 .replace(R.id.container_view, fragment).commit();
     }
 
+    public void showFaceCompareResult(double result) {
+        double score = result;
+        final FaceCompareResultFragment fragment = new FaceCompareResultFragment(score);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container_view, fragment).commit();
+    }
+
     public void showPinRegisterFragment() {
         _showPinRegisterFragment();
     }
@@ -433,14 +439,18 @@ public class JAppActivity extends JCompatActivity {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                 byteImageCam = stream.toByteArray();
+                Log.d( "onActivityResult:xxxxx", "xxxxxx");
+
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             // Start image compare
-            CompareImage compare = new CompareImage();
-            compare.execute();
+//            CompareImage compare = new CompareImage();
+//            compare.execute();
+            CompareImageBuidu();
+
         }
     }
 
@@ -488,9 +498,64 @@ public class JAppActivity extends JCompatActivity {
     }
 
     /* ******************************************************* */
+    /* Facial Compare baidu                                  */
+    /* ******************************************************* */
+    private void CompareImageBuidu() {
+        //TODO :: THIS xxxxxx
+        RequestFaceCompare image1 = new RequestFaceCompare();
+        RequestFaceCompare image2 = new RequestFaceCompare();
+        //image 1
+        image1.setImage(Base64.encodeToString(byteImage, Base64.NO_WRAP));
+        image1.setImageType("BASE64");
+        image1.setFaceType("LIVE");
+        image1.setQualityControl("LOW");
+        image1.setLivenessControl("NONE");
+
+//        image2
+        image2.setImage(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
+        image2.setImageType("BASE64");
+        image2.setFaceType("LIVE");
+        image2.setQualityControl("LOW");
+        image2.setLivenessControl("NONE");
+
+        ArrayList list = new ArrayList();
+        list.add(image1);
+        list.add(image2);
+        Log.d("CompareImageBuidu: ", list.toString());
+
+        FaceCompare service = RetrofitFaceInstance.getRetrofitInstance().create(FaceCompare.class);
+        Call<ResponseFaceCompare> call = service.faceCompare(list);
+        call.enqueue(new Callback<ResponseFaceCompare>() {
+            @Override
+            public void onResponse(Call<ResponseFaceCompare> call, Response<ResponseFaceCompare> response) {
+                if (response.isSuccessful()) {
+                    ResponseFaceCompare res = response.body();
+                    Log.d("onResponse:aaa ", res.getTimestamp().toString());
+                    ResultFaceCompare result = res.getResultFaceCompare();
+                    if (result.getScore() >= 50.00) {
+                        showFaceCompareResult(result.getScore());
+                        Log.d("onResponse:aaa ", "1");
+                    } else {
+                        Log.d("onResponse:aaa ", "1.1");
+                    }
+                } else {
+                    Log.d("onResponse:aaa ", "2");
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseFaceCompare> call, Throwable t) {
+                Log.d("onResponse:aaa ", "3");
+            }
+        });
+    }
+
+
+    /* ******************************************************* */
     /* Facial Compare Routine                                  */
     /* ******************************************************* */
-    private class CompareImage extends AsyncTask<Void, Void, JSONObject> {
+    class CompareImage extends AsyncTask<Void, Void, JSONObject> {
 
         @Override
         protected void onPreExecute() {
@@ -690,11 +755,11 @@ public class JAppActivity extends JCompatActivity {
             public void onResponse(Call<UserInformation> call, Response<UserInformation> response) {
                 if (response.isSuccessful() && response.code() == 200) {
                     UserInformation result = response.body();
-                    if (result.getPortraitUrl() == null){
+                    if (result.getPortraitUrl() == null) {
                         alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำรายการ ekyc ก่อน");
-                    }else {
+                    } else {
                         String imageUrl = result.getPortraitUrl();
-                        Log.d("onResponse: ",imageUrl);
+                        Log.d("onResponse: ", imageUrl);
                         byte[] image = new byte[0];
 
                         try {
@@ -731,7 +796,7 @@ public class JAppActivity extends JCompatActivity {
 
         try (InputStream inputStream = url.openStream()) {
             int n = 0;
-            byte [] buffer = new byte[ 1024 ];
+            byte[] buffer = new byte[1024];
             while (-1 != (n = inputStream.read(buffer))) {
                 output.write(buffer, 0, n);
             }
@@ -893,6 +958,7 @@ public class JAppActivity extends JCompatActivity {
                 mcardAcquireFragment.updateEventLog(true, false, "ติดตั้งเครื่องอ่านบัตรแล้ว");
             }
         }
+
     }
 
     public void initializeCardReader() {
@@ -1421,7 +1487,7 @@ public class JAppActivity extends JCompatActivity {
     /* ******************************************************* */
 
     public void hideKeyboard() {
-        InputMethodManager inputManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         View focusedView = getCurrentFocus();
 
         if (focusedView != null) {
