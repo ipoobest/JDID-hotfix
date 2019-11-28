@@ -55,6 +55,18 @@ public class RequestCreateUser {
     @SerializedName("photo")
     @Expose
     private String photo;
+    //TODO ::  THIS ADD parameter
+    @SerializedName("portrait_url")
+    @Expose
+    private String portraitUrl;
+
+    public String getPortraitUrl() {
+        return portraitUrl;
+    }
+
+    public void setPortraitUrl(String portraitUrl) {
+        this.portraitUrl = portraitUrl;
+    }
 
     public String getNameTh() {
         return nameTh;
