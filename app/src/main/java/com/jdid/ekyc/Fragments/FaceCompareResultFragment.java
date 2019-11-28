@@ -99,8 +99,8 @@ public class FaceCompareResultFragment extends Fragment {
         imageFromCard.setMinimumWidth(metrics.widthPixels);
         imageFromCard.setImageBitmap(bm);
 
-        checkResult();
-//        checkResultBuidu(result);
+//        checkResult();
+        checkResultBuidu(result);
 
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override

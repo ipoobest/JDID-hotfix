@@ -53,11 +53,14 @@ import com.jdid.ekyc.Fragments.PinCodeFragment;
 import com.jdid.ekyc.Fragments.SuccessFragment;
 import com.jdid.ekyc.Fragments.WaitForAuthoriseFragment;
 import com.jdid.ekyc.base.JCompatActivity;
+import com.jdid.ekyc.repository.RetrofitFaceCompare;
 import com.jdid.ekyc.repository.RetrofitFaceInstance;
 import com.jdid.ekyc.repository.RetrofitInstance;
 import com.jdid.ekyc.repository.api.FaceCompare;
 import com.jdid.ekyc.repository.api.User;
 import com.jdid.ekyc.repository.api.Device;
+import com.jdid.ekyc.repository.pojo.FaceCompareRequest;
+import com.jdid.ekyc.repository.pojo.FaceCompareResult;
 import com.jdid.ekyc.repository.pojo.OtpRef;
 import com.jdid.ekyc.repository.pojo.RequestFaceCompare;
 import com.jdid.ekyc.repository.pojo.RequestPutUser;
@@ -87,7 +90,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 
@@ -255,6 +257,8 @@ public class JAppActivity extends JCompatActivity {
 
     private String mAuthenPinCode;
 
+    public boolean resultComapreImage;
+    public int scoreCompareImage;
     Toolbar toolbar;
 
     @Override
@@ -439,17 +443,16 @@ public class JAppActivity extends JCompatActivity {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                 byteImageCam = stream.toByteArray();
-                Log.d( "onActivityResult:xxxxx", "xxxxxx");
+                Log.d("onActivityResult:xxxxx", "xxxxxx");
 
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            // Start image compare
-            CompareImage compare = new CompareImage();
-            compare.execute();
-//            CompareImageBuidu();
+            String imageDB = Base64.encodeToString(byteImage, Base64.NO_WRAP);
+            String imageCam = Base64.encodeToString(byteImageCam, Base64.NO_WRAP);
+            comPareImage(imageDB, imageCam);
 
         }
     }
@@ -551,6 +554,40 @@ public class JAppActivity extends JCompatActivity {
         });
     }
 
+    /* ******************************************************* */
+    /* Facial Compare baidu                                  */
+    /* ******************************************************* */
+    private void comPareImage(String imageDB, String imageCam){
+        //TODO :: fix here return true
+        FaceCompareRequest request = new FaceCompareRequest();
+        request.setDatabaseImageContent(imageDB);
+        request.setDatabaseImageType(101);
+        request.setQueryImageContent(imageCam);
+        request.setQueryImageType(301);
+        request.setTrueNegativeRate("99.9");
+        FaceCompare service = RetrofitFaceCompare.getRetrofitInstance().create(FaceCompare.class);
+        Call<FaceCompareResult> call = service.faceCompareBase(request);
+        call.enqueue(new Callback<FaceCompareResult>() {
+            @Override
+            public void onResponse(Call<FaceCompareResult> call, Response<FaceCompareResult> response) {
+                if (response.isSuccessful()){
+                    FaceCompareResult result1 = response.body();
+                    int score = result1.getPairVerifySimilarity();
+                    showFaceCompareResult(score);
+
+                }else {
+                    Log.d(TAG, "onResponse: sssssssss");
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FaceCompareResult> call, Throwable t) {
+                Log.d(TAG, "onFailure: " + t.toString());
+            }
+        });
+
+    }
 
     /* ******************************************************* */
     /* Facial Compare Routine                                  */
@@ -644,7 +681,6 @@ public class JAppActivity extends JCompatActivity {
             String requestContent;
             requestContent = requestParams.toString();
 
-            // TODO : THIS
             OutputStream os = conn.getOutputStream();
             os.write(requestContent.getBytes());
             os.close();
@@ -696,6 +732,7 @@ public class JAppActivity extends JCompatActivity {
         request.setIncome(income);
         request.setVerifyBy(mStrDeviceID);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
+        request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
 
         createUser(request);
 
@@ -714,6 +751,8 @@ public class JAppActivity extends JCompatActivity {
         request.setNationality("Thai");
         request.setVerifyBy(mStrDeviceID);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
+//        request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
+
 
         putUser(request);
     }
@@ -755,10 +794,16 @@ public class JAppActivity extends JCompatActivity {
             public void onResponse(Call<UserInformation> call, Response<UserInformation> response) {
                 if (response.isSuccessful() && response.code() == 200) {
                     UserInformation result = response.body();
-                    if (result.getPortraitUrl() == null) {
-                        alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำรายการ ekyc ก่อน");
-                    } else {
-                        String imageUrl = result.getPortraitUrl();
+                    /*TODO :: check this
+                    *
+                    * if request != null
+                    *   base64
+                    *    compareImage(imageบัตร, image ที่ดึงมาก)
+                    *        true -> PutInformationForPerson();
+                    *        false -> ไม่ผ่าน
+                    *
+                    *   url
+                    *   String imageUrl = result.getPortraitUrl();
                         Log.d("onResponse: ", imageUrl);
                         byte[] image = new byte[0];
 
@@ -774,11 +819,40 @@ public class JAppActivity extends JCompatActivity {
                         } else {
                             alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำ ekyc ก่อน");
                         }
-                    }
+                    *
+                    *
+                    * */
+                    String image = result.getPortraitUrl();
+                    if (image != null && image.length() >= 1000) {
+                        Log.d("onResponse:xxxxxxx ", image.length() + "");
+                        PutInformationForPerson();
+                        // TODO comare iamge
+//                        if (compareImageUrl(byteImage, image)){
+//                            PutInformationForPerson();
+//                        }else {
+//                            alertDialogPutUser("ไม่สาารถยืนยันได้เนื่องจากภาพไม่ตรง");
+//                        }
+                    } else if (image.length() <= 999) {
+                        Log.d("onResponse: ", image);
+                        Log.d("onResponse:xxxxxxx ", image.length() + "");
+                        byte[] imageFormUrl = new byte[0];
 
-                } else {
-                    Toast.makeText(getAppContext(), "ไม่สามารถยินยันได้ กรุณายทำ ekyc ก่อน", Toast.LENGTH_SHORT).show();
-                    alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำ ekyc ก่อน");
+                        try {
+                            imageFormUrl = recoverImageFromUrl(image);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        String imageURL = Base64.encodeToString(imageFormUrl, Base64.NO_WRAP);
+                        if (compareImageUrl(byteImage, imageURL)) {
+                            Toast.makeText(getAppContext(), "สำเร็จ", Toast.LENGTH_SHORT).show();
+                            PutInformationForPerson();
+                        } else {
+                            alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำลงทะเบียน jfin wallet มาก่อน");
+                        }
+                    } else {
+                        alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำลงทะเบียน jfin wallet มาก่อน");
+                    }
                 }
             }
 
@@ -789,6 +863,7 @@ public class JAppActivity extends JCompatActivity {
             }
         });
     }
+
 
     public byte[] recoverImageFromUrl(String urlText) throws Exception {
         URL url = new URL(urlText);
@@ -806,18 +881,18 @@ public class JAppActivity extends JCompatActivity {
     }
 
 
-    private boolean compareImageUrl(byte[] image) {
+    private boolean compareImageUrl(byte[] imageDb, String imageFormUrl) {
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
                 null, "กำลังส่ง OTP กรุณารอสักครู่", true, false);
 
-        String imageDB = Base64.encodeToString(byteImage, Base64.NO_WRAP);
-        String imageURL = Base64.encodeToString(image, Base64.NO_WRAP);
+        String imageDB = Base64.encodeToString(imageDb, Base64.NO_WRAP);
+//        String imageURL = Base64.encodeToString(imageFormUrl, Base64.NO_WRAP);
 //        String imageURL = image;
-        Log.d("ssss: xx ", imageURL + " " + image.getClass().getName());
+        Log.d("ssss: xx ", imageFormUrl + " " + imageFormUrl.getClass().getName());
         Log.d("compareImageUrl: xx", imageDB + " " + imageDB.getClass().getName());
         JSONObject result = new JSONObject();
         try {
-            result = _compareImage(imageDB, imageURL);
+            result = _compareImage(imageDB, imageFormUrl);
         } catch (TimeoutException e) {
             e.printStackTrace();
         } catch (IOException e) {
