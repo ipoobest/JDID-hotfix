@@ -127,10 +127,10 @@ public class FaceCompareResultFragment extends Fragment {
                             ((JAppActivity) getActivity()).showFormFillFragment();
                             break;
                         case VERIFY_PERSON:
-                            ((JAppActivity) getActivity()).PutInformationForPerson();
+                            ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_PERSON);
                             break;
                         case VERIFY_DIP_CHIP:
-                            ((JAppActivity) getActivity()).PutInformationForPerson();
+                            ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_DIP_CHIP);
                             break;
                     }
                 } else {

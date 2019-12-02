@@ -108,7 +108,7 @@ public class JAppActivity extends JCompatActivity {
     private static final int IMAGE_CAPTURE_CODE = 1001;
 
     private static final int VERIFY_PERSON = 1;
-
+    private static final int VERIFY_DIPCHIP = 2;
 
     private PFCodeView mCodeView;
 
@@ -648,10 +648,12 @@ public class JAppActivity extends JCompatActivity {
 
     }
 
-    public void PutInformationForPerson() {
+    public void PutInformationForPerson(int verify_type) {
         String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         RequestPutUser request = new RequestPutUser();
-
+        if (verify_type == VERIFY_PERSON){
+            request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
+        }
         request.setNameTh(generalInformation[THAIFULLNAME]);
         request.setNameEn(generalInformation[ENGLISHFULLNAME]);
         request.setBirthdate(generalInformation[BIRTH]);
@@ -661,8 +663,6 @@ public class JAppActivity extends JCompatActivity {
         request.setNationality("Thai");
         request.setVerifyBy(mStrDeviceID);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
-//        request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
-
 
         putUser(request);
     }
@@ -725,7 +725,7 @@ public class JAppActivity extends JCompatActivity {
                         String imageURL = Base64.encodeToString(imageFormUrl, Base64.NO_WRAP);
                         if (compareImageUrl(byteImage, imageURL)) {
                             Toast.makeText(getAppContext(), "สำเร็จ", Toast.LENGTH_SHORT).show();
-                            PutInformationForPerson();
+                            PutInformationForPerson(VERIFY_DIPCHIP);
                         } else {
                             alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำลงทะเบียน jfin wallet มาก่อน");
                         }
