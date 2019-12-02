@@ -23,12 +23,12 @@ import androidx.fragment.app.Fragment;
 
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
-import com.jdid.ekyc.repository.RetrofitInstance;
-import com.jdid.ekyc.repository.api.Admin;
-import com.jdid.ekyc.repository.pojo.RequestOTPForRegister;
-import com.jdid.ekyc.repository.pojo.RequestOTPForVerify;
-import com.jdid.ekyc.repository.pojo.ResponseOTPForRegister;
-import com.jdid.ekyc.repository.pojo.ResponseOTPForVerify;
+import com.jdid.ekyc.models.RetrofitInstance;
+import com.jdid.ekyc.models.api.Admin;
+import com.jdid.ekyc.models.pojo.RequestOTPForRegister;
+import com.jdid.ekyc.models.pojo.RequestOTPForVerify;
+import com.jdid.ekyc.models.pojo.ResponseOTPForRegister;
+import com.jdid.ekyc.models.pojo.ResponseOTPForVerify;
 
 import retrofit2.Call;
 import retrofit2.Callback;

@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -41,15 +42,18 @@ public class FaceCompareResultFragment extends Fragment {
     private TextView txtScore;
     private Button btnNextStep;
     private byte[] byteImage;
+    private String byteImageUrl;
     private boolean mfNextStep = false;
 
     double result;
 
 
-    public FaceCompareResultFragment(){}
+    public FaceCompareResultFragment() {
+    }
 
-    public FaceCompareResultFragment(double result){
+    public FaceCompareResultFragment(double result, String image) {
         this.result = result;
+        this.byteImageUrl = image;
     }
 
 
@@ -83,23 +87,34 @@ public class FaceCompareResultFragment extends Fragment {
 
         txtResult = view.findViewById(R.id.tvResult);
         txtResultDescription = view.findViewById(R.id.txtResultDescription);
-        txtScore = view.findViewById(R.id.tvScore);
+//        txtScore = view.findViewById(R.id.tvScore);
         imageFromCard = view.findViewById(R.id.imageFromCard);
         imageFromCam = view.findViewById(R.id.imageFromCam);
-
-        imageFromCam.setImageURI(((JAppActivity) getActivity()).imageUri);
         byteImage = ((JAppActivity) getActivity()).getByteImage();
         Bitmap bm = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
         DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager windowManager = (WindowManager) ((JAppActivity) getActivity()).getAppContext()
-                .getSystemService(((JAppActivity) getActivity()).getAppContext().WINDOW_SERVICE);
-        windowManager.getDefaultDisplay().getMetrics(metrics);
 
+
+        if (byteImageUrl != null) {
+            byte[] decodedString = Base64.decode(byteImageUrl, Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            imageFromCam.setImageBitmap(decodedByte);
+            imageFromCam.setMinimumHeight(metrics.heightPixels);
+            imageFromCam.setMinimumWidth(metrics.widthPixels);
+        } else {
+            imageFromCam = view.findViewById(R.id.imageFromCam);
+            imageFromCam.setImageURI(((JAppActivity) getActivity()).imageUri);
+            imageFromCam.setMinimumHeight(metrics.heightPixels);
+            imageFromCam.setMinimumWidth(metrics.widthPixels);
+        }
         imageFromCard.setMinimumHeight(metrics.heightPixels);
         imageFromCard.setMinimumWidth(metrics.widthPixels);
         imageFromCard.setImageBitmap(bm);
 
-//        checkResult();
+        WindowManager windowManager = (WindowManager) ((JAppActivity) getActivity()).getAppContext()
+                .getSystemService(((JAppActivity) getActivity()).getAppContext().WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(metrics);
+
         checkResultBuidu(result);
 
         btnNextStep.setOnClickListener(new View.OnClickListener() {
@@ -115,7 +130,7 @@ public class FaceCompareResultFragment extends Fragment {
                             ((JAppActivity) getActivity()).PutInformationForPerson();
                             break;
                         case VERIFY_DIP_CHIP:
-                            ((JAppActivity) getActivity()).showOTPVerifyFragment(VERIFY_DIP_CHIP);
+                            ((JAppActivity) getActivity()).PutInformationForPerson();
                             break;
                     }
                 } else {
@@ -126,50 +141,26 @@ public class FaceCompareResultFragment extends Fragment {
 
     }
 
-    private void checkResultBuidu(double result){
+    private void checkResultBuidu(double result) {
         String re = String.valueOf(result);
-        if (result >= 70){
+        if (result >= 70) {
             txtResult.setText(R.string.compare_success);
             txtResultDescription.setText(R.string.compare_success_description);
-            txtScore.setText(re);
+//            txtScore.setText(re);
             txtResultDescription.setTextColor(getResources().getColor(R.color.success_color));
             btnNextStep.setText(R.string.next_step);
             mfNextStep = true;
-        }else {
+        } else {
             txtResult.setText(R.string.compare_fail);
             txtResultDescription.setText(R.string.compare_fail_description);
             txtResultDescription.setTextColor(getResources().getColor(R.color.error_color));
-            txtScore.setText(re);
+//            txtScore.setText(re);
             btnNextStep.setText(R.string.try_again);
             mfNextStep = false;
         }
     }
 
-    private void checkResult() {
-        JSONObject result = ((JAppActivity) getActivity()).resultCompare;
-        try {
-            String score = String.valueOf(result.getInt("pair_verify_similarity"));
-            if ((result != null) && (result.toString().length() != 0)
-                    && (result.getInt("rtn") == 0 || result.getInt("rtn") == -6131)
-                    && (result.getInt("pair_verify_similarity") >= 95)) {
-                txtResult.setText(R.string.compare_success);
-                txtResultDescription.setText(R.string.compare_success_description);
-                txtResultDescription.setTextColor(getResources().getColor(R.color.success_color));
-                txtScore.setText(score);
-                btnNextStep.setText(R.string.next_step);
-                mfNextStep = true;
-            } else {
-                txtResult.setText(R.string.compare_fail);
-                txtResultDescription.setText(R.string.compare_fail_description);
-                txtResultDescription.setTextColor(getResources().getColor(R.color.error_color));
-                txtScore.setText(score);
-               btnNextStep.setText(R.string.try_again);
-                mfNextStep = false;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

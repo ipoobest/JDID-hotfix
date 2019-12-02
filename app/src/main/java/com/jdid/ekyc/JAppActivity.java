@@ -53,25 +53,25 @@ import com.jdid.ekyc.Fragments.PinCodeFragment;
 import com.jdid.ekyc.Fragments.SuccessFragment;
 import com.jdid.ekyc.Fragments.WaitForAuthoriseFragment;
 import com.jdid.ekyc.base.JCompatActivity;
-import com.jdid.ekyc.repository.RetrofitFaceCompare;
-import com.jdid.ekyc.repository.RetrofitFaceInstance;
-import com.jdid.ekyc.repository.RetrofitInstance;
-import com.jdid.ekyc.repository.api.FaceCompare;
-import com.jdid.ekyc.repository.api.User;
-import com.jdid.ekyc.repository.api.Device;
-import com.jdid.ekyc.repository.pojo.FaceCompareRequest;
-import com.jdid.ekyc.repository.pojo.FaceCompareResult;
-import com.jdid.ekyc.repository.pojo.OtpRef;
-import com.jdid.ekyc.repository.pojo.RequestFaceCompare;
-import com.jdid.ekyc.repository.pojo.RequestPutUser;
-import com.jdid.ekyc.repository.pojo.RequestVrifyPin;
-import com.jdid.ekyc.repository.pojo.RequestCreateUser;
-import com.jdid.ekyc.repository.pojo.ResponVerifyPin;
-import com.jdid.ekyc.repository.pojo.ResponseCreateUser;
-import com.jdid.ekyc.repository.pojo.ResponseFaceCompare;
-import com.jdid.ekyc.repository.pojo.ResponseVerifyUser;
-import com.jdid.ekyc.repository.pojo.ResultFaceCompare;
-import com.jdid.ekyc.repository.pojo.UserInformation;
+import com.jdid.ekyc.models.RetrofitFaceCompare;
+import com.jdid.ekyc.models.RetrofitFaceInstance;
+import com.jdid.ekyc.models.RetrofitInstance;
+import com.jdid.ekyc.models.api.FaceCompare;
+import com.jdid.ekyc.models.api.User;
+import com.jdid.ekyc.models.api.Device;
+import com.jdid.ekyc.models.pojo.FaceCompareRequest;
+import com.jdid.ekyc.models.pojo.FaceCompareResult;
+import com.jdid.ekyc.models.pojo.OtpRef;
+import com.jdid.ekyc.models.pojo.RequestFaceCompare;
+import com.jdid.ekyc.models.pojo.RequestPutUser;
+import com.jdid.ekyc.models.pojo.RequestVrifyPin;
+import com.jdid.ekyc.models.pojo.RequestCreateUser;
+import com.jdid.ekyc.models.pojo.ResponVerifyPin;
+import com.jdid.ekyc.models.pojo.ResponseCreateUser;
+import com.jdid.ekyc.models.pojo.ResponseFaceCompare;
+import com.jdid.ekyc.models.pojo.ResponseVerifyUser;
+import com.jdid.ekyc.models.pojo.ResultFaceCompare;
+import com.jdid.ekyc.models.pojo.UserInformation;
 import com.jdid.ekyc.views.PFCodeView;
 
 import org.json.JSONException;
@@ -335,12 +335,13 @@ public class JAppActivity extends JCompatActivity {
                 .replace(R.id.container_view, fragment).commit();
     }
 
-    public void showFaceCompareResult(double result) {
+    public void showFaceCompareResult(double result, String image) {
         double score = result;
-        final FaceCompareResultFragment fragment = new FaceCompareResultFragment(score);
+        final FaceCompareResultFragment fragment = new FaceCompareResultFragment(score, image);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container_view, fragment).commit();
     }
+
 
     public void showPinRegisterFragment() {
         _showPinRegisterFragment();
@@ -500,69 +501,17 @@ public class JAppActivity extends JCompatActivity {
 
     }
 
-    /* ******************************************************* */
-    /* Facial Compare baidu                                  */
-    /* ******************************************************* */
-    private void CompareImageBuidu() {
-        //TODO :: THIS xxxxxx
-        RequestFaceCompare image1 = new RequestFaceCompare();
-        RequestFaceCompare image2 = new RequestFaceCompare();
-        //image 1
-        image1.setImage(Base64.encodeToString(byteImage, Base64.NO_WRAP));
-        image1.setImageType("BASE64");
-        image1.setFaceType("LIVE");
-        image1.setQualityControl("LOW");
-        image1.setLivenessControl("NONE");
 
-//        image2
-        image2.setImage(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
-        image2.setImageType("BASE64");
-        image2.setFaceType("LIVE");
-        image2.setQualityControl("LOW");
-        image2.setLivenessControl("NONE");
-
-        ArrayList list = new ArrayList();
-        list.add(image1);
-        list.add(image2);
-        Log.d("CompareImageBuidu: ", list.toString());
-
-        FaceCompare service = RetrofitFaceInstance.getRetrofitInstance().create(FaceCompare.class);
-        Call<ResponseFaceCompare> call = service.faceCompare(list);
-        call.enqueue(new Callback<ResponseFaceCompare>() {
-            @Override
-            public void onResponse(Call<ResponseFaceCompare> call, Response<ResponseFaceCompare> response) {
-                if (response.isSuccessful()) {
-                    ResponseFaceCompare res = response.body();
-                    Log.d("onResponse:aaa ", res.getTimestamp().toString());
-                    ResultFaceCompare result = res.getResultFaceCompare();
-                    if (result.getScore() >= 50.00) {
-                        showFaceCompareResult(result.getScore());
-                        Log.d("onResponse:aaa ", "1");
-                    } else {
-                        Log.d("onResponse:aaa ", "1.1");
-                    }
-                } else {
-                    Log.d("onResponse:aaa ", "2");
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseFaceCompare> call, Throwable t) {
-                Log.d("onResponse:aaa ", "3");
-            }
-        });
-    }
 
     /* ******************************************************* */
-    /* Facial Compare baidu                                  */
+    /* Facial comPareImage                                */
     /* ******************************************************* */
     private void comPareImage(String imageDB, String imageCam){
-        //TODO :: fix here return true
+        final String imageQuery = imageCam;
         FaceCompareRequest request = new FaceCompareRequest();
         request.setDatabaseImageContent(imageDB);
         request.setDatabaseImageType(101);
-        request.setQueryImageContent(imageCam);
+        request.setQueryImageContent(imageQuery);
         request.setQueryImageType(301);
         request.setTrueNegativeRate("99.9");
         FaceCompare service = RetrofitFaceCompare.getRetrofitInstance().create(FaceCompare.class);
@@ -571,10 +520,14 @@ public class JAppActivity extends JCompatActivity {
             @Override
             public void onResponse(Call<FaceCompareResult> call, Response<FaceCompareResult> response) {
                 if (response.isSuccessful()){
-                    FaceCompareResult result1 = response.body();
-                    int score = result1.getPairVerifySimilarity();
-                    showFaceCompareResult(score);
-
+//                    if ((result != null) && (result.toString().length() != 0)
+//                            && (result.getInt("rtn") == 0 || result.getInt("rtn") == -6131)
+//                            && (result.getInt("pair_verify_similarity") >= 95)) {
+//
+//                    }
+                    FaceCompareResult result = response.body();
+                    int score = result.getPairVerifySimilarity();
+                    showFaceCompareResult(score,imageQuery);
                 }else {
                     Log.d(TAG, "onResponse: sssssssss");
 
@@ -587,49 +540,6 @@ public class JAppActivity extends JCompatActivity {
             }
         });
 
-    }
-
-    /* ******************************************************* */
-    /* Facial Compare Routine                                  */
-    /* ******************************************************* */
-    class CompareImage extends AsyncTask<Void, Void, JSONObject> {
-
-        @Override
-        protected void onPreExecute() {
-            mProgressDialog = ProgressDialog.show(JAppActivity.this,
-                    null, "กำลังทำการเปรียบเทียบข้อมูล กรุณารอสักครู่", true, false);
-        }
-
-        @Override
-        protected JSONObject doInBackground(Void... voids) {
-            JSONObject result = new JSONObject();
-            try {
-                result = _compareImage(Base64.encodeToString(byteImage, Base64.NO_WRAP),
-                        Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
-            } catch (TimeoutException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject result) {
-            resultCompare = result;
-            try {
-                if ((result != null) && (result.toString().length() != 0)
-                        && (result.getInt("rtn") == 0 || result.getInt("rtn") == -6131)
-                        && (result.getInt("pair_verify_similarity") >= 95)) {
-
-                }
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
-                showFaceCompareResult();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
 
@@ -794,44 +704,13 @@ public class JAppActivity extends JCompatActivity {
             public void onResponse(Call<UserInformation> call, Response<UserInformation> response) {
                 if (response.isSuccessful() && response.code() == 200) {
                     UserInformation result = response.body();
-                    /*TODO :: check this
-                    *
-                    * if request != null
-                    *   base64
-                    *    compareImage(imageบัตร, image ที่ดึงมาก)
-                    *        true -> PutInformationForPerson();
-                    *        false -> ไม่ผ่าน
-                    *
-                    *   url
-                    *   String imageUrl = result.getPortraitUrl();
-                        Log.d("onResponse: ", imageUrl);
-                        byte[] image = new byte[0];
-
-                        try {
-                            image = recoverImageFromUrl(imageUrl);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        if (compareImageUrl(image)) {
-                            Toast.makeText(getAppContext(), "สำเร็จ", Toast.LENGTH_SHORT).show();
-                            PutInformationForPerson();
-                        } else {
-                            alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำ ekyc ก่อน");
-                        }
-                    *
-                    *
-                    * */
+                    String imageDB = Base64.encodeToString(byteImage, Base64.NO_WRAP);
                     String image = result.getPortraitUrl();
+
                     if (image != null && image.length() >= 1000) {
-                        Log.d("onResponse:xxxxxxx ", image.length() + "");
-                        PutInformationForPerson();
-                        // TODO comare iamge
-//                        if (compareImageUrl(byteImage, image)){
-//                            PutInformationForPerson();
-//                        }else {
-//                            alertDialogPutUser("ไม่สาารถยืนยันได้เนื่องจากภาพไม่ตรง");
-//                        }
+//                        Log.d("onResponse:xxxxxxx ", image.length() + "");
+                        comPareImage(imageDB,image);
+//
                     } else if (image.length() <= 999) {
                         Log.d("onResponse: ", image);
                         Log.d("onResponse:xxxxxxx ", image.length() + "");
@@ -1113,7 +992,6 @@ public class JAppActivity extends JCompatActivity {
         int activeProtocol = 0;
 
         if (iSlotNum >= 0) {
-            //TODO :: fix here
             Log.d("vPowerOnCard: ", "1");
             if (actionNum < Reader.CARD_POWER_DOWN || actionNum > Reader.CARD_WARM_RESET) {
                 Log.d("vPowerOnCard: ", "1.1");
