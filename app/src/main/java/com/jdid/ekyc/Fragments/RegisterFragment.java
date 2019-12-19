@@ -1,8 +1,6 @@
 package com.jdid.ekyc.Fragments;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,15 +10,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
 import com.jdid.ekyc.RegisterActivity;
 
@@ -40,11 +40,13 @@ public class RegisterFragment extends Fragment {
     private ProgressDialog mProgressDialog;
 
     private String imei;
-    private EditText edCompanyName;
+    private Spinner spCompanyName;
     private EditText edName;
     private EditText edBranch;
     private EditText edPhone;
     private EditText edEmail;
+    String company;
+
 
 
     /* ******************************************************* */
@@ -76,7 +78,7 @@ public class RegisterFragment extends Fragment {
             if (result!=null) {
                 try {
                     if (result.getString("created_at").length()>0) {
-                        ((RegisterActivity)getActivity()).mCompanyName = edCompanyName.getText().toString();
+                        ((RegisterActivity)getActivity()).mCompanyName = company;
                         ((RegisterActivity)getActivity()).mName = edName.getText().toString();
                         ((RegisterActivity)getActivity()).mBranch = edBranch.getText().toString();
                         ((RegisterActivity)getActivity()).mPhone = edPhone.getText().toString();
@@ -106,7 +108,7 @@ public class RegisterFragment extends Fragment {
         JSONObject requestParams = new JSONObject();
         try {
             requestParams.put("imei", this.imei);
-            requestParams.put("company", edCompanyName.getText().toString());
+            requestParams.put("company", company);
             requestParams.put("name_th", edName.getText().toString());
             requestParams.put("branch", edBranch.getText().toString());
             requestParams.put("phone_no", edPhone.getText().toString());
@@ -189,11 +191,33 @@ public class RegisterFragment extends Fragment {
             imei = Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
         }
         ((EditText)view.findViewById(R.id.edDeviceID)).setText(formatImei(imei));
-        edCompanyName = view.findViewById(R.id.edCompanyName);
+        spCompanyName = view.findViewById(R.id.spCompanyName);
         edName = view.findViewById(R.id.edName);
         edBranch = view.findViewById(R.id.edBranch);
         edPhone = view.findViewById(R.id.edPhone);
         edEmail = view.findViewById(R.id.edEMail);
+
+        //spCompanyName
+        final String[] companyName = getResources().getStringArray(R.array.companyList);
+        ArrayAdapter<String> spComAdapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, companyName);
+        spCompanyName.setAdapter(spComAdapter);
+
+        spCompanyName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                Toast.makeText(getContext(),
+//                        "Select : " + companyName[position],
+//                        Toast.LENGTH_SHORT).show();
+
+                company = companyName[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
     }
 
@@ -225,8 +249,8 @@ public class RegisterFragment extends Fragment {
             return false;
         }
 
-        if (edCompanyName.getText().length()==0) {
-            edCompanyName.requestFocus();
+        if (spCompanyName == null) {
+            spCompanyName.requestFocus();
             return false;
         }
         if (edName.getText().length()==0) {

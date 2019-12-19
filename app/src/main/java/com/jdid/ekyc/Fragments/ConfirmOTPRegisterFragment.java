@@ -42,10 +42,12 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     private ProgressDialog mProgressDialog;
     private EditText edOTP;
     private TextView txtOTPREF;
+    private TextView tvResend;
     private Button btnNextStep;
     private String mPhoneNumber;
     private String mPhonePerson;
     private String mRef;
+
     private final TextWatcher mTextEditorWatcher = new TextWatcher() {
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
         }
@@ -68,6 +70,73 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     }
 
     /* ******************************************************* */
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_otp_register, container, false);
+        setHasOptionsMenu(true);
+        mPhoneNumber = ((JAppActivity) getActivity()).fieldsList[JAppActivity.CONTACT_NUMBER];
+        Log.d( "mPhoneNumber xxx ::: ", mPhoneNumber);
+        setupUI(view);
+        requestOTP();
+        return view;
+    }
+
+    private void setupUI(View view) {
+        // Toolbar
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Confirm OTP");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        btnNextStep = view.findViewById(R.id.btnNextStep);
+        btnNextStep.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                verifyOTP();
+            }
+        });
+        btnNextStep.setEnabled(false);
+        edOTP = view.findViewById(R.id.edOTP);
+        edOTP.addTextChangedListener(mTextEditorWatcher);
+        txtOTPREF = view.findViewById(R.id.tvOtpRef);
+        tvResend = view.findViewById(R.id.tvResend);
+        tvResend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO :: request OTP
+                requestOTP();
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            confirmBack();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private void confirmBack() {
+        new AlertDialog.Builder(getContext())
+                .setMessage("ต้องการรยกเลิกการทำรายการหรือไม่")
+                .setCancelable(false)
+                .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
+                            ((JAppActivity) getActivity()).showCardInformation();
+                        } else {
+                            ((JAppActivity) getActivity()).showFormFillFragment();
+                        }
+                    }
+                })
+                .setNegativeButton("ยกเลิก", null)
+                .show();
+    }
+
 
     private void requestOTP() {
         mProgressDialog = ProgressDialog.show(getActivity(),
@@ -93,6 +162,8 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                     mProgressDialog = null;
                     ResponseOTPForRegister result = response.body();
                     String otpRef = result.getOtpRef().getOtpRef();
+                    //TODO FIX THIS
+//                    Log.d("onResponsexxx: ",otpRef);
                     txtOTPREF.setText("OTP Ref : " + otpRef);
                     mRef = otpRef;
                 } else {
@@ -141,11 +212,12 @@ public class ConfirmOTPRegisterFragment extends Fragment {
 //                        saveUser();
                         ((JAppActivity) getActivity()).SaveInformation();
                     } else {
+                        Log.d("res bodyxx: ", "xxxxxxxx");
                         Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
                     }
                 } else {
                     response.errorBody();
-                    Log.d("errrrr : ", response.errorBody().getClass().getName());
+                    Log.d("error : ", response.errorBody().getClass().getName());
                     Toast.makeText(getContext(), "ผิดพลาด กรุณาติดต่อเจ้าหน้าที่", Toast.LENGTH_LONG).show();
                 }
             }
@@ -160,60 +232,4 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         });
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_otp_register, container, false);
-        setHasOptionsMenu(true);
-        mPhoneNumber = ((JAppActivity) getActivity()).fieldsList[JAppActivity.CONTACT_NUMBER];
-        setupUI(view);
-        requestOTP();
-        return view;
-    }
-
-    private void setupUI(View view) {
-        // Toolbar
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Confirm OTP");
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        btnNextStep = view.findViewById(R.id.btnNextStep);
-        btnNextStep.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                verifyOTP();
-            }
-        });
-        btnNextStep.setEnabled(false);
-        edOTP = view.findViewById(R.id.edOTP);
-        edOTP.addTextChangedListener(mTextEditorWatcher);
-        txtOTPREF = view.findViewById(R.id.txtOTPREF);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            confirmBack();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    private void confirmBack() {
-        new AlertDialog.Builder(getContext())
-                .setMessage("ต้องการรยกเลิกการทำรายการหรือไม่")
-                .setCancelable(false)
-                .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
-                            ((JAppActivity) getActivity()).showCardInformation();
-                        } else {
-                            ((JAppActivity) getActivity()).showFormFillFragment();
-                        }
-                    }
-                })
-                .setNegativeButton("ยกเลิก", null)
-                .show();
-    }
 }

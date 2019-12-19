@@ -101,8 +101,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.0.7";
-    public static final String APP_DATE_UPDATE = "24/11/62";
+    public static final String APP_VERSION = "release 1.0.9";
+    public static final String APP_DATE_UPDATE = "18/12/62";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -236,7 +236,8 @@ public class JAppActivity extends JCompatActivity {
     public final static int COMPANY = 5;
     public final static int COMPANY_ADDRSS = 6;
     public final static int INCOME = 7;
-    public final static int MAX_FORM_FIELDS = 8;
+    public final static int REF_COMPANY = 8;
+    public final static int MAX_FORM_FIELDS = 9;
     public String[] fieldsList = new String[MAX_FORM_FIELDS];
 
     //registration information
@@ -641,6 +642,7 @@ public class JAppActivity extends JCompatActivity {
         request.setCompanyAddress(fieldsList[COMPANY_ADDRSS]);
         request.setIncome(income);
         request.setVerifyBy(mStrDeviceID);
+        request.setReferBy(fieldsList[REF_COMPANY]);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
         request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
 
@@ -654,15 +656,21 @@ public class JAppActivity extends JCompatActivity {
         if (verify_type == VERIFY_PERSON){
             request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
         }
+        if (fieldsList[REF_COMPANY] == null){
+            fieldsList[JAppActivity.REF_COMPANY] = "บริษัท เจ ฟินเทค จำกัด";
+        }
         request.setNameTh(generalInformation[THAIFULLNAME]);
         request.setNameEn(generalInformation[ENGLISHFULLNAME]);
         request.setBirthdate(generalInformation[BIRTH]);
         request.setId(generalInformation[CID]);
         request.setGender(generalInformation[GENDER]);
         request.setOfficialAddress(generalInformation[ADDRESS]);
+        request.setReferBy(fieldsList[REF_COMPANY]);
         request.setNationality("Thai");
         request.setVerifyBy(mStrDeviceID);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
+
+        Log.d("PutInformation : ", fieldsList[REF_COMPANY]);
 
         putUser(request);
     }
@@ -697,21 +705,29 @@ public class JAppActivity extends JCompatActivity {
     }
 
     public void getUser(String id) {
+        Log.d("getUser: ", "callllthis");
         User service = RetrofitInstance.getRetrofitInstance().create(User.class);
         Call<UserInformation> call = service.getUser(id);
         call.enqueue(new Callback<UserInformation>() {
             @Override
             public void onResponse(Call<UserInformation> call, Response<UserInformation> response) {
+                Log.d("getUser: ", "00000000000000000001");
+
                 if (response.isSuccessful() && response.code() == 200) {
+                    Log.d("getUser: ", "00000000000000000002");
+
                     UserInformation result = response.body();
                     String imageDB = Base64.encodeToString(byteImage, Base64.NO_WRAP);
                     String image = result.getPortraitUrl();
 
                     if (image != null && image.length() >= 1000) {
+                        Log.d("getUser: ", "1");
+
 //                        Log.d("onResponse:xxxxxxx ", image.length() + "");
                         comPareImage(imageDB,image);
 //
                     } else if (image.length() <= 999) {
+                        Log.d("getUser: ", "2");
                         Log.d("onResponse: ", image);
                         Log.d("onResponse:xxxxxxx ", image.length() + "");
                         byte[] imageFormUrl = new byte[0];
@@ -727,18 +743,21 @@ public class JAppActivity extends JCompatActivity {
                             Toast.makeText(getAppContext(), "สำเร็จ", Toast.LENGTH_SHORT).show();
                             PutInformationForPerson(VERIFY_DIPCHIP);
                         } else {
-                            alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำลงทะเบียน jfin wallet มาก่อน");
+                            alertDialogPutUser("ไม่พบข้อมูลท่านในระบบกรุณาทำการยืนยันตัวตนใน ระบบ ekyc ก่อน\"");
                         }
-                    } else {
-                        alertDialogPutUser("ไม่สามารถยินยันได้ กรุณายทำลงทะเบียน jfin wallet มาก่อน");
                     }
+                }
+                else {
+                    Log.d("getUser: ", "xxxxxx3");
+                    alertDialogPutUser("ไม่พบข้อมูลท่านในระบบกรุณาทำการยืนยันตัวตนใน ระบบ ekyc ก่อน");
                 }
             }
 
 
             @Override
             public void onFailure(Call<UserInformation> call, Throwable t) {
-
+                Log.d("getUser: ", "4");
+                Log.d("onResponse: ", "exxxxxxxxxxxxxxx");
             }
         });
     }

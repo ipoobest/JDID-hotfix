@@ -38,6 +38,18 @@ public class RequestPutUser {
     @Expose
     private String portraitUrl;
 
+    @SerializedName("refer_by")
+    @Expose
+    private String referBy;
+
+    public String getReferBy() {
+        return referBy;
+    }
+
+    public void setReferBy(String referBy) {
+        this.referBy = referBy;
+    }
+
     public String getPortraitUrl() {
         return portraitUrl;
     }

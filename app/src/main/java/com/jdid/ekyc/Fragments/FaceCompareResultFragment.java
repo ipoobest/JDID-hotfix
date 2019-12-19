@@ -11,8 +11,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,9 +47,11 @@ public class FaceCompareResultFragment extends Fragment {
     private byte[] byteImage;
     private String byteImageUrl;
     private boolean mfNextStep = false;
+    private Spinner spCompanyRef;
+    private TextView tvRefBy;
 
     double result;
-
+    String companyRef;
 
     public FaceCompareResultFragment() {
     }
@@ -71,9 +76,13 @@ public class FaceCompareResultFragment extends Fragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        spCompanyRef = view.findViewById(R.id.spCompanyRef);
+        tvRefBy = view.findViewById(R.id.tvRefBy);
         switch (((JAppActivity) getActivity()).isVerifyPerson()) {
             case VERIFY_EKYC:
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
+                spCompanyRef.setVisibility(View.GONE);
+                tvRefBy.setVisibility(View.GONE);
                 break;
             case VERIFY_PERSON:
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
@@ -82,6 +91,29 @@ public class FaceCompareResultFragment extends Fragment {
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
                 break;
         }
+
+        final String[] companyName = getResources().getStringArray(R.array.companyList);
+        ArrayAdapter<String> spComAdapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, companyName);
+        spCompanyRef.setAdapter(spComAdapter);
+
+        spCompanyRef.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                Toast.makeText(getContext(),
+//                        "Select : " + companyName[position],
+//                        Toast.LENGTH_SHORT).show();
+
+                companyRef = companyName[position];
+                ((JAppActivity) getActivity()).fieldsList[JAppActivity.REF_COMPANY] = companyRef;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
 
         btnNextStep = view.findViewById(R.id.btnNextStep);
 

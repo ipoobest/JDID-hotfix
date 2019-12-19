@@ -57,8 +57,10 @@ public class FormFillFragment extends Fragment {
     private EditText edWorkAddress;
     private EditText edIncome;
     private Button btnSaveAndGo;
+    private Spinner spReferByCompany;
 
     private List<String> slPurpose;
+    String refCompany;
 
     private ProgressDialog mProgressDialog;
 
@@ -87,15 +89,15 @@ public class FormFillFragment extends Fragment {
                 return;
             }
 
-            if (result!=null) {
+            if (result != null) {
                 try {
                     JSONArray ar = result.getJSONArray("purpose");
                     slPurpose = new ArrayList<String>();
-                    for (int idx=0;idx<ar.length();idx++) {
-                        JSONObject obj = (JSONObject)ar.get(idx);
+                    for (int idx = 0; idx < ar.length(); idx++) {
+                        JSONObject obj = (JSONObject) ar.get(idx);
                         slPurpose.add(obj.getString("purpose"));
                     }
-                    ArrayAdapter<String> adapterPurpose = new ArrayAdapter<String>(((JAppActivity)getActivity()).getApplicationContext(),
+                    ArrayAdapter<String> adapterPurpose = new ArrayAdapter<String>(((JAppActivity) getActivity()).getApplicationContext(),
                             android.R.layout.simple_spinner_item, slPurpose);
                     spPurpose.setAdapter(adapterPurpose);
                 } catch (JSONException e) {
@@ -152,11 +154,11 @@ public class FormFillFragment extends Fragment {
 
     private void initialize(View view) {
         // ToolBar
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
 
 
-        switch (((JAppActivity) getActivity()).isVerifyPerson()){
+        switch (((JAppActivity) getActivity()).isVerifyPerson()) {
             case VERIFY_EKYC:
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
                 break;
@@ -172,8 +174,8 @@ public class FormFillFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                                        int arg2, long arg3) {
-                Log.e(TAG, "selected item pos : " + spPurpose.getSelectedItemPosition()+"");
-                if (spPurpose.getSelectedItemPosition()==0) {
+                Log.e(TAG, "selected item pos : " + spPurpose.getSelectedItemPosition() + "");
+                if (spPurpose.getSelectedItemPosition() == 0) {
                     edOtherPurpose.setVisibility(View.VISIBLE);
                 } else {
                     edOtherPurpose.setVisibility(View.GONE);
@@ -191,7 +193,7 @@ public class FormFillFragment extends Fragment {
 
         spMarriageStatus = view.findViewById(R.id.spMariageStatus);
         String[] mariageStatusList = getResources().getStringArray(R.array.mariageStatusList);
-        ArrayAdapter<String> adapterMonth = new ArrayAdapter<String>(((JAppActivity)getActivity()).getApplicationContext(),
+        ArrayAdapter<String> adapterMonth = new ArrayAdapter<String>(((JAppActivity) getActivity()).getApplicationContext(),
                 android.R.layout.simple_dropdown_item_1line, mariageStatusList);
         spMarriageStatus.setAdapter(adapterMonth);
 
@@ -199,6 +201,25 @@ public class FormFillFragment extends Fragment {
         edWork = view.findViewById(R.id.edWork);
         edWorkAddress = view.findViewById(R.id.edWorkAddress);
         edIncome = view.findViewById(R.id.edIncome);
+        //spReferByCompany
+        spReferByCompany = view.findViewById(R.id.spReferByCompany);
+        final String[] companyName = getResources().getStringArray(R.array.companyList);
+        ArrayAdapter<String> spComAdapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, companyName);
+        spReferByCompany.setAdapter(spComAdapter);
+
+        spReferByCompany.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                refCompany = companyName[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         btnSaveAndGo = view.findViewById(R.id.btnNextStep);
         btnSaveAndGo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -212,70 +233,59 @@ public class FormFillFragment extends Fragment {
         });
     }
 
-    private void saveAndGo() {
-        if (spPurpose.getSelectedItemPosition()==0) {
-            ((JAppActivity) getActivity()).fieldsList[JAppActivity.PURPOSE] = edOtherPurpose.getText().toString();
-        } else {
-            ((JAppActivity) getActivity()).fieldsList[JAppActivity.PURPOSE] = spPurpose.getSelectedItem().toString();
-        }
-        ((JAppActivity)getActivity()).fieldsList[JAppActivity.CONTACT_NUMBER] = edPhone.getText().toString();
-        ((JAppActivity)getActivity()).fieldsList[JAppActivity.CENSUS_ADDRESS] = edCurrentAddress.getText().toString();
-        long lMariageStatus = spMarriageStatus.getSelectedItemId();
-        ((JAppActivity)getActivity()).fieldsList[JAppActivity.MARIAGE_STATUS] = Long.toString(lMariageStatus+1);
-        ((JAppActivity)getActivity()).fieldsList[JAppActivity.OCCUPATION] = edProfession.getText().toString();
-        ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY] = edWork.getText().toString();
-        ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY_ADDRSS] = edWorkAddress.getText().toString();
-        ((JAppActivity)getActivity()).fieldsList[JAppActivity.INCOME] = edIncome.getText().toString();
-        ((JAppActivity) getActivity()).hideKeyboard();
-        ((JAppActivity)getActivity()).SaveInformation();
-    }
 
     private void authenOTP() {
         // need save data fields first
-        if (spPurpose.getSelectedItemPosition()==0) {
+        if (spPurpose.getSelectedItemPosition() == 0) {
             ((JAppActivity) getActivity()).fieldsList[JAppActivity.PURPOSE] = edOtherPurpose.getText().toString();
         } else {
             ((JAppActivity) getActivity()).fieldsList[JAppActivity.PURPOSE] = spPurpose.getSelectedItem().toString();
         }
-        ((JAppActivity)getActivity()).fieldsList[JAppActivity.CONTACT_NUMBER] = edPhone.getText().toString();
-        ((JAppActivity)getActivity()).fieldsList[JAppActivity.CENSUS_ADDRESS] = edCurrentAddress.getText().toString();
+        ((JAppActivity) getActivity()).fieldsList[JAppActivity.CONTACT_NUMBER] = edPhone.getText().toString();
+        ((JAppActivity) getActivity()).fieldsList[JAppActivity.CENSUS_ADDRESS] = edCurrentAddress.getText().toString();
         long lMariageStatus = spMarriageStatus.getSelectedItemId();
-        ((JAppActivity)getActivity()).fieldsList[JAppActivity.MARIAGE_STATUS] = Long.toString(lMariageStatus+1);
-        ((JAppActivity)getActivity()).fieldsList[JAppActivity.OCCUPATION] = edProfession.getText().toString();
-        ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY] = edWork.getText().toString();
-        ((JAppActivity)getActivity()).fieldsList[JAppActivity.COMPANY_ADDRSS] = edWorkAddress.getText().toString();
-        ((JAppActivity)getActivity()).fieldsList[JAppActivity.INCOME] = edIncome.getText().toString();
+        ((JAppActivity) getActivity()).fieldsList[JAppActivity.MARIAGE_STATUS] = Long.toString(lMariageStatus + 1);
+        ((JAppActivity) getActivity()).fieldsList[JAppActivity.OCCUPATION] = edProfession.getText().toString();
+        ((JAppActivity) getActivity()).fieldsList[JAppActivity.COMPANY] = edWork.getText().toString();
+        ((JAppActivity) getActivity()).fieldsList[JAppActivity.COMPANY_ADDRSS] = edWorkAddress.getText().toString();
+        ((JAppActivity) getActivity()).fieldsList[JAppActivity.INCOME] = edIncome.getText().toString();
+        ((JAppActivity) getActivity()).fieldsList[JAppActivity.REF_COMPANY] = refCompany;
         ((JAppActivity) getActivity()).hideKeyboard();
-        ((JAppActivity)getActivity()).showOTPVerifyFragment(VERIFY_EKYC);
+        ((JAppActivity) getActivity()).showOTPVerifyFragment(VERIFY_EKYC);
     }
 
     private boolean finishedFormFill() {
-        if (edPhone.getText().length()==0) {
+        if (edPhone.getText().length() == 0) {
             edPhone.requestFocus();
             return false;
         }
 
-        if (edCurrentAddress.getText().length()==0) {
+        if (refCompany == null){
+            spReferByCompany.findFocus();
+            return false;
+        }
+
+        if (edCurrentAddress.getText().length() == 0) {
             edCurrentAddress.requestFocus();
             return false;
         }
-        if (edPhone.getText().length()==0) {
+        if (edPhone.getText().length() == 0) {
             edPhone.requestFocus();
             return false;
         }
-        if (edProfession.getText().length()==0) {
+        if (edProfession.getText().length() == 0) {
             edProfession.requestFocus();
             return false;
         }
-        if (edWork.getText().length()==0) {
+        if (edWork.getText().length() == 0) {
             edWork.requestFocus();
             return false;
         }
-        if (edWorkAddress.getText().length()==0) {
+        if (edWorkAddress.getText().length() == 0) {
             edWorkAddress.requestFocus();
             return false;
         }
-        if (edIncome.getText().length()==0) {
+        if (edIncome.getText().length() == 0) {
             edIncome.requestFocus();
             return false;
         }
@@ -284,7 +294,7 @@ public class FormFillFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             confirmBack();
             return true;
         }

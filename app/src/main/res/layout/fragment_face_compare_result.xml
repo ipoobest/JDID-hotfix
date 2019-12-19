@@ -69,7 +69,31 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-<!--    <TextView-->
+    <TextView
+        android:id="@+id/tvRefBy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ref. By"
+        app:layout_constraintBottom_toTopOf="@+id/btnNextStep"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llImage" />
+
+    <Spinner
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:id="@+id/spCompanyRef"
+        android:background="#E0DFDF"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="28dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvRefBy" />
+
+
+    <!--    <TextView-->
 <!--        android:id="@+id/tvScore"-->
 <!--        android:layout_width="wrap_content"-->
 <!--        android:layout_height="wrap_content"-->

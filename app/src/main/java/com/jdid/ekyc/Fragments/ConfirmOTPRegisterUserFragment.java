@@ -37,6 +37,7 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
     private ProgressDialog mProgressDialog;
     private EditText edOTP;
     private TextView txtOTPREF;
+    private TextView tvResend;
     private Button btnNextStep;
     private String mPhoneNumber;
     private String mRef;
@@ -130,7 +131,7 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
 
         edOTP = view.findViewById(R.id.edOTP);
         edOTP.addTextChangedListener(mTextEditorWatcher);
-        txtOTPREF = view.findViewById(R.id.txtOTPREF);
+        txtOTPREF = view.findViewById(R.id.tvOtpRef);
         txtOTPREF.setText("OTP Ref : "+ mRef);
         btnNextStep = view.findViewById(R.id.btnNextStep);
         btnNextStep.setOnClickListener(new View.OnClickListener() {

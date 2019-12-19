@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -113,6 +112,7 @@
                     android:fontFamily="@font/kanit"
                     android:text="เบอร์โทรศัพท์"
                     android:textSize="16sp" />
+
                 <EditText
                     android:id="@+id/edPhone"
                     android:layout_width="match_parent"
@@ -127,12 +127,12 @@
                     android:fontFamily="@font/kanit"
                     android:text="สถานะ"
                     android:textSize="16sp" />
-<!--                <EditText-->
-<!--                    android:id="@+id/edMariageStatus"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:ems="10"-->
-<!--                    android:inputType="textPersonName" />-->
+                <!--                <EditText-->
+                <!--                    android:id="@+id/edMariageStatus"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:ems="10"-->
+                <!--                    android:inputType="textPersonName" />-->
                 <Spinner
                     android:id="@+id/spMariageStatus"
                     android:layout_width="match_parent"
@@ -148,6 +148,7 @@
                     android:fontFamily="@font/kanit"
                     android:text="อาชีพ"
                     android:textSize="16sp" />
+
                 <EditText
                     android:id="@+id/edProfession"
                     android:layout_width="match_parent"
@@ -162,6 +163,7 @@
                     android:fontFamily="@font/kanit"
                     android:text="สถานที่ทำงาน"
                     android:textSize="16sp" />
+
                 <EditText
                     android:id="@+id/edWork"
                     android:layout_width="match_parent"
@@ -176,6 +178,7 @@
                     android:fontFamily="@font/kanit"
                     android:text="ที่อยู่ที่ทำงาน"
                     android:textSize="16sp" />
+
                 <EditText
                     android:id="@+id/edWorkAddress"
                     android:layout_width="match_parent"
@@ -190,12 +193,29 @@
                     android:fontFamily="@font/kanit"
                     android:text="รายได้ (บาท)"
                     android:textSize="16sp" />
+
                 <EditText
                     android:id="@+id/edIncome"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="number" />
+
+                <TextView
+                    android:id="@+id/refer_by"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/kanit"
+                    android:text="Refer by"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/spReferByCompany"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="2"
+                    android:background="#E0DFDF" />
 
             </LinearLayout>
         </ScrollView>
