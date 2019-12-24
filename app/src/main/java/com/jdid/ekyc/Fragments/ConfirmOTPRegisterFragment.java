@@ -104,7 +104,6 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         tvResend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO :: request OTP
                 requestOTP();
             }
         });
@@ -218,7 +217,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 } else {
                     response.errorBody();
                     Log.d("error : ", response.errorBody().getClass().getName());
-                    Toast.makeText(getContext(), "ผิดพลาด กรุณาติดต่อเจ้าหน้าที่", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "OTP หมดอายุ กรุณาขอ OTP ใหม่", Toast.LENGTH_LONG).show();
                 }
             }
 

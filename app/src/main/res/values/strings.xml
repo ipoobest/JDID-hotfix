@@ -33,6 +33,7 @@
     </string-array>
 
     <string-array name="companyList">
+        <item>กรุณาเลือก ชื่อบริษัท</item>
         <item>บริษัท เจ ฟินเทค จำกัด</item>
         <item>บริษัท เจ เวนเจอร์ส จำกัด</item>
         <item>บริษัท เจมาร์ท โมบาย จำกัด</item>

@@ -48,7 +48,6 @@ public class RegisterFragment extends Fragment {
     String company;
 
 
-
     /* ******************************************************* */
     private class ProcessVerifyDevice extends AsyncTask<Void, Void, JSONObject> {
 
@@ -75,15 +74,15 @@ public class RegisterFragment extends Fragment {
                 return;
             }
 
-            if (result!=null) {
+            if (result != null) {
                 try {
-                    if (result.getString("created_at").length()>0) {
-                        ((RegisterActivity)getActivity()).mCompanyName = company;
-                        ((RegisterActivity)getActivity()).mName = edName.getText().toString();
-                        ((RegisterActivity)getActivity()).mBranch = edBranch.getText().toString();
-                        ((RegisterActivity)getActivity()).mPhone = edPhone.getText().toString();
-                        ((RegisterActivity)getActivity()).mEMail = edEmail.getText().toString();
-                        ((RegisterActivity)getActivity()).showPinRegisterFragment();
+                    if (result.getString("created_at").length() > 0) {
+                        ((RegisterActivity) getActivity()).mCompanyName = company;
+                        ((RegisterActivity) getActivity()).mName = edName.getText().toString();
+                        ((RegisterActivity) getActivity()).mBranch = edBranch.getText().toString();
+                        ((RegisterActivity) getActivity()).mPhone = edPhone.getText().toString();
+                        ((RegisterActivity) getActivity()).mEMail = edEmail.getText().toString();
+                        ((RegisterActivity) getActivity()).showPinRegisterFragment();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -161,10 +160,10 @@ public class RegisterFragment extends Fragment {
         @Override
         public void onClick(View view) {
             ((RegisterActivity) getActivity()).hideKeyboard();
-            if (finishedFormFill()){
+            if (finishedFormFill()) {
                 ProcessVerifyDevice verify = new ProcessVerifyDevice();
                 verify.execute();
-            }else {
+            } else {
                 Toast.makeText(getContext(), "กรุณากรอกข้อมูลให้ครบทุกช่อง", Toast.LENGTH_LONG).show();
             }
         }
@@ -190,14 +189,18 @@ public class RegisterFragment extends Fragment {
         } else {
             imei = Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
         }
-        ((EditText)view.findViewById(R.id.edDeviceID)).setText(formatImei(imei));
+        ((EditText) view.findViewById(R.id.edDeviceID)).setText(formatImei(imei));
         spCompanyName = view.findViewById(R.id.spCompanyName);
         edName = view.findViewById(R.id.edName);
         edBranch = view.findViewById(R.id.edBranch);
         edPhone = view.findViewById(R.id.edPhone);
         edEmail = view.findViewById(R.id.edEMail);
 
+
         //spCompanyName
+        spCompanyName.setFocusable(true);
+        spCompanyName.setFocusableInTouchMode(true);
+
         final String[] companyName = getResources().getStringArray(R.array.companyList);
         ArrayAdapter<String> spComAdapter = new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, companyName);
@@ -206,16 +209,17 @@ public class RegisterFragment extends Fragment {
         spCompanyName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                Toast.makeText(getContext(),
-//                        "Select : " + companyName[position],
-//                        Toast.LENGTH_SHORT).show();
+                if (parent.getItemAtPosition(position).equals("กรุณาเลือก ชื่อบริษัท")) {
+                    company = null;
+                } else {
+                    company = companyName[position];
+                }
 
-                company = companyName[position];
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                company = "กรุณาเลือก ชื่อบริษัท";
             }
         });
 
@@ -223,49 +227,49 @@ public class RegisterFragment extends Fragment {
 
     private String formatImei(String strImei) {
         String strReturn = "";
-        if (strImei.length() == 15){
-            strReturn = strImei.substring(0,4);
+        if (strImei.length() == 15) {
+            strReturn = strImei.substring(0, 4);
             strReturn += "-";
-            strReturn += strImei.substring(4,8);
+            strReturn += strImei.substring(4, 8);
             strReturn += "-";
-            strReturn += strImei.substring(8,12);
+            strReturn += strImei.substring(8, 12);
             strReturn += "-";
-            strReturn += strImei.substring(12,15);
-        }else {
-            strReturn = strImei.substring(0,4);
+            strReturn += strImei.substring(12, 15);
+        } else {
+            strReturn = strImei.substring(0, 4);
             strReturn += "-";
-            strReturn += strImei.substring(4,8);
+            strReturn += strImei.substring(4, 8);
             strReturn += "-";
-            strReturn += strImei.substring(8,12);
+            strReturn += strImei.substring(8, 12);
             strReturn += "-";
-            strReturn += strImei.substring(12,16);
+            strReturn += strImei.substring(12, 16);
         }
         return strReturn;
     }
 
     private boolean finishedFormFill() {
-        if (edPhone.getText().length()==0) {
+        if (edPhone.getText().length() == 0) {
             edPhone.requestFocus();
             return false;
         }
 
-        if (spCompanyName == null) {
-            spCompanyName.requestFocus();
+        if (company == null) {
+            spCompanyName.isFocusableInTouchMode();
             return false;
         }
-        if (edName.getText().length()==0) {
+        if (edName.getText().length() == 0) {
             edName.requestFocus();
             return false;
         }
-        if (edBranch.getText().length()==0) {
+        if (edBranch.getText().length() == 0) {
             edBranch.requestFocus();
             return false;
         }
-        if (edPhone.getText().length()==0) {
+        if (edPhone.getText().length() == 0) {
             edPhone.requestFocus();
             return false;
         }
-        if (edEmail.getText().length()==0) {
+        if (edEmail.getText().length() == 0) {
             edEmail.requestFocus();
             return false;
         }

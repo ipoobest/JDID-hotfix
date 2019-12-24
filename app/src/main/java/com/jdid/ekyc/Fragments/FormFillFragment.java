@@ -211,12 +211,17 @@ public class FormFillFragment extends Fragment {
         spReferByCompany.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                refCompany = companyName[position];
+
+                if (parent.getItemAtPosition(position).equals("กรุณาเลือก ชื่อบริษัท")) {
+                    refCompany = null;
+                } else {
+                    refCompany = companyName[position];
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                refCompany = "กรุณาเลือก ชื่อบริษัท";
             }
         });
 
@@ -260,8 +265,8 @@ public class FormFillFragment extends Fragment {
             return false;
         }
 
-        if (refCompany == null){
-            spReferByCompany.findFocus();
+        if (refCompany == null) {
+            spReferByCompany.isFocusableInTouchMode();
             return false;
         }
 
