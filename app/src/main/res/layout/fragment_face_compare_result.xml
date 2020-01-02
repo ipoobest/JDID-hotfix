@@ -35,6 +35,8 @@
             tools:src="@drawable/ic_credit_card_black_24dp" />
 
         <ImageView
+            android:adjustViewBounds="true"
+            android:layout_centerInParent="true"
             android:id="@+id/imageFromCam"
             android:layout_width="148dp"
             android:layout_height="178dp"

@@ -38,8 +38,11 @@ public class VerifyDevice extends AppCompatActivity {
             String ts = this.TELEPHONY_SERVICE;
             TelephonyManager mTelephonyMgr = (TelephonyManager) getSystemService(ts);
             mStrDeviceID = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
-            ProcessVerifyDevice verifyDevice = new ProcessVerifyDevice();
-            verifyDevice.execute();
+            //TODO THIS
+            Intent intent = new Intent(getApplicationContext(), JAppActivity.class);
+            startActivity(intent);
+//            ProcessVerifyDevice verifyDevice = new ProcessVerifyDevice();
+//            verifyDevice.execute();
         } else {
             String[] permission = {Manifest.permission.READ_PHONE_STATE};
             requestPermissions(permission, PERMISSION_PHONESTATE_CODE);

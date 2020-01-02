@@ -19,7 +19,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:adjustViewBounds="true"
-            android:src="@drawable/top_bg" />
+            android:src="@drawable/domecloud_top_bg" />
 
         <ImageView
             android:id="@+id/bgimage_bottom"
@@ -28,7 +28,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:adjustViewBounds="true"
-            android:src="@drawable/bottom_bg" />
+            android:src="@drawable/domecloud_bottom_bg" />
 
 
     </RelativeLayout>
@@ -52,7 +52,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/kanit"
-        android:text="JDID สาขา บางกอก"
+        android:text="DOMECLOUD"
         android:textColor="@android:color/white"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"

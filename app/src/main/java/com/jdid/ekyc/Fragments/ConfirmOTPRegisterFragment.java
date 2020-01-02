@@ -161,7 +161,6 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                     mProgressDialog = null;
                     ResponseOTPForRegister result = response.body();
                     String otpRef = result.getOtpRef().getOtpRef();
-                    //TODO FIX THIS
 //                    Log.d("onResponsexxx: ",otpRef);
                     txtOTPREF.setText("OTP Ref : " + otpRef);
                     mRef = otpRef;

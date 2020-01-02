@@ -44,7 +44,7 @@ public class LaunchScreenActivity extends AppCompatActivity {
 
         if(!isConnected(this)) buildDialog(this).show();
         else {
-            Toast.makeText(this,"Welcome", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this,"Welcome", Toast.LENGTH_SHORT).show();
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override

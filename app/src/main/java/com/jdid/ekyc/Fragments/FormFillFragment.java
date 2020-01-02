@@ -230,7 +230,8 @@ public class FormFillFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (finishedFormFill()) {
-                    authenOTP();
+                    ((JAppActivity) getActivity()).successFragment();
+//                    authenOTP();
                 } else {
                     Toast.makeText(getActivity(), "กรุณาป้อนข้อมูลให้ครบทุกช่อง", Toast.LENGTH_LONG).show();
                 }

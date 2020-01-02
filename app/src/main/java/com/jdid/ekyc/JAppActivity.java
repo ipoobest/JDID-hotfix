@@ -289,15 +289,18 @@ public class JAppActivity extends JCompatActivity {
         mPhone = getIntent().getStringExtra("phone_no");
         mEMail = getIntent().getStringExtra("email");
 
-        if (mfStartFromRegister) {
-            showWaitForAuthorise();
-        } else {
-            if (fVerifyIMEI) {
-                _showPinRegisterFragment();
-            } else {
-                showWaitForAuthorise();
-            }
-        }
+
+        showHomeFragment();
+
+//        if (mfStartFromRegister) {
+//            showWaitForAuthorise();
+//        } else {
+//            if (fVerifyIMEI) {
+//                _showPinRegisterFragment();
+//            } else {
+//                showWaitForAuthorise();
+//            }
+//        }
     }
 
     private void showWaitForAuthorise() {

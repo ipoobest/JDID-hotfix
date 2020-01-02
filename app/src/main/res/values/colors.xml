@@ -2,8 +2,8 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#f16638</color>
-    <color name="colorAccent2">#d23d0c</color>
+    <color name="colorAccent">#234090</color>
+    <color name="colorAccent2">#354677</color>
     <color name="colorGradient1">#fccc5a</color>
     <color name="colorGradient2">#f15824</color>
     <color name="circle_lock_screen_pf">#EE5555</color>

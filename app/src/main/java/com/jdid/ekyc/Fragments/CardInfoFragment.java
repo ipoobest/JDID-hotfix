@@ -94,7 +94,6 @@ public class CardInfoFragment extends Fragment {
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("click : ", "xxxxxx");
                 String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
                 if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_DIP_CHIP){
                     ((JAppActivity) getActivity()).getUser(generalInformation[CID]);

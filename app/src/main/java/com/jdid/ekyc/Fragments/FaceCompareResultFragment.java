@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +32,9 @@ import com.jdid.ekyc.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 public class FaceCompareResultFragment extends Fragment {
 
@@ -85,9 +89,13 @@ public class FaceCompareResultFragment extends Fragment {
                 tvRefBy.setVisibility(View.GONE);
                 break;
             case VERIFY_PERSON:
+                spCompanyRef.setVisibility(View.GONE);
+                tvRefBy.setVisibility(View.GONE);
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
                 break;
             case VERIFY_DIP_CHIP:
+                spCompanyRef.setVisibility(View.GONE);
+                tvRefBy.setVisibility(View.GONE);
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
                 break;
         }
@@ -104,13 +112,18 @@ public class FaceCompareResultFragment extends Fragment {
 //                        "Select : " + companyName[position],
 //                        Toast.LENGTH_SHORT).show();
 
-                companyRef = companyName[position];
-                ((JAppActivity) getActivity()).fieldsList[JAppActivity.REF_COMPANY] = companyRef;
+                if (parent.getItemAtPosition(position).equals("กรุณาเลือก ชื่อบริษัท")) {
+                    companyRef = null;
+                } else {
+                    companyRef = companyName[position];
+                    ((JAppActivity) getActivity()).fieldsList[JAppActivity.REF_COMPANY] = companyRef;
+                }
+
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                companyRef = "กรุณาเลือก ชื่อบริษัท";
             }
         });
 
@@ -128,11 +141,14 @@ public class FaceCompareResultFragment extends Fragment {
 
 
         if (byteImageUrl != null) {
+            ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream();
             byte[] decodedString = Base64.decode(byteImageUrl, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            decodedByte.compress(Bitmap.CompressFormat.JPEG, 50, bytearrayoutputstream);
+            Log.d("bitmap size : ", decodedByte.getRowBytes() * decodedByte.getHeight()+ "");
             imageFromCam.setImageBitmap(decodedByte);
-            imageFromCam.setMinimumHeight(metrics.heightPixels);
-            imageFromCam.setMinimumWidth(metrics.widthPixels);
+//            imageFromCam.setMinimumHeight(metrics.heightPixels);
+//            imageFromCam.setMinimumWidth(metrics.widthPixels); v421740 421740
         } else {
             imageFromCam = view.findViewById(R.id.imageFromCam);
             imageFromCam.setImageURI(((JAppActivity) getActivity()).imageUri);
@@ -153,21 +169,47 @@ public class FaceCompareResultFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                if (mfNextStep) {
+                if (mfNextStep){
                     switch (((JAppActivity) getActivity()).isVerifyPerson()) {
                         case VERIFY_EKYC:
                             ((JAppActivity) getActivity()).showFormFillFragment();
                             break;
                         case VERIFY_PERSON:
-                            ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_PERSON);
+                            ((JAppActivity) getActivity()).successFragment();
                             break;
                         case VERIFY_DIP_CHIP:
-                            ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_DIP_CHIP);
+                            ((JAppActivity) getActivity()).successFragment();
                             break;
                     }
-                } else {
+                }else {
                     ((JAppActivity) getActivity()).OpenCameraForCapture();
                 }
+
+//                if (mfNextStep) {
+//                    switch (((JAppActivity) getActivity()).isVerifyPerson()) {
+//                        case VERIFY_EKYC:
+//                            ((JAppActivity) getActivity()).showFormFillFragment();
+//                            break;
+//                        case VERIFY_PERSON:
+//                            if (companyRef != null){
+//                                ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_PERSON);
+//                            }else {
+//                                Toast.makeText(getContext(), "กรุณาเลือก ref บริษัท", Toast.LENGTH_SHORT).show();
+//                            }
+//                            break;
+//                        case VERIFY_DIP_CHIP:
+//                            if (companyRef != null){
+//                                ((JAppActivity) getActivity()).successFragment();
+//
+//                                ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_DIP_CHIP);
+//                            }else {
+//                                Toast.makeText(getContext(), "กรุณาเลิก ref บริษัท", Toast.LENGTH_SHORT).show();
+//                            }
+//                            break;
+//                    }
+//                } else {
+//                    ((JAppActivity) getActivity()).OpenCameraForCapture();
+//                }
             }
         });
 
@@ -175,10 +217,11 @@ public class FaceCompareResultFragment extends Fragment {
 
     private void checkResultBuidu(double result) {
         String re = String.valueOf(result);
-        if (result >= 70) {
+        if (result >= 90) {
             txtResult.setText(R.string.compare_success);
             txtResultDescription.setText(R.string.compare_success_description);
 //            txtScore.setText(re);
+
             txtResultDescription.setTextColor(getResources().getColor(R.color.success_color));
             btnNextStep.setText(R.string.next_step);
             mfNextStep = true;

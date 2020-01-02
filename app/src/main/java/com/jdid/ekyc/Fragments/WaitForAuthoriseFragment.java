@@ -57,7 +57,7 @@ public class WaitForAuthoriseFragment extends Fragment implements WaitForAuthori
         txtDetail7 = view.findViewById(R.id.txtDetail7);
 
         txtBranch.setText("JDID สาขา "+((JAppActivity)getActivity()).mBranch);
-        txtDetail2.setText("Device ID : "+formatImei(((JAppActivity)getActivity()).mIMEI));
+        txtDetail2.setText("Device ID : "+((JAppActivity)getActivity()).mIMEI);
         txtDetail3.setText("บริษัท : "+((JAppActivity)getActivity()).mCompanyName);
         txtDetail4.setText("ผู้จัดการสาขา : "+((JAppActivity)getActivity()).mName);
         txtDetail5.setText("ชื่อสาขา : "+((JAppActivity)getActivity()).mBranch);
@@ -68,7 +68,7 @@ public class WaitForAuthoriseFragment extends Fragment implements WaitForAuthori
     @Override
     public void setDeviceInfo(String imei, String company, String name, String phone, String branch, String email) {
         txtBranch.setText("JDID สาขา "+branch);
-        txtDetail2.setText("Device ID : "+formatImei(imei));
+        txtDetail2.setText("Device ID : "+imei);
         txtDetail3.setText("บริษัท : "+company);
         txtDetail4.setText("ผู้จัดการสาขา : "+name);
         txtDetail5.setText("ชื่อสาขา : "+branch);
