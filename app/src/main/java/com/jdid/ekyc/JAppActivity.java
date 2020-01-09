@@ -527,8 +527,13 @@ public class JAppActivity extends JCompatActivity {
 //
 //                    }
                     FaceCompareResult result = response.body();
-                    int score = result.getPairVerifySimilarity();
-                    showFaceCompareResult(score,imageQuery);
+                    if (result.getPairVerifySimilarity() != null){
+                        int score = result.getPairVerifySimilarity();
+                        showFaceCompareResult(score,imageQuery);
+                    } else {
+                        showFaceCompareResult();
+                    }
+
                 }else {
                     Log.d(TAG, "onResponse: sssssssss");
 
