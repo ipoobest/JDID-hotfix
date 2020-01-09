@@ -38,7 +38,7 @@
             android:text="@string/lock_screen_title_pf"
             android:theme="@style/PFLockScreenTitleTextStyle" />
 
-        <com.jdid.ekyc.views.PFCodeView
+        <com.viva.ekyc.views.PFCodeView
             android:id="@+id/code_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">JDID eKYC</string>
+    <string name="app_name">ViVA eKYC</string>
     <string name="please_register">กรุณาลงทะเบียนอุปกรณ์</string>
     <string name="device_id">รหัสอุปกรณ์</string>
     <string name="manager_name">ชื่อนามสกุล ผู้จัดการสาขา</string>
