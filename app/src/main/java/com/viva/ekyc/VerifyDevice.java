@@ -38,7 +38,6 @@ public class VerifyDevice extends AppCompatActivity {
             String ts = this.TELEPHONY_SERVICE;
             TelephonyManager mTelephonyMgr = (TelephonyManager) getSystemService(ts);
             mStrDeviceID = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
-            //TODO THIS
             Intent intent = new Intent(getApplicationContext(), JAppActivity.class);
             startActivity(intent);
 //            ProcessVerifyDevice verifyDevice = new ProcessVerifyDevice();

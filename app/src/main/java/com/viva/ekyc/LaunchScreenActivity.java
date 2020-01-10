@@ -32,7 +32,7 @@ public class LaunchScreenActivity extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    startActivity(new Intent(getApplicationContext(), VerifyDevice.class));
+                    startActivity(new Intent(getApplicationContext(), JAppActivity.class));
                     finish();
                 }
             }, 2000L);
