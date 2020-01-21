@@ -212,10 +212,10 @@ public class FormFillFragment extends Fragment {
                 String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
                 if (cbCurrentAddress.isChecked()){
                     edCurrentAddress.setText(generalInformation[ADDRESS]);
-                    Toast.makeText(getContext(),"ที่อยู่ปัจจุบัน", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(),"ที่อยู่ปัจจุบัน", Toast.LENGTH_SHORT).show();
                 } else {
                     edCurrentAddress.setText("");
-                    Toast.makeText(getContext(),"uncheck", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(),"uncheck", Toast.LENGTH_SHORT).show();
                 }
             }
         });
