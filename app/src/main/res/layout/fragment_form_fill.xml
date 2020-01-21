@@ -89,13 +89,32 @@
                     android:hapticFeedbackEnabled="false"
                     android:inputType="textPersonName" />
 
-                <TextView
-                    android:id="@+id/txtCurrentAddress"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/kanit"
-                    android:text="ที่อยู่ปัจจุบัน"
-                    android:textSize="16sp" />
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:id="@+id/txtCurrentAddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/kanit"
+                        android:text="ที่อยู่ปัจจุบัน"
+                        android:textSize="16sp" />
+
+                    <CheckBox
+                        android:id="@+id/checkBoxAddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/kanit"
+                        android:text="ที่อยู่ตรงกับที่อยู่ในบัตร ปชช"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
 
                 <EditText
                     android:id="@+id/edCurrentAddress"
