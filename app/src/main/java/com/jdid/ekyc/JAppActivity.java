@@ -687,18 +687,17 @@ public class JAppActivity extends JCompatActivity {
             @Override
             public void onResponse(Call<ResponseCreateUser> call, Response<ResponseCreateUser> response) {
                 if (response.isSuccessful()) {
-                    ResponseCreateUser resutl = response.body();
-                    if (resutl.getStatusCode() == 409) {
+                    ResponseCreateUser result = response.body();
+                    if (result.getStatusCode() == 409) {
                         alertDialogPhone();
-                    } else if (resutl.getStatusCode() == 200) {
-                        Log.d("success xxx : ", resutl.getStatusCode().toString());
-                        Log.d("onResponse: xx ", resutl.getMessage());
-                        sentConfirmOtp(generalInformation[CID], resutl);
+                    } else if (result.getStatusCode() == 200) {
+                        Log.d("success xxx : ", result.getStatusCode().toString());
+                        Log.d("onResponse: xx ", result.getMessage());
+                        sentConfirmOtp(generalInformation[CID], result);
                     }
-
                 } else {
-                    Log.d("not success", "response ไม่สำเร็จ");
-                    Toast.makeText(getAppContext(), "response ไม่สำเร็จ", Toast.LENGTH_LONG).show();
+                    Log.d("onResponse: xx ","ssss");
+                    Toast.makeText(getAppContext(), "ระบบขัดข้องไม่สามารถ บันทึกได้กรุณาติดต่อเจ้าหน้าที่" , Toast.LENGTH_LONG).show();
                 }
             }
 

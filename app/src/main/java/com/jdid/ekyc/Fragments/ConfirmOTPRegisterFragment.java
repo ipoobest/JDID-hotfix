@@ -21,6 +21,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.google.gson.JsonObject;
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
 import com.jdid.ekyc.models.RetrofitInstance;
@@ -208,7 +209,6 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 mProgressDialog = null;
                 if (response.isSuccessful()) {
                     if (response.body().getStatusCode() == 200) {
-//                        saveUser();
                         ((JAppActivity) getActivity()).SaveInformation();
                     } else {
                         Log.d("res bodyxx: ", "xxxxxxxx");
@@ -217,6 +217,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 } else {
                     response.errorBody();
                     Log.d("error : ", response.errorBody().getClass().getName());
+
                     Toast.makeText(getContext(), "OTP หมดอายุ กรุณาขอ OTP ใหม่", Toast.LENGTH_LONG).show();
                 }
             }

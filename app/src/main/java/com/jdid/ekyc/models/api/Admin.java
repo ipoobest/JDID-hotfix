@@ -19,6 +19,6 @@ public interface Admin {
 
     // ADMIN VERIFY OTP
     @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
-    @POST("b")
+    @POST("/admin/verify_otp")
     Call<ResponseOTPForVerify> verifyOTP(@Body RequestOTPForVerify requestOTPForVerify);
 }
