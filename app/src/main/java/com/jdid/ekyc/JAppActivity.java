@@ -42,6 +42,7 @@ import androidx.annotation.Nullable;
 import com.acs.smartcard.Features;
 import com.acs.smartcard.Reader;
 import com.acs.smartcard.ReaderException;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jdid.ekyc.Fragments.CardAcquireFragment;
 import com.jdid.ekyc.Fragments.CardInfoFragment;
 import com.jdid.ekyc.Fragments.ConfirmOTPRegisterFragment;
@@ -262,6 +263,9 @@ public class JAppActivity extends JCompatActivity {
     public int scoreCompareImage;
     Toolbar toolbar;
 
+    //log
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -272,6 +276,9 @@ public class JAppActivity extends JCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
 
         if (getIntent().getBooleanExtra("ToFormFill", false)) {
             showFormFillFragment();
@@ -696,7 +703,10 @@ public class JAppActivity extends JCompatActivity {
                         sentConfirmOtp(generalInformation[CID], result);
                     }
                 } else {
-                    Log.d("onResponse: xx ","ssss");
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT, response.message());
+                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+                    Log.d("onResponse: xx ",response.message());
                     Toast.makeText(getAppContext(), "ระบบขัดข้องไม่สามารถ บันทึกได้กรุณาติดต่อเจ้าหน้าที่" , Toast.LENGTH_LONG).show();
                 }
             }
