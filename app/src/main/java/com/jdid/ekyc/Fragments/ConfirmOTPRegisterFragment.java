@@ -21,6 +21,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.JsonObject;
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
@@ -30,6 +31,8 @@ import com.jdid.ekyc.models.pojo.RequestOTPForRegister;
 import com.jdid.ekyc.models.pojo.RequestOTPForVerify;
 import com.jdid.ekyc.models.pojo.ResponseOTPForRegister;
 import com.jdid.ekyc.models.pojo.ResponseOTPForVerify;
+
+import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,6 +51,8 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     private String mPhoneNumber;
     private String mPhonePerson;
     private String mRef;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     private final TextWatcher mTextEditorWatcher = new TextWatcher() {
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -79,6 +84,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         setHasOptionsMenu(true);
         mPhoneNumber = ((JAppActivity) getActivity()).fieldsList[JAppActivity.CONTACT_NUMBER];
         Log.d( "mPhoneNumber xxx ::: ", mPhoneNumber);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
         setupUI(view);
         requestOTP();
         return view;
@@ -162,8 +168,6 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                     mProgressDialog = null;
                     ResponseOTPForRegister result = response.body();
                     String otpRef = result.getOtpRef().getOtpRef();
-                    //TODO FIX THIS
-//                    Log.d("onResponsexxx: ",otpRef);
                     txtOTPREF.setText("OTP Ref : " + otpRef);
                     mRef = otpRef;
                 } else {
@@ -209,15 +213,27 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 mProgressDialog = null;
                 if (response.isSuccessful()) {
                     if (response.body().getStatusCode() == 200) {
+                        Bundle params = new Bundle();
+                        params.putString("success_otp", response.body().getMessage());
+                        mFirebaseAnalytics.logEvent("Verify_OTP", params);
                         ((JAppActivity) getActivity()).SaveInformation();
                     } else {
                         Log.d("res bodyxx: ", "xxxxxxxx");
                         Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
                     }
                 } else {
+                    try {
+                        String err = response.errorBody().string();
+                        Bundle params = new Bundle();
+                        params.putString("invalid_otp", err);
+                        Log.d("onResponse: xx ",err);
+                        mFirebaseAnalytics.logEvent("Verify_OTP", params);
+                    }catch (IOException e){
+                        e.printStackTrace();
+
+                    }
                     response.errorBody();
                     Log.d("error : ", response.errorBody().getClass().getName());
-
                     Toast.makeText(getContext(), "OTP หมดอายุ กรุณาขอ OTP ใหม่", Toast.LENGTH_LONG).show();
                 }
             }

@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -162,7 +163,17 @@ public class VerifyDevice extends AppCompatActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     String ts = this.TELEPHONY_SERVICE;
                     TelephonyManager mTelephonyMgr = (TelephonyManager) getSystemService(ts);
-                    mStrDeviceID = mTelephonyMgr.getImei();
+                    if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    Activity#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for Activity#requestPermissions for more details.
+                        return;
+                    }
+
                     ProcessVerifyDevice verifyDevice = new ProcessVerifyDevice();
                     verifyDevice.execute();
                 } else {

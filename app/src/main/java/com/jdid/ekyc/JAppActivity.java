@@ -60,6 +60,7 @@ import com.jdid.ekyc.models.RetrofitInstance;
 import com.jdid.ekyc.models.api.FaceCompare;
 import com.jdid.ekyc.models.api.User;
 import com.jdid.ekyc.models.api.Device;
+import com.jdid.ekyc.models.pojo.Detail;
 import com.jdid.ekyc.models.pojo.FaceCompareRequest;
 import com.jdid.ekyc.models.pojo.FaceCompareResult;
 import com.jdid.ekyc.models.pojo.OtpRef;
@@ -94,6 +95,7 @@ import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -102,8 +104,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.0.12";
-    public static final String APP_DATE_UPDATE = "17/02/63";
+    public static final String APP_VERSION = "release 1.0.13";
+    public static final String APP_DATE_UPDATE = "22/02/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -278,6 +280,7 @@ public class JAppActivity extends JCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        mFirebaseAnalytics.setUserProperty("test_create", "test");
 
 
         if (getIntent().getBooleanExtra("ToFormFill", false)) {
@@ -698,16 +701,24 @@ public class JAppActivity extends JCompatActivity {
                     if (result.getStatusCode() == 409) {
                         alertDialogPhone();
                     } else if (result.getStatusCode() == 200) {
+                        Bundle params = new Bundle();
+                        params.putString("create_user", result.getMessage());
+                        mFirebaseAnalytics.logEvent("createUser", params);
                         Log.d("success xxx : ", result.getStatusCode().toString());
                         Log.d("onResponse: xx ", result.getMessage());
                         sentConfirmOtp(generalInformation[CID], result);
                     }
                 } else {
-                    Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.CONTENT, response.message());
-                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-                    Log.d("onResponse: xx ",response.message());
-                    Toast.makeText(getAppContext(), "ระบบขัดข้องไม่สามารถ บันทึกได้กรุณาติดต่อเจ้าหน้าที่" , Toast.LENGTH_LONG).show();
+                    try {
+                        String err = response.errorBody().string();
+                        Bundle params = new Bundle();
+                        params.putString("invalid_create", err);
+                        Log.d("onResponse: xx ",err);
+                        Toast.makeText(getAppContext(), "ระบบขัดข้องไม่สามารถ บันทึกได้กรุณาติดต่อเจ้าหน้าที่" , Toast.LENGTH_LONG).show();
+                        mFirebaseAnalytics.logEvent("createUser", params);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
