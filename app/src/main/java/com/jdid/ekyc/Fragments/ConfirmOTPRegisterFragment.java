@@ -213,25 +213,13 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 mProgressDialog = null;
                 if (response.isSuccessful()) {
                     if (response.body().getStatusCode() == 200) {
-                        Bundle params = new Bundle();
-                        params.putString("success_otp", response.body().getMessage());
-                        mFirebaseAnalytics.logEvent("Verify_OTP", params);
                         ((JAppActivity) getActivity()).SaveInformation();
                     } else {
                         Log.d("res bodyxx: ", "xxxxxxxx");
                         Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    try {
-                        String err = response.errorBody().string();
-                        Bundle params = new Bundle();
-                        params.putString("invalid_otp", err);
-                        Log.d("onResponse: xx ",err);
-                        mFirebaseAnalytics.logEvent("Verify_OTP", params);
-                    }catch (IOException e){
-                        e.printStackTrace();
 
-                    }
                     response.errorBody();
                     Log.d("error : ", response.errorBody().getClass().getName());
                     Toast.makeText(getContext(), "OTP หมดอายุ กรุณาขอ OTP ใหม่", Toast.LENGTH_LONG).show();

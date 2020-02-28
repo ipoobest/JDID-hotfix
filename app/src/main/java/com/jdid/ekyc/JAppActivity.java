@@ -702,7 +702,7 @@ public class JAppActivity extends JCompatActivity {
                         alertDialogPhone();
                     } else if (result.getStatusCode() == 200) {
                         Bundle params = new Bundle();
-                        params.putString("create_user", result.getMessage());
+                        params.putString(FirebaseAnalytics.Param.CONTENT, result.getStatusCode().toString());
                         mFirebaseAnalytics.logEvent("createUser", params);
                         Log.d("success xxx : ", result.getStatusCode().toString());
                         Log.d("onResponse: xx ", result.getMessage());
@@ -711,8 +711,10 @@ public class JAppActivity extends JCompatActivity {
                 } else {
                     try {
                         String err = response.errorBody().string();
+                        String code = response.code() + "";
                         Bundle params = new Bundle();
-                        params.putString("invalid_create", err);
+                        params.putString(FirebaseAnalytics.Param.CONTENT, err);
+                        params.putString(FirebaseAnalytics.Param.CONTENT, code);
                         Log.d("onResponse: xx ",err);
                         Toast.makeText(getAppContext(), "ระบบขัดข้องไม่สามารถ บันทึกได้กรุณาติดต่อเจ้าหน้าที่" , Toast.LENGTH_LONG).show();
                         mFirebaseAnalytics.logEvent("createUser", params);
@@ -730,7 +732,7 @@ public class JAppActivity extends JCompatActivity {
     }
 
     public void getUser(String id) {
-        Log.d("getUser: ", "callllthis");
+        Log.d("getUs    er: ", "callllthis");
         User service = RetrofitInstance.getRetrofitInstance().create(User.class);
         Call<UserInformation> call = service.getUser(id);
         call.enqueue(new Callback<UserInformation>() {
@@ -745,13 +747,14 @@ public class JAppActivity extends JCompatActivity {
                     String imageDB = Base64.encodeToString(byteImage, Base64.NO_WRAP);
                     String image = result.getPortraitUrl();
 
+
                     if (image != null && image.length() >= 1000) {
                         Log.d("getUser: ", "1");
 
 //                        Log.d("onResponse:xxxxxxx ", image.length() + "");
                         comPareImage(imageDB,image);
 //
-                    } else if (image.length() <= 999) {
+                    } else if (image != null && image.length() <= 999) {
                         Log.d("getUser: ", "2");
                         Log.d("onResponse: ", image);
                         Log.d("onResponse:xxxxxxx ", image.length() + "");
@@ -770,6 +773,8 @@ public class JAppActivity extends JCompatActivity {
                         } else {
                             alertDialogPutUser("ไม่พบข้อมูลท่านในระบบกรุณาทำการยืนยันตัวตนใน ระบบ ekyc ก่อน\"");
                         }
+                    }else {
+                        alertDialogPutUser("ไม่พบข้อมูลท่านในระบบกรุณาทำการยืนยันตัวตนใน ระบบ ekyc ก่อน\"");
                     }
                 }
                 else {
@@ -850,6 +855,10 @@ public class JAppActivity extends JCompatActivity {
                         Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
                         alertDialogPutUser("กรุณาทำ ekyc มาก่อน");
                     } else {
+                        ResponseVerifyUser responseVerifyUser = response.body();
+                        Bundle params = new Bundle();
+                        params.putString("time", responseVerifyUser.getVerifiedAt());
+                        mFirebaseAnalytics.logEvent("put_user", params);
                         Toast.makeText(getAppContext(), "ยืนยันสำเร็จ", Toast.LENGTH_SHORT).show();
                         successFragment();
                     }
@@ -861,7 +870,9 @@ public class JAppActivity extends JCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseVerifyUser> call, Throwable t) {
-                Toast.makeText(getAppContext(), "ปปปหหหหหหปป", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
+                alertDialogPutUser("กรุณาทำ ekyc มาก่อน");
+//                Toast.makeText(getAppContext(), "ปปปหหหหหหปป", Toast.LENGTH_SHORT).show();
             }
         });
     }
