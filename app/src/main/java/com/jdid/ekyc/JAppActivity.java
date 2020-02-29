@@ -713,11 +713,13 @@ public class JAppActivity extends JCompatActivity {
                         String err = response.errorBody().string();
                         String code = response.code() + "";
                         Bundle params = new Bundle();
-                        params.putString(FirebaseAnalytics.Param.CONTENT, err);
-                        params.putString(FirebaseAnalytics.Param.CONTENT, code);
+                        params.putString("invalid_create", err);
+                        params.putString("invalid_create", code);
+                        params.putString("invalid_create", "this");
                         Log.d("onResponse: xx ",err);
                         Toast.makeText(getAppContext(), "ระบบขัดข้องไม่สามารถ บันทึกได้กรุณาติดต่อเจ้าหน้าที่" , Toast.LENGTH_LONG).show();
-                        mFirebaseAnalytics.logEvent("createUser", params);
+                        alertDialogPutUser("ระบบขัดข้องไม่สามารถ บันทึกได้กรุณาติดต่อเจ้าหน้าที่");
+                        mFirebaseAnalytics.logEvent("invalid_create_user", params);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -732,16 +734,13 @@ public class JAppActivity extends JCompatActivity {
     }
 
     public void getUser(String id) {
-        Log.d("getUs    er: ", "callllthis");
         User service = RetrofitInstance.getRetrofitInstance().create(User.class);
         Call<UserInformation> call = service.getUser(id);
         call.enqueue(new Callback<UserInformation>() {
             @Override
             public void onResponse(Call<UserInformation> call, Response<UserInformation> response) {
-                Log.d("getUser: ", "00000000000000000001");
 
                 if (response.isSuccessful() && response.code() == 200) {
-                    Log.d("getUser: ", "00000000000000000002");
 
                     UserInformation result = response.body();
                     String imageDB = Base64.encodeToString(byteImage, Base64.NO_WRAP);
@@ -755,9 +754,6 @@ public class JAppActivity extends JCompatActivity {
                         comPareImage(imageDB,image);
 //
                     } else if (image != null && image.length() <= 999) {
-                        Log.d("getUser: ", "2");
-                        Log.d("onResponse: ", image);
-                        Log.d("onResponse:xxxxxxx ", image.length() + "");
                         byte[] imageFormUrl = new byte[0];
 
                         try {
@@ -778,7 +774,6 @@ public class JAppActivity extends JCompatActivity {
                     }
                 }
                 else {
-                    Log.d("getUser: ", "xxxxxx3");
                     alertDialogPutUser("ไม่พบข้อมูลท่านในระบบกรุณาทำการยืนยันตัวตนใน ระบบ ekyc ก่อน");
                 }
             }
