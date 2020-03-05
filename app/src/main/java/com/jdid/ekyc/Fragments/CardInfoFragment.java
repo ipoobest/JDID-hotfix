@@ -125,6 +125,17 @@ public class CardInfoFragment extends Fragment {
 
     private void fillCardInformation() {
         String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
+        Log.d("บัตรประขาขน",
+                parsingCID(generalInformation[CID]) + " "+
+                generalInformation[THAIFULLNAME] + " "+
+                        generalInformation[ENGLISHFULLNAME] + " "+
+                        generalInformation[BIRTH] + " "+
+                        generalInformation[GENDER] +" "+
+                        generalInformation[ADDRESS] +" "+
+                        generalInformation[ISSUER]+" "+
+                        generalInformation[ISSUE]+" "+
+                        generalInformation[EXPIRE]+" "
+                        );
         edCID.setText(parsingCID(generalInformation[CID]));
         edThaiName.setText(generalInformation[THAIFULLNAME]);
         edEnglishName.setText(generalInformation[ENGLISHFULLNAME]);

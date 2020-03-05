@@ -104,8 +104,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.0.13";
-    public static final String APP_DATE_UPDATE = "22/02/63";
+    public static final String APP_VERSION = "release 1.0.14";
+    public static final String APP_DATE_UPDATE = "29/02/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -195,6 +195,7 @@ public class JAppActivity extends JCompatActivity {
         return generalInformation;
     }
 
+//    TODO:: (1) Retrieve
     static String[] generalRetrieve = {
             "80b0000402000d",
             "80b00011020064",
@@ -702,24 +703,26 @@ public class JAppActivity extends JCompatActivity {
                         alertDialogPhone();
                     } else if (result.getStatusCode() == 200) {
                         Bundle params = new Bundle();
-                        params.putString(FirebaseAnalytics.Param.CONTENT, result.getStatusCode().toString());
+                        params.putString("create", result.getStatusCode().toString());
                         mFirebaseAnalytics.logEvent("createUser", params);
-                        Log.d("success xxx : ", result.getStatusCode().toString());
                         Log.d("onResponse: xx ", result.getMessage());
                         sentConfirmOtp(generalInformation[CID], result);
                     }
                 } else {
                     try {
-                        String err = response.errorBody().string();
-                        String code = response.code() + "";
                         Bundle params = new Bundle();
+                        ResponseCreateUser result = response.body();
+                        if (result != null){
+                            Log.d("create xx : ", result.getStatusCode().toString());
+                            Log.d("create: xx ", result.getMessage());
+                            params.putString("invalid_create_message", result.getMessage());
+                            mFirebaseAnalytics.logEvent("createUser", params);
+                        }
+                        String err = response.errorBody().string();
+                        Log.d("invalid_create xx : ",err);
                         params.putString("invalid_create", err);
-                        params.putString("invalid_create", code);
-                        params.putString("invalid_create", "this");
-                        Log.d("onResponse: xx ",err);
-                        Toast.makeText(getAppContext(), "ระบบขัดข้องไม่สามารถ บันทึกได้กรุณาติดต่อเจ้าหน้าที่" , Toast.LENGTH_LONG).show();
                         alertDialogPutUser("ระบบขัดข้องไม่สามารถ บันทึกได้กรุณาติดต่อเจ้าหน้าที่");
-                        mFirebaseAnalytics.logEvent("invalid_create_user", params);
+                        mFirebaseAnalytics.logEvent("createUser", params);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -1204,7 +1207,7 @@ public class JAppActivity extends JCompatActivity {
 
         return true;
     }
-
+    //TODO:: (2)
     private byte[] transceives(byte[] data) {
         byte[] response = new byte[512];
         int responseLength = 0;
@@ -1315,6 +1318,7 @@ public class JAppActivity extends JCompatActivity {
                                 boolGetInformation = false;
                                 iCurrentImageChunk = 0;
                                 iCurrentInfoChunk = 0;
+
                                 //finishGeneralInformation();
                                 // ^^^ just store
 //                                    mProgressDialog.dismiss();
@@ -1338,6 +1342,8 @@ public class JAppActivity extends JCompatActivity {
             }
         }
         byte[] ra = Arrays.copyOf(response, responseLength);
+        //TODO(2.1)
+        Log.d("transceives", response +"");
         response = null;
         return (ra);
     }
