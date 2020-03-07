@@ -31,10 +31,11 @@ import static com.jdid.ekyc.JAppActivity.ADDRESS;
 import static com.jdid.ekyc.JAppActivity.BIRTH;
 import static com.jdid.ekyc.JAppActivity.CID;
 import static com.jdid.ekyc.JAppActivity.ENGLISHFULLNAME;
-import static com.jdid.ekyc.JAppActivity.EXPIRE;
+//import static com.jdid.ekyc.JAppActivity.EXPIRE;
 import static com.jdid.ekyc.JAppActivity.GENDER;
 import static com.jdid.ekyc.JAppActivity.ISSUE;
 import static com.jdid.ekyc.JAppActivity.ISSUER;
+import static com.jdid.ekyc.JAppActivity.LASER_ID;
 import static com.jdid.ekyc.JAppActivity.THAIFULLNAME;
 
 public class CardInfoFragment extends Fragment {
@@ -52,6 +53,7 @@ public class CardInfoFragment extends Fragment {
     private EditText edBirthDate;
     private EditText edGender;
     private EditText edAddress;
+    private EditText edLaser;
     private Button btnNextStep;
     private Button btnBack;
 
@@ -88,6 +90,8 @@ public class CardInfoFragment extends Fragment {
         edBirthDate = view.findViewById(R.id.edBirthDate);
         edGender = view.findViewById(R.id.edGender);
         edAddress = view.findViewById(R.id.edAddress);
+        edLaser = view.findViewById(R.id.edLaser);
+
 
 
         btnNextStep = view.findViewById(R.id.btnNextStep);
@@ -125,23 +129,14 @@ public class CardInfoFragment extends Fragment {
 
     private void fillCardInformation() {
         String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
-        Log.d("บัตรประขาขน",
-                parsingCID(generalInformation[CID]) + " "+
-                generalInformation[THAIFULLNAME] + " "+
-                        generalInformation[ENGLISHFULLNAME] + " "+
-                        generalInformation[BIRTH] + " "+
-                        generalInformation[GENDER] +" "+
-                        generalInformation[ADDRESS] +" "+
-                        generalInformation[ISSUER]+" "+
-                        generalInformation[ISSUE]+" "+
-                        generalInformation[EXPIRE]+" "
-                        );
+
         edCID.setText(parsingCID(generalInformation[CID]));
         edThaiName.setText(generalInformation[THAIFULLNAME]);
         edEnglishName.setText(generalInformation[ENGLISHFULLNAME]);
         edBirthDate.setText(parsingDate(generalInformation[BIRTH]));
         edGender.setText(parsingSex(generalInformation[GENDER]));
         edAddress.setText(generalInformation[ADDRESS]);
+        edLaser.setText(generalInformation[LASER_ID]);
     }
 
 

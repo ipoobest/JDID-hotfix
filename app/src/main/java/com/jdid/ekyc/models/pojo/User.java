@@ -3,7 +3,7 @@ package com.jdid.ekyc.models.pojo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class RequestCreateUser {
+public class User {
     @SerializedName("name_th")
     @Expose
     private String nameTh;
@@ -61,6 +61,18 @@ public class RequestCreateUser {
     @SerializedName("refer_by")
     @Expose
     private String referBy;
+
+    @SerializedName("back_idcard")
+    @Expose
+    private String backIdcard;
+
+    public String getBackIdcard() {
+        return backIdcard;
+    }
+
+    public void setBackIdcard(String backIdcard) {
+        this.backIdcard = backIdcard;
+    }
 
     public String getReferBy() {
         return referBy;
