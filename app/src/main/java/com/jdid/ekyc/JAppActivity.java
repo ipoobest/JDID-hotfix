@@ -97,8 +97,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.0.14";
-    public static final String APP_DATE_UPDATE = "29/02/63";
+    public static final String APP_VERSION = "release 1.1.0";
+    public static final String APP_DATE_UPDATE = "08/03/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
