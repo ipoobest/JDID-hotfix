@@ -134,7 +134,7 @@ public class CardInfoFragment extends Fragment {
         edThaiName.setText(generalInformation[THAIFULLNAME]);
         edEnglishName.setText(generalInformation[ENGLISHFULLNAME]);
         edBirthDate.setText(parsingDate(generalInformation[BIRTH]));
-        edGender.setText(parsingSex(generalInformation[GENDER]));
+        edGender.setText(generalInformation[GENDER]);
         edAddress.setText(generalInformation[ADDRESS]);
         edLaser.setText(generalInformation[LASER_ID]);
     }

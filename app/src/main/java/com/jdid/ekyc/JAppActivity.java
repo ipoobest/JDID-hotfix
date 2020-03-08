@@ -189,7 +189,6 @@ public class JAppActivity extends JCompatActivity {
         return generalInformation;
     }
 
-//    TODO:: (1) Retrieve
     static String[] generalRetrieve = {
             "80b0000402000d",
             "80b00011020064",
@@ -1015,9 +1014,6 @@ public class JAppActivity extends JCompatActivity {
         for (UsbDevice device : mManager.getDeviceList().values()) {
             if (mReader.isSupported(device)) {
                 deviceName = device.getDeviceName();
-
-
-
                 break;
             }
         }
@@ -1129,24 +1125,12 @@ public class JAppActivity extends JCompatActivity {
                 }
 
 
-//                    public static final int CID = 0;
-//                    public static final int THAIFULLNAME = 1;
-//                    public static final int ENGLISHFULLNAME = 2;
-//                    public static final int BIRTH = 3;
-//                    public static final int GENDER = 4;
-//                    public static final int ISSUER = 5;
-//                    public static final int ISSUE = 6;
-//                    public static final int EXPIRE = 7;
-//                    public static final int ADDRESS = 8;
-
-//                    Bitmap bmp = intent.getExtras().get("data");
-//                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//                    bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-//                    byte[] byteArray = stream.toByteArray();
-//                    bmp.recycle();
-
                 int number = generalInformation.length;
                 Log.d(TAG, "OnReady:xx " + number);
+
+//                CardInfo
+
+                Log.d(TAG, "OnReady0.1: " + info.CardInfo);
 
                 generalInformation[CID] = info.PersonalID;
                 Log.d(TAG, "OnReady0: " + generalInformation[CID]);
@@ -1160,7 +1144,7 @@ public class JAppActivity extends JCompatActivity {
                 generalInformation[BIRTH] = info.BirthDate;
                 Log.d(TAG, "OnReady3: " + generalInformation[BIRTH]);
 
-                generalInformation[GENDER] = "ชาย";
+                generalInformation[GENDER] = parsingSex(info.NameTH);
                 Log.d(TAG, "OnReady4: " + generalInformation[GENDER]);
 
                 generalInformation[ISSUER] = info.IssuerCode;
@@ -1175,7 +1159,8 @@ public class JAppActivity extends JCompatActivity {
                 generalInformation[ADDRESS] = info.Address;
                 Log.d(TAG, "OnReady8: " + generalInformation[ADDRESS]);
 
-                generalInformation[LASER_ID] = chipCardADM.LaserNumber;
+                String laserId = chipCardADM.LaserNumber.substring(0,12);
+                generalInformation[LASER_ID] = laserId;
 
                 Log.d(TAG, "OnReady9: " + generalInformation[LASER_ID]);
 
@@ -1305,7 +1290,6 @@ public class JAppActivity extends JCompatActivity {
 
         return true;
     }
-    //TODO:: (2)
     private byte[] transceives(byte[] data) {
         byte[] response = new byte[512];
         int responseLength = 0;
@@ -1440,7 +1424,6 @@ public class JAppActivity extends JCompatActivity {
             }
         }
         byte[] ra = Arrays.copyOf(response, responseLength);
-        //TODO(2.1)
         Log.d("transceives", response +"");
         response = null;
         return (ra);
@@ -1556,6 +1539,16 @@ public class JAppActivity extends JCompatActivity {
     static void clearCardInformation() {
         fImageFromCamLoaded = false;
         generalInformation = new String[10];
+    }
+
+    private String parsingSex(String strSex) {
+        String gender = strSex.substring(0,3);
+        Log.d(TAG, "OnReady10: " + gender);
+        if (gender.equals("นาย")) {
+            return "ชาย";
+        } else {
+            return "หญิง";
+        }
     }
 
     private static String TrimData(String strData) {
