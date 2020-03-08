@@ -55,24 +55,17 @@ import com.jdid.ekyc.Fragments.SuccessFragment;
 import com.jdid.ekyc.Fragments.WaitForAuthoriseFragment;
 import com.jdid.ekyc.base.JCompatActivity;
 import com.jdid.ekyc.models.RetrofitFaceCompare;
-import com.jdid.ekyc.models.RetrofitFaceInstance;
 import com.jdid.ekyc.models.RetrofitInstance;
 import com.jdid.ekyc.models.api.FaceCompare;
-import com.jdid.ekyc.models.api.User;
 import com.jdid.ekyc.models.api.Device;
-import com.jdid.ekyc.models.pojo.Detail;
 import com.jdid.ekyc.models.pojo.FaceCompareRequest;
 import com.jdid.ekyc.models.pojo.FaceCompareResult;
 import com.jdid.ekyc.models.pojo.OtpRef;
-import com.jdid.ekyc.models.pojo.RequestFaceCompare;
-import com.jdid.ekyc.models.pojo.RequestPutUser;
 import com.jdid.ekyc.models.pojo.RequestVrifyPin;
-import com.jdid.ekyc.models.pojo.RequestCreateUser;
 import com.jdid.ekyc.models.pojo.ResponVerifyPin;
 import com.jdid.ekyc.models.pojo.ResponseCreateUser;
-import com.jdid.ekyc.models.pojo.ResponseFaceCompare;
 import com.jdid.ekyc.models.pojo.ResponseVerifyUser;
-import com.jdid.ekyc.models.pojo.ResultFaceCompare;
+import com.jdid.ekyc.models.pojo.User;
 import com.jdid.ekyc.models.pojo.UserInformation;
 import com.jdid.ekyc.views.PFCodeView;
 
@@ -90,12 +83,12 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
 
-import okhttp3.ResponseBody;
+import co.advancedlogic.thainationalidcard.SmartCardDevice;
+import co.advancedlogic.thainationalidcard.ThaiSmartCard;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -104,8 +97,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.0.14";
-    public static final String APP_DATE_UPDATE = "29/02/63";
+    public static final String APP_VERSION = "release 1.0.15";
+    public static final String APP_DATE_UPDATE = "08/03/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -178,7 +171,7 @@ public class JAppActivity extends JCompatActivity {
             "80b014680200FF"
     };
     static boolean boolGetInformation = false;
-    static int iMaxInfoChunk = 9;
+    static int iMaxInfoChunk = 10;
     static int iCurrentInfoChunk = 0;
     public static final int CID = 0;
     public static final int THAIFULLNAME = 1;
@@ -189,13 +182,13 @@ public class JAppActivity extends JCompatActivity {
     public static final int ISSUE = 6;
     public static final int EXPIRE = 7;
     public static final int ADDRESS = 8;
-    static String[] generalInformation = new String[9];
+    public static final int LASER_ID = 9;
+    static String[] generalInformation = new String[10];
 
     public String[] getGeneralInformation() {
         return generalInformation;
     }
 
-//    TODO:: (1) Retrieve
     static String[] generalRetrieve = {
             "80b0000402000d",
             "80b00011020064",
@@ -268,6 +261,8 @@ public class JAppActivity extends JCompatActivity {
 
     //log
     private FirebaseAnalytics mFirebaseAnalytics;
+
+    SmartCardDevice devices;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -632,7 +627,7 @@ public class JAppActivity extends JCompatActivity {
 
     public void SaveInformation() {
         Log.d("save", "SaveInformation");
-        RequestCreateUser request = new RequestCreateUser();
+        User request = new User();
         double income;
         String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -656,6 +651,7 @@ public class JAppActivity extends JCompatActivity {
         request.setOccupation(fieldsList[OCCUPATION]);
         request.setCompany(fieldsList[COMPANY]);
         request.setCompanyAddress(fieldsList[COMPANY_ADDRSS]);
+        request.setBackIdcard(generalInformation[LASER_ID]);
         request.setIncome(income);
         request.setVerifyBy(mStrDeviceID);
         request.setReferBy(fieldsList[REF_COMPANY]);
@@ -668,7 +664,7 @@ public class JAppActivity extends JCompatActivity {
 
     public void PutInformationForPerson(int verify_type) {
         String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        RequestPutUser request = new RequestPutUser();
+        User request = new User();
         if (verify_type == VERIFY_PERSON){
             request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
         }
@@ -681,6 +677,7 @@ public class JAppActivity extends JCompatActivity {
         request.setId(generalInformation[CID]);
         request.setGender(generalInformation[GENDER]);
         request.setOfficialAddress(generalInformation[ADDRESS]);
+        request.setBackIdcard(generalInformation[LASER_ID]);
         request.setReferBy(fieldsList[REF_COMPANY]);
         request.setNationality("Thai");
         request.setVerifyBy(mStrDeviceID);
@@ -691,9 +688,9 @@ public class JAppActivity extends JCompatActivity {
         putUser(request);
     }
 
-    private void createUser(RequestCreateUser requestCreateUser) {
-        User service = RetrofitInstance.getRetrofitInstance().create(User.class);
-        Call<ResponseCreateUser> call = service.createUser(requestCreateUser);
+    private void createUser(User user) {
+        com.jdid.ekyc.models.api.User service = RetrofitInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.User.class);
+        Call<ResponseCreateUser> call = service.createUser(user);
         call.enqueue(new Callback<ResponseCreateUser>() {
             @Override
             public void onResponse(Call<ResponseCreateUser> call, Response<ResponseCreateUser> response) {
@@ -737,7 +734,7 @@ public class JAppActivity extends JCompatActivity {
     }
 
     public void getUser(String id) {
-        User service = RetrofitInstance.getRetrofitInstance().create(User.class);
+        com.jdid.ekyc.models.api.User service = RetrofitInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.User.class);
         Call<UserInformation> call = service.getUser(id);
         call.enqueue(new Callback<UserInformation>() {
             @Override
@@ -842,8 +839,8 @@ public class JAppActivity extends JCompatActivity {
         return false;
     }
 
-    private void putUser(RequestPutUser requestPutUser) {
-        User service = RetrofitInstance.getRetrofitInstance().create(User.class);
+    private void putUser(User requestPutUser) {
+        com.jdid.ekyc.models.api.User service = RetrofitInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.User.class);
         Call<ResponseVerifyUser> call = service.editteUser(requestPutUser.getId(), requestPutUser);
         call.enqueue(new Callback<ResponseVerifyUser>() {
             @Override
@@ -1000,6 +997,7 @@ public class JAppActivity extends JCompatActivity {
                         }
                         if (iActualState == 2) {
                             vPowerOnCard();
+
                         }
                     }
                 });
@@ -1016,7 +1014,6 @@ public class JAppActivity extends JCompatActivity {
         for (UsbDevice device : mManager.getDeviceList().values()) {
             if (mReader.isSupported(device)) {
                 deviceName = device.getDeviceName();
-                Toast.makeText(JAppActivity.this, deviceName, Toast.LENGTH_SHORT).show();
                 break;
             }
         }
@@ -1097,9 +1094,95 @@ public class JAppActivity extends JCompatActivity {
             mcardAcquireFragment.updateEventLog(true, false, "การ์ดถูกเสียบเข้าเครื่องอ่านแล้ว");
             vShowCardProtocol(activeProtocolString);
 
-            SelectApplet();
+//            SelectApplet();
+            cardInformation();
 
         }
+    }
+
+    public void cardInformation(){
+        devices = SmartCardDevice.getSmartCardDevice(getApplicationContext(), "CCID", new SmartCardDevice.SmartCardDeviceEvent() {
+            @Override
+            public void OnReady(SmartCardDevice device) {
+                ThaiSmartCard thaiSmartCard = new ThaiSmartCard(device);
+
+                ThaiSmartCard.PersonalInformation info = thaiSmartCard.getPersonalInformation();
+                ThaiSmartCard.ChipCardADM chipCardADM = thaiSmartCard.getChipCardADM();
+
+                if (info == null) {
+                    Toast.makeText(getApplicationContext(), "Read Smart Card information failed", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                Log.d("SmartCard", String.format("PID: %s NameTH: %s NameEN: %s BirthDate: %s", info.PersonalID, info.NameTH, info.NameEN, info.BirthDate));
+                Log.d("chipCardADM", chipCardADM.LaserNumber.trim());
+
+                Bitmap personalPic = thaiSmartCard.getPersonalPicture();
+
+                if (personalPic == null) {
+                    Toast.makeText(getApplicationContext(), "Read Smart Card personal picture failed", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+
+                int number = generalInformation.length;
+                Log.d(TAG, "OnReady:xx " + number);
+
+//                CardInfo
+
+                Log.d(TAG, "OnReady0.1: " + info.CardInfo);
+
+                generalInformation[CID] = info.PersonalID;
+                Log.d(TAG, "OnReady0: " + generalInformation[CID]);
+
+                generalInformation[THAIFULLNAME] = info.NameTH;
+                Log.d(TAG, "OnReady1: " + generalInformation[THAIFULLNAME]);
+
+                generalInformation[ENGLISHFULLNAME] = info.NameEN;
+                Log.d(TAG, "OnReady2: " + generalInformation[ENGLISHFULLNAME]);
+
+                generalInformation[BIRTH] = info.BirthDate;
+                Log.d(TAG, "OnReady3: " + generalInformation[BIRTH]);
+
+                generalInformation[GENDER] = parsingSex(info.NameTH);
+                Log.d(TAG, "OnReady4: " + generalInformation[GENDER]);
+
+                generalInformation[ISSUER] = info.IssuerCode;
+                Log.d(TAG, "OnReady5: " + generalInformation[ISSUER]);
+
+                generalInformation[ISSUE] = info.Issuer;
+                Log.d(TAG, "OnReady6: " + generalInformation[ISSUE]);
+
+                generalInformation[EXPIRE] = info.ExpireDate;
+                Log.d(TAG, "OnReady7: " + generalInformation[EXPIRE]);
+
+                generalInformation[ADDRESS] = info.Address;
+                Log.d(TAG, "OnReady8: " + generalInformation[ADDRESS]);
+
+                String laserId = chipCardADM.LaserNumber.substring(0,12);
+                generalInformation[LASER_ID] = laserId;
+
+                Log.d(TAG, "OnReady9: " + generalInformation[LASER_ID]);
+
+
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                personalPic.compress(Bitmap.CompressFormat.PNG,100, stream);
+                byteImage = stream.toByteArray();
+                personalPic.recycle();
+
+
+                JAppActivity.this.mcardAcquireFragment.updateEventLog(true, true, "อ่านข้อมูลจากบัตรแล้ว");
+                JAppActivity.this.mcardAcquireFragment.setNextStep();
+
+                // do something
+            }
+
+            @Override
+            public void OnDetached(SmartCardDevice device) {
+                Toast.makeText(getApplicationContext(), "Smart Card is removed", Toast.LENGTH_LONG).show();
+            }
+        });
+        Toast.makeText(JAppActivity.this, deviceName, Toast.LENGTH_SHORT).show();
     }
 
     public void StartGrapInformation() {
@@ -1207,7 +1290,6 @@ public class JAppActivity extends JCompatActivity {
 
         return true;
     }
-    //TODO:: (2)
     private byte[] transceives(byte[] data) {
         byte[] response = new byte[512];
         int responseLength = 0;
@@ -1342,7 +1424,6 @@ public class JAppActivity extends JCompatActivity {
             }
         }
         byte[] ra = Arrays.copyOf(response, responseLength);
-        //TODO(2.1)
         Log.d("transceives", response +"");
         response = null;
         return (ra);
@@ -1457,7 +1538,17 @@ public class JAppActivity extends JCompatActivity {
 
     static void clearCardInformation() {
         fImageFromCamLoaded = false;
-        generalInformation = new String[9];
+        generalInformation = new String[10];
+    }
+
+    private String parsingSex(String strSex) {
+        String gender = strSex.substring(0,3);
+        Log.d(TAG, "OnReady10: " + gender);
+        if (gender.equals("นาย")) {
+            return "ชาย";
+        } else {
+            return "หญิง";
+        }
     }
 
     private static String TrimData(String strData) {

@@ -1,8 +1,6 @@
 package com.jdid.ekyc.models.api;
 
 import com.jdid.ekyc.models.pojo.RequestOTPForVerify;
-import com.jdid.ekyc.models.pojo.RequestCreateUser;
-import com.jdid.ekyc.models.pojo.RequestPutUser;
 import com.jdid.ekyc.models.pojo.ResponseVerifyUser;
 import com.jdid.ekyc.models.pojo.ResponseCreateUser;
 import com.jdid.ekyc.models.pojo.UserInformation;
@@ -20,7 +18,7 @@ public interface User {
     // USER CREATE USER
     @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
     @POST("/user")
-    Call<ResponseCreateUser> createUser(@Body RequestCreateUser user);
+    Call<ResponseCreateUser> createUser(@Body com.jdid.ekyc.models.pojo.User user);
 
     // USER VERIFY USeR
     @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
@@ -30,7 +28,7 @@ public interface User {
     // EDIT USER
     @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
     @PUT("/user/{id}")
-    Call<ResponseVerifyUser> editteUser(@Path("id") String id,@Body RequestPutUser user);
+    Call<ResponseVerifyUser> editteUser(@Path("id") String id,@Body com.jdid.ekyc.models.pojo.User user);
 
     //GET USRT
     @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
