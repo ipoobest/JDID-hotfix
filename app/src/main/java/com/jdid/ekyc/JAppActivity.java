@@ -58,13 +58,17 @@ import com.jdid.ekyc.models.RetrofitFaceCompare;
 import com.jdid.ekyc.models.RetrofitInstance;
 import com.jdid.ekyc.models.api.FaceCompare;
 import com.jdid.ekyc.models.api.Device;
+import com.jdid.ekyc.models.pojo.Data;
+import com.jdid.ekyc.models.pojo.Dopa;
 import com.jdid.ekyc.models.pojo.FaceCompareRequest;
 import com.jdid.ekyc.models.pojo.FaceCompareResult;
 import com.jdid.ekyc.models.pojo.OtpRef;
 import com.jdid.ekyc.models.pojo.RequestVrifyPin;
 import com.jdid.ekyc.models.pojo.ResponVerifyPin;
 import com.jdid.ekyc.models.pojo.ResponseCreateUser;
+import com.jdid.ekyc.models.pojo.ResponseDopa;
 import com.jdid.ekyc.models.pojo.ResponseVerifyUser;
+import com.jdid.ekyc.models.pojo.RetrofitDopaInstance;
 import com.jdid.ekyc.models.pojo.User;
 import com.jdid.ekyc.models.pojo.UserInformation;
 import com.jdid.ekyc.views.PFCodeView;
@@ -508,8 +512,6 @@ public class JAppActivity extends JCompatActivity {
 
     }
 
-
-
     /* ******************************************************* */
     /* Facial comPareImage                                */
     /* ******************************************************* */
@@ -554,7 +556,6 @@ public class JAppActivity extends JCompatActivity {
 
     }
 
-
     private Bitmap convertImageViewToBitmap(ImageView v) {
         Bitmap bm = ((BitmapDrawable) v.getDrawable()).getBitmap();
         return bm;
@@ -576,7 +577,6 @@ public class JAppActivity extends JCompatActivity {
         bm.recycle();
         return resizedBitmap;
     }
-
 
     public JSONObject _compareImage(String base64Image1, String base64Image2) throws TimeoutException, IOException {
         JSONObject responseJson = null;
@@ -787,6 +787,89 @@ public class JAppActivity extends JCompatActivity {
         });
     }
 
+    private void putUser(User requestPutUser) {
+        com.jdid.ekyc.models.api.User service = RetrofitInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.User.class);
+        Call<ResponseVerifyUser> call = service.editteUser(requestPutUser.getId(), requestPutUser);
+        call.enqueue(new Callback<ResponseVerifyUser>() {
+            @Override
+            public void onResponse(Call<ResponseVerifyUser> call, Response<ResponseVerifyUser> response) {
+                if (response.isSuccessful()) {
+                    if (response.code() == 404) {
+                        Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
+                        alertDialogPutUser("กรุณาทำ ekyc มาก่อน");
+                    } else {
+                        ResponseVerifyUser responseVerifyUser = response.body();
+                        Bundle params = new Bundle();
+                        params.putString("time", responseVerifyUser.getVerifiedAt());
+                        mFirebaseAnalytics.logEvent("put_user", params);
+                        Toast.makeText(getAppContext(), "ยืนยันสำเร็จ", Toast.LENGTH_SHORT).show();
+                        successFragment();
+                    }
+                } else {
+                    Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
+                    alertDialogPutUser("กรุณาทำ ekyc มาก่อน");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseVerifyUser> call, Throwable t) {
+                Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
+                alertDialogPutUser("กรุณาทำ ekyc มาก่อน");
+//                Toast.makeText(getAppContext(), "ปปปหหหหหหปป", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void checkDopa(Dopa dopa){
+        com.jdid.ekyc.models.api.Dopa service = RetrofitDopaInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.Dopa.class);
+        Call<ResponseDopa> call = service.checkDopa(dopa);
+        call.enqueue(new Callback<ResponseDopa>() {
+            @Override
+            public void onResponse(Call<ResponseDopa> call, Response<ResponseDopa> response) {
+                if (response.isSuccessful()){
+                    Log.d(TAG, "DOPA 1 : ");
+
+                    ResponseDopa result = response.body();
+                    Log.d(TAG, "DOPA 1.1 : " + result.getCode());
+
+                    if (result.getCode().equals("0")){
+                        Log.d(TAG, "DOPA 2 : " + result.getDesc());
+
+                        JAppActivity.this.mcardAcquireFragment.updateEventLog(true, true, "อ่านข้อมูลจากบัตรแล้ว");
+                        JAppActivity.this.mcardAcquireFragment.setNextStep();
+
+                    }else {
+                        Log.d(TAG, "DOPA 3 : ");
+                        alertDialogPutUser("บัตรประชาชนไม่ถูกต้อง");
+
+                    }
+                }else {
+                    Log.d(TAG, "DOPA 4 : ");
+                    alertDialogPutUser("ระบบขัดข้องกรุณาทำรายการใหม่ภายหลัง");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseDopa> call, Throwable t) {
+                Log.d(TAG, "DOPA 5 : ");
+                alertDialogPutUser("ระบบขัดข้องกรุณาทำรายการใหม่ภายหลัง");
+
+            }
+        });
+    }
+
+    private void sentConfirmOtp(String id, ResponseCreateUser result) {
+        OtpRef otpRef = result.getOtpRef();
+        String otp = otpRef.getOtpRef();
+        mProgressDialog = ProgressDialog.show(JAppActivity.this,
+                null, "กำลังส่ง OTP กรุณารอสักครู่", true, false);
+        mProgressDialog.dismiss();
+        mProgressDialog = null;
+        // if save success then show success fragment
+        if (otp != null) {
+            showOTPVerifyUserFragment(id, otp, mPhonePerson);
+        }
+    }
 
     public byte[] recoverImageFromUrl(String urlText) throws Exception {
         URL url = new URL(urlText);
@@ -802,7 +885,6 @@ public class JAppActivity extends JCompatActivity {
 
         return output.toByteArray();
     }
-
 
     private boolean compareImageUrl(byte[] imageDb, String imageFormUrl) {
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
@@ -839,51 +921,7 @@ public class JAppActivity extends JCompatActivity {
         return false;
     }
 
-    private void putUser(User requestPutUser) {
-        com.jdid.ekyc.models.api.User service = RetrofitInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.User.class);
-        Call<ResponseVerifyUser> call = service.editteUser(requestPutUser.getId(), requestPutUser);
-        call.enqueue(new Callback<ResponseVerifyUser>() {
-            @Override
-            public void onResponse(Call<ResponseVerifyUser> call, Response<ResponseVerifyUser> response) {
-                if (response.isSuccessful()) {
-                    if (response.code() == 404) {
-                        Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
-                        alertDialogPutUser("กรุณาทำ ekyc มาก่อน");
-                    } else {
-                        ResponseVerifyUser responseVerifyUser = response.body();
-                        Bundle params = new Bundle();
-                        params.putString("time", responseVerifyUser.getVerifiedAt());
-                        mFirebaseAnalytics.logEvent("put_user", params);
-                        Toast.makeText(getAppContext(), "ยืนยันสำเร็จ", Toast.LENGTH_SHORT).show();
-                        successFragment();
-                    }
-                } else {
-                    Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
-                    alertDialogPutUser("กรุณาทำ ekyc มาก่อน");
-                }
-            }
 
-            @Override
-            public void onFailure(Call<ResponseVerifyUser> call, Throwable t) {
-                Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
-                alertDialogPutUser("กรุณาทำ ekyc มาก่อน");
-//                Toast.makeText(getAppContext(), "ปปปหหหหหหปป", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void sentConfirmOtp(String id, ResponseCreateUser result) {
-        OtpRef otpRef = result.getOtpRef();
-        String otp = otpRef.getOtpRef();
-        mProgressDialog = ProgressDialog.show(JAppActivity.this,
-                null, "กำลังส่ง OTP กรุณารอสักครู่", true, false);
-        mProgressDialog.dismiss();
-        mProgressDialog = null;
-        // if save success then show success fragment
-        if (otp != null) {
-            showOTPVerifyUserFragment(id, otp, mPhonePerson);
-        }
-    }
     /* ******************************************************* */
     /* Citizen Card Reader Routine
     /* ******************************************************* */
@@ -1170,11 +1208,25 @@ public class JAppActivity extends JCompatActivity {
                 byteImage = stream.toByteArray();
                 personalPic.recycle();
 
+                String string = generalInformation[THAIFULLNAME];
+                Log.d(TAG, "OnReady: string 10 " + string);
+                String[] parts = string.split("\\s+");
+                String part1 = parts[1];
+                String part2 = parts[2];
 
-                JAppActivity.this.mcardAcquireFragment.updateEventLog(true, true, "อ่านข้อมูลจากบัตรแล้ว");
-                JAppActivity.this.mcardAcquireFragment.setNextStep();
+                Log.d(TAG, "OnReady: 11 " + part1);
+                Log.d(TAG, "OnReady: 12 " + part2);
 
-                // do something
+
+                Dopa dopa = new Dopa();
+                dopa.setPID(generalInformation[CID]);
+                dopa.setFirstName(part1);
+                dopa.setLastName(part2);
+                dopa.setBirthDay(generalInformation[BIRTH]);
+                dopa.setLaser(generalInformation[LASER_ID]);
+
+                checkDopa(dopa);
+
             }
 
             @Override
