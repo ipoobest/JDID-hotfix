@@ -663,6 +663,11 @@ public class JAppActivity extends JCompatActivity {
     }
 
     public void PutInformationForPerson(int verify_type) {
+
+        mProgressDialog = ProgressDialog.show(JAppActivity.this,
+                null, "กำลังอ่านข้อมูลจากบัตร", true, false);
+
+
         String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         User request = new User();
         if (verify_type == VERIFY_PERSON){
@@ -684,6 +689,9 @@ public class JAppActivity extends JCompatActivity {
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
 
         Log.d("PutInformation : ", fieldsList[REF_COMPANY]);
+
+        mProgressDialog.dismiss();
+        mProgressDialog = null;
 
         putUser(request);
     }
@@ -788,6 +796,9 @@ public class JAppActivity extends JCompatActivity {
     }
 
     private void putUser(User requestPutUser) {
+        mProgressDialog = ProgressDialog.show(JAppActivity.this,
+                null, "ระบบกำลังจัดเก็บข้อมูล", true, false);
+
         com.jdid.ekyc.models.api.User service = RetrofitInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.User.class);
         Call<ResponseVerifyUser> call = service.editteUser(requestPutUser.getId(), requestPutUser);
         call.enqueue(new Callback<ResponseVerifyUser>() {
@@ -803,9 +814,14 @@ public class JAppActivity extends JCompatActivity {
                         params.putString("time", responseVerifyUser.getVerifiedAt());
                         mFirebaseAnalytics.logEvent("put_user", params);
                         Toast.makeText(getAppContext(), "ยืนยันสำเร็จ", Toast.LENGTH_SHORT).show();
+
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
                         successFragment();
                     }
                 } else {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
                     Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
                     alertDialogPutUser("กรุณาทำ ekyc มาก่อน");
                 }
@@ -813,6 +829,8 @@ public class JAppActivity extends JCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseVerifyUser> call, Throwable t) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
                 Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
                 alertDialogPutUser("กรุณาทำ ekyc มาก่อน");
 //                Toast.makeText(getAppContext(), "ปปปหหหหหหปป", Toast.LENGTH_SHORT).show();
@@ -1133,12 +1151,15 @@ public class JAppActivity extends JCompatActivity {
             vShowCardProtocol(activeProtocolString);
 
 //            SelectApplet();
-            cardInformation();
+//            cardInformation();
 
         }
     }
 
     public void cardInformation(){
+        mProgressDialog = ProgressDialog.show(JAppActivity.this,
+                null, "กำลังอ่านข้อมูลจากบัตร", true, false);
+
         devices = SmartCardDevice.getSmartCardDevice(getApplicationContext(), "CCID", new SmartCardDevice.SmartCardDeviceEvent() {
             @Override
             public void OnReady(SmartCardDevice device) {
@@ -1224,6 +1245,9 @@ public class JAppActivity extends JCompatActivity {
                 dopa.setLastName(part2);
                 dopa.setBirthDay(generalInformation[BIRTH]);
                 dopa.setLaser(generalInformation[LASER_ID]);
+
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
 
                 checkDopa(dopa);
 
