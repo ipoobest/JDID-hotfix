@@ -1170,6 +1170,9 @@ public class JAppActivity extends JCompatActivity {
 
                 if (info == null) {
                     Toast.makeText(getApplicationContext(), "Read Smart Card information failed", Toast.LENGTH_LONG).show();
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                    alertDialogPutUser("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณาทำรายการใหม่");
                     return;
                 }
 
@@ -1180,6 +1183,9 @@ public class JAppActivity extends JCompatActivity {
 
                 if (personalPic == null) {
                     Toast.makeText(getApplicationContext(), "Read Smart Card personal picture failed", Toast.LENGTH_LONG).show();
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                    alertDialogPutUser("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณาทำรายการใหม่");
                     return;
                 }
 
