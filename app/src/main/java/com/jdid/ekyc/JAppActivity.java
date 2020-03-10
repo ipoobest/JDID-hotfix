@@ -1157,8 +1157,8 @@ public class JAppActivity extends JCompatActivity {
     }
 
     public void cardInformation(){
-        mProgressDialog = ProgressDialog.show(JAppActivity.this,
-                null, "กำลังอ่านข้อมูลจากบัตร", true, false);
+//        mProgressDialog = ProgressDialog.show(JAppActivity.this,
+//                null, "กำลังอ่านข้อมูลจากบัตร", true, false);
 
         devices = SmartCardDevice.getSmartCardDevice(getApplicationContext(), "CCID", new SmartCardDevice.SmartCardDeviceEvent() {
             @Override
@@ -1170,8 +1170,8 @@ public class JAppActivity extends JCompatActivity {
 
                 if (info == null) {
                     Toast.makeText(getApplicationContext(), "Read Smart Card information failed", Toast.LENGTH_LONG).show();
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
+//                    mProgressDialog.dismiss();
+//                    mProgressDialog = null;
                     alertDialogPutUser("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณาทำรายการใหม่");
                     return;
                 }
@@ -1183,8 +1183,8 @@ public class JAppActivity extends JCompatActivity {
 
                 if (personalPic == null) {
                     Toast.makeText(getApplicationContext(), "Read Smart Card personal picture failed", Toast.LENGTH_LONG).show();
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
+//                    mProgressDialog.dismiss();
+//                    mProgressDialog = null;
                     alertDialogPutUser("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณาทำรายการใหม่");
                     return;
                 }
@@ -1244,6 +1244,10 @@ public class JAppActivity extends JCompatActivity {
                 Log.d(TAG, "OnReady: 11 " + part1);
                 Log.d(TAG, "OnReady: 12 " + part2);
 
+                Bundle params = new Bundle();
+                params.putString("dopa", part2);
+//                alertDialogPutUser("ระบบขัดข้องไม่สามารถ บันทึกได้กรุณาติดต่อเจ้าหน้าที่");
+                mFirebaseAnalytics.logEvent("createUser", params);
 
                 Dopa dopa = new Dopa();
                 dopa.setPID(generalInformation[CID]);
@@ -1252,8 +1256,10 @@ public class JAppActivity extends JCompatActivity {
                 dopa.setBirthDay(generalInformation[BIRTH]);
                 dopa.setLaser(generalInformation[LASER_ID]);
 
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
+
+
+//                mProgressDialog.dismiss();
+//                mProgressDialog = null;
 
                 checkDopa(dopa);
 
