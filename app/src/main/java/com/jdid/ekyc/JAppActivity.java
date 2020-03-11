@@ -101,8 +101,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.0.16";
-    public static final String APP_DATE_UPDATE = "09/03/63";
+    public static final String APP_VERSION = "release 1.0.17";
+    public static final String APP_DATE_UPDATE = "11/03/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -742,6 +742,8 @@ public class JAppActivity extends JCompatActivity {
     }
 
     public void getUser(String id) {
+        mProgressDialog = ProgressDialog.show(JAppActivity.this,
+                null, "กำลังอ่านข้อมูลจากบัตร", true, false);
         com.jdid.ekyc.models.api.User service = RetrofitInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.User.class);
         Call<UserInformation> call = service.getUser(id);
         call.enqueue(new Callback<UserInformation>() {
@@ -757,6 +759,8 @@ public class JAppActivity extends JCompatActivity {
 
                     if (image != null && image.length() >= 1000) {
                         Log.d("getUser: ", "1");
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
 
 //                        Log.d("onResponse:xxxxxxx ", image.length() + "");
                         comPareImage(imageDB,image);
@@ -765,6 +769,8 @@ public class JAppActivity extends JCompatActivity {
                         byte[] imageFormUrl = new byte[0];
 
                         try {
+                            mProgressDialog.dismiss();
+                            mProgressDialog = null;
                             imageFormUrl = recoverImageFromUrl(image);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -773,15 +779,23 @@ public class JAppActivity extends JCompatActivity {
                         String imageURL = Base64.encodeToString(imageFormUrl, Base64.NO_WRAP);
                         if (compareImageUrl(byteImage, imageURL)) {
                             Toast.makeText(getAppContext(), "สำเร็จ", Toast.LENGTH_SHORT).show();
+                            mProgressDialog.dismiss();
+                            mProgressDialog = null;
                             PutInformationForPerson(VERIFY_DIPCHIP);
                         } else {
+                            mProgressDialog.dismiss();
+                            mProgressDialog = null;
                             alertDialogPutUser("ไม่พบข้อมูลท่านในระบบกรุณาทำการยืนยันตัวตนใน ระบบ ekyc ก่อน\"");
                         }
                     }else {
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
                         alertDialogPutUser("ไม่พบข้อมูลท่านในระบบกรุณาทำการยืนยันตัวตนใน ระบบ ekyc ก่อน\"");
                     }
                 }
                 else {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
                     alertDialogPutUser("ไม่พบข้อมูลท่านในระบบกรุณาทำการยืนยันตัวตนใน ระบบ ekyc ก่อน");
                 }
             }
@@ -789,6 +803,8 @@ public class JAppActivity extends JCompatActivity {
 
             @Override
             public void onFailure(Call<UserInformation> call, Throwable t) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
                 Log.d("getUser: ", "4");
                 Log.d("onResponse: ", "exxxxxxxxxxxxxxx");
             }
@@ -1157,8 +1173,8 @@ public class JAppActivity extends JCompatActivity {
     }
 
     public void cardInformation(){
-//        mProgressDialog = ProgressDialog.show(JAppActivity.this,
-//                null, "กำลังอ่านข้อมูลจากบัตร", true, false);
+        mProgressDialog = ProgressDialog.show(JAppActivity.this,
+                null, "กำลังอ่านข้อมูลจากบัตร", true, false);
 
         devices = SmartCardDevice.getSmartCardDevice(getApplicationContext(), "CCID", new SmartCardDevice.SmartCardDeviceEvent() {
             @Override
@@ -1170,8 +1186,8 @@ public class JAppActivity extends JCompatActivity {
 
                 if (info == null) {
                     Toast.makeText(getApplicationContext(), "Read Smart Card information failed", Toast.LENGTH_LONG).show();
-//                    mProgressDialog.dismiss();
-//                    mProgressDialog = null;
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
                     alertDialogPutUser("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณาทำรายการใหม่");
                     return;
                 }
@@ -1183,8 +1199,8 @@ public class JAppActivity extends JCompatActivity {
 
                 if (personalPic == null) {
                     Toast.makeText(getApplicationContext(), "Read Smart Card personal picture failed", Toast.LENGTH_LONG).show();
-//                    mProgressDialog.dismiss();
-//                    mProgressDialog = null;
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
                     alertDialogPutUser("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณาทำรายการใหม่");
                     return;
                 }
@@ -1244,10 +1260,6 @@ public class JAppActivity extends JCompatActivity {
                 Log.d(TAG, "OnReady: 11 " + part1);
                 Log.d(TAG, "OnReady: 12 " + part2);
 
-                Bundle params = new Bundle();
-                params.putString("dopa", part2);
-//                alertDialogPutUser("ระบบขัดข้องไม่สามารถ บันทึกได้กรุณาติดต่อเจ้าหน้าที่");
-                mFirebaseAnalytics.logEvent("createUser", params);
 
                 Dopa dopa = new Dopa();
                 dopa.setPID(generalInformation[CID]);
@@ -1256,10 +1268,18 @@ public class JAppActivity extends JCompatActivity {
                 dopa.setBirthDay(generalInformation[BIRTH]);
                 dopa.setLaser(generalInformation[LASER_ID]);
 
+                if (dopa.getFirstName() == null){
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                    alertDialogPutUser("ไม่สามารถอ่านข้อมูลจากบัตรได้ กรุณาทำรายการใหม่");
+                    return;
+
+                }
 
 
-//                mProgressDialog.dismiss();
-//                mProgressDialog = null;
+
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
 
                 checkDopa(dopa);
 
