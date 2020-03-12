@@ -1166,7 +1166,7 @@ public class JAppActivity extends JCompatActivity {
             mcardAcquireFragment.updateEventLog(true, false, "การ์ดถูกเสียบเข้าเครื่องอ่านแล้ว");
             vShowCardProtocol(activeProtocolString);
 
-//            SelectApplet();
+            SelectApplet();
 //            cardInformation();
 
         }
@@ -1175,6 +1175,8 @@ public class JAppActivity extends JCompatActivity {
     public void cardInformation(){
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
                 null, "กำลังอ่านข้อมูลจากบัตร", true, false);
+
+        clearCardInformation();
 
         devices = SmartCardDevice.getSmartCardDevice(getApplicationContext(), "CCID", new SmartCardDevice.SmartCardDeviceEvent() {
             @Override
@@ -1188,7 +1190,7 @@ public class JAppActivity extends JCompatActivity {
                     Toast.makeText(getApplicationContext(), "Read Smart Card information failed", Toast.LENGTH_LONG).show();
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
-                    alertDialogPutUser("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณาทำรายการใหม่");
+                    alertDialogPutUser("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณาทำรายการใหม่ info");
                     return;
                 }
 
@@ -1201,7 +1203,7 @@ public class JAppActivity extends JCompatActivity {
                     Toast.makeText(getApplicationContext(), "Read Smart Card personal picture failed", Toast.LENGTH_LONG).show();
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
-                    alertDialogPutUser("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณาทำรายการใหม่");
+                    alertDialogPutUser("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณาทำรายการใหม่ pic");
                     return;
                 }
 
@@ -1398,6 +1400,7 @@ public class JAppActivity extends JCompatActivity {
 
         return true;
     }
+
     private byte[] transceives(byte[] data) {
         byte[] response = new byte[512];
         int responseLength = 0;
