@@ -88,6 +88,7 @@ import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.concurrent.TimeoutException;
 
 
@@ -101,8 +102,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.0.17";
-    public static final String APP_DATE_UPDATE = "11/03/63";
+    public static final String APP_VERSION = "release 1.0.18";
+    public static final String APP_DATE_UPDATE = "12/03/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -265,8 +266,6 @@ public class JAppActivity extends JCompatActivity {
 
     //log
     private FirebaseAnalytics mFirebaseAnalytics;
-
-    SmartCardDevice devices;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -1166,7 +1165,7 @@ public class JAppActivity extends JCompatActivity {
             mcardAcquireFragment.updateEventLog(true, false, "การ์ดถูกเสียบเข้าเครื่องอ่านแล้ว");
             vShowCardProtocol(activeProtocolString);
 
-            SelectApplet();
+//            SelectApplet();
 //            cardInformation();
 
         }
@@ -1176,9 +1175,11 @@ public class JAppActivity extends JCompatActivity {
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
                 null, "กำลังอ่านข้อมูลจากบัตร", true, false);
 
-        clearCardInformation();
+        deviceName = getDeviceName();
 
-        devices = SmartCardDevice.getSmartCardDevice(getApplicationContext(), "CCID", new SmartCardDevice.SmartCardDeviceEvent() {
+        Log.d(TAG, "cardInformation: devicename " + deviceName);
+
+        SmartCardDevice.getSmartCardDevice(getApplicationContext(), deviceName, new SmartCardDevice.SmartCardDeviceEvent() {
             @Override
             public void OnReady(SmartCardDevice device) {
                 ThaiSmartCard thaiSmartCard = new ThaiSmartCard(device);
@@ -1650,6 +1651,31 @@ public class JAppActivity extends JCompatActivity {
     static void clearCardInformation() {
         fImageFromCamLoaded = false;
         generalInformation = new String[10];
+    }
+    private String getDeviceName(){
+        HashMap<String, UsbDevice> deviceList;
+//        UsbDevice device = null;
+        UsbManager manager;
+
+        manager = (UsbManager)context.getSystemService(Context.USB_SERVICE);
+        if (manager == null) {
+            Log.w(TAG, "USB manager not found");
+            return null;
+        }
+
+        deviceList = manager.getDeviceList();
+        if (deviceList == null) {
+            Log.w(TAG, "USB device list not found");
+            return null;
+        }
+
+
+        for (String key : deviceList.keySet()) {
+            Log.d(TAG, "[ productname " + deviceList.get(key).getProductName() + "] [" + deviceList.get(key).getDeviceName() + "]");
+            deviceName =  deviceList.get(key).getProductName();
+            break;
+        }
+        return deviceName;
     }
 
     private String parsingSex(String strSex) {
