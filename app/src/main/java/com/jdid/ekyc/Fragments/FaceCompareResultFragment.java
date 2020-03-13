@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -175,7 +176,7 @@ public class FaceCompareResultFragment extends Fragment {
 
     private void checkResultBuidu(double result) {
         String re = String.valueOf(result);
-        if (result >= 70) {
+        if (result >= 85) {
             txtResult.setText(R.string.compare_success);
             txtResultDescription.setText(R.string.compare_success_description);
 //            txtScore.setText(re);
@@ -183,6 +184,8 @@ public class FaceCompareResultFragment extends Fragment {
             btnNextStep.setText(R.string.next_step);
             mfNextStep = true;
         } else {
+            Log.d("image score", "checkResultBuidu: " + result);
+            Toast.makeText(getContext(), result+"", Toast.LENGTH_SHORT).show();
             txtResult.setText(R.string.compare_fail);
             txtResultDescription.setText(R.string.compare_fail_description);
             txtResultDescription.setTextColor(getResources().getColor(R.color.error_color));

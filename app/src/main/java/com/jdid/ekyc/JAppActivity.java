@@ -55,6 +55,7 @@ import com.jdid.ekyc.Fragments.SuccessFragment;
 import com.jdid.ekyc.Fragments.WaitForAuthoriseFragment;
 import com.jdid.ekyc.base.JCompatActivity;
 import com.jdid.ekyc.models.RetrofitFaceCompare;
+import com.jdid.ekyc.models.RetrofitFaceInstance;
 import com.jdid.ekyc.models.RetrofitInstance;
 import com.jdid.ekyc.models.api.FaceCompare;
 import com.jdid.ekyc.models.api.Device;
@@ -63,11 +64,14 @@ import com.jdid.ekyc.models.pojo.Dopa;
 import com.jdid.ekyc.models.pojo.FaceCompareRequest;
 import com.jdid.ekyc.models.pojo.FaceCompareResult;
 import com.jdid.ekyc.models.pojo.OtpRef;
+import com.jdid.ekyc.models.pojo.RequestFaceCompare;
 import com.jdid.ekyc.models.pojo.RequestVrifyPin;
 import com.jdid.ekyc.models.pojo.ResponVerifyPin;
 import com.jdid.ekyc.models.pojo.ResponseCreateUser;
 import com.jdid.ekyc.models.pojo.ResponseDopa;
+import com.jdid.ekyc.models.pojo.ResponseFaceCompare;
 import com.jdid.ekyc.models.pojo.ResponseVerifyUser;
+import com.jdid.ekyc.models.pojo.ResultFaceCompare;
 import com.jdid.ekyc.models.pojo.RetrofitDopaInstance;
 import com.jdid.ekyc.models.pojo.User;
 import com.jdid.ekyc.models.pojo.UserInformation;
@@ -87,6 +91,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.TimeoutException;
@@ -102,8 +107,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.0.18";
-    public static final String APP_DATE_UPDATE = "12/03/63";
+    public static final String APP_VERSION = "release 1.1.0";
+    public static final String APP_DATE_UPDATE = "13/03/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -463,7 +468,8 @@ public class JAppActivity extends JCompatActivity {
 
             String imageDB = Base64.encodeToString(byteImage, Base64.NO_WRAP);
             String imageCam = Base64.encodeToString(byteImageCam, Base64.NO_WRAP);
-            comPareImage(imageDB, imageCam);
+//            comPareImage(imageDB, imageCam);
+            comPareImageBuidu(imageDB, imageCam);
 
         }
     }
@@ -555,6 +561,62 @@ public class JAppActivity extends JCompatActivity {
 
     }
 
+
+    private void comPareImageBuidu(String imageDB, final String imageCam){
+        RequestFaceCompare image1 = new RequestFaceCompare();
+        final RequestFaceCompare image2 = new RequestFaceCompare();
+        //image 1
+//        image1.setImage(Base64.encodeToString(byteImage, Base64.NO_WRAP));
+        image1.setImage(imageDB);
+        image1.setImageType("BASE64");
+        image1.setFaceType("LIVE");
+        image1.setQualityControl("LOW");
+        image1.setLivenessControl("NONE");
+
+//        image2
+//        image2.setImage(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
+        image2.setImage(imageCam);
+        image2.setImageType("BASE64");
+        image2.setFaceType("LIVE");
+        image2.setQualityControl("LOW");
+        image2.setLivenessControl("NONE");
+
+        ArrayList<RequestFaceCompare> list = new ArrayList<>();
+        list.add(image1);
+        list.add(image2);
+        Log.d("CompareImageBuidu: ", list.toString());
+
+        FaceCompare service = RetrofitFaceInstance.getRetrofitInstance().create(FaceCompare.class);
+        Call<ResponseFaceCompare> call = service.faceCompare(list);
+
+
+        call.enqueue(new Callback<ResponseFaceCompare>() {
+            @Override
+            public void onResponse(Call<ResponseFaceCompare> call, Response<ResponseFaceCompare> response) {
+                if (response.isSuccessful()) {
+                    ResponseFaceCompare res = response.body();
+                    Log.d("onResponse:aaa ", res.getTimestamp().toString());
+
+                    ResultFaceCompare result = res.getResultFaceCompare();
+                    if (result.getScore() >= 85.00) {
+                        showFaceCompareResult(result.getScore(),image2.getImage());
+                        Log.d("onResponse:aaa ", "1");
+                    } else {
+                        Log.d("onResponse:aaa ", "1.1");
+                    }
+                } else {
+                    Log.d("onResponse:aaa ", "2");
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseFaceCompare> call, Throwable t) {
+                Log.d("onResponse:aaa ", "3" + t.toString());
+            }
+        });
+
+    }
     private Bitmap convertImageViewToBitmap(ImageView v) {
         Bitmap bm = ((BitmapDrawable) v.getDrawable()).getBitmap();
         return bm;
@@ -637,6 +699,7 @@ public class JAppActivity extends JCompatActivity {
         }
 
         request.setNameTh(generalInformation[THAIFULLNAME]);
+//        request.setNameTh("ภูเบศ222");
         request.setNameEn(generalInformation[ENGLISHFULLNAME]);
         request.setBirthdate(generalInformation[BIRTH]);
         request.setId(generalInformation[CID]);
@@ -703,14 +766,17 @@ public class JAppActivity extends JCompatActivity {
             public void onResponse(Call<ResponseCreateUser> call, Response<ResponseCreateUser> response) {
                 if (response.isSuccessful()) {
                     ResponseCreateUser result = response.body();
-                    if (result.getStatusCode() == 409) {
-                        alertDialogPhone();
-                    } else if (result.getStatusCode() == 200) {
+                    int status = result.getStatusCode();
+                    if (status == 409) {
+                        alertDialogPhone("เบอร์โทรศัพท์นี้ถูกใช้งานแล้ว กรุณาเปลี่ยนใหม่");
+                    } else if (status == 200) {
                         Bundle params = new Bundle();
                         params.putString("create", result.getStatusCode().toString());
                         mFirebaseAnalytics.logEvent("createUser", params);
                         Log.d("onResponse: xx ", result.getMessage());
                         sentConfirmOtp(generalInformation[CID], result);
+                    }else if (status == 411){
+                        alertDialogPhone("ข้อมูลชื่อ นามสกุล หรือวันเกิดไม่ตรงกับเลขบัตรนี้");
                     }
                 } else {
                     try {
@@ -762,7 +828,9 @@ public class JAppActivity extends JCompatActivity {
                         mProgressDialog = null;
 
 //                        Log.d("onResponse:xxxxxxx ", image.length() + "");
-                        comPareImage(imageDB,image);
+                        //TODO :: compare image
+//                        comPareImage(imageDB,image);
+                        comPareImageBuidu(imageDB,image);
 //
                     } else if (image != null && image.length() <= 999) {
                         byte[] imageFormUrl = new byte[0];
@@ -1284,7 +1352,10 @@ public class JAppActivity extends JCompatActivity {
                 mProgressDialog.dismiss();
                 mProgressDialog = null;
 
-                checkDopa(dopa);
+                JAppActivity.this.mcardAcquireFragment.updateEventLog(true, true, "อ่านข้อมูลจากบัตรแล้ว");
+                JAppActivity.this.mcardAcquireFragment.setNextStep();
+
+//                checkDopa(dopa);
 
             }
 
@@ -1733,9 +1804,9 @@ public class JAppActivity extends JCompatActivity {
         }
     }
 
-    private void alertDialogPhone() {
+    private void alertDialogPhone(String message) {
         new AlertDialog.Builder(this)
-                .setMessage("เบอร์โทรศัพท์นี้ถูกใช้งานแล้ว กรุณาเปลี่ยนใหม่")
+                .setMessage(message)
                 .setCancelable(false)
                 .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
