@@ -602,7 +602,8 @@ public class JAppActivity extends JCompatActivity {
                         alertDialogPutUser("รูปภาพไม้สมบูรณ์ กรุณาทำรายการใหม่");
                         return;
                     }
-                    if (result.getScore() >= 40.00) {
+                    if (result.getScore() >= 20.00) {
+                        Toast.makeText(context,result.getScore()+"", Toast.LENGTH_SHORT).show();
                         showFaceCompareResult(result.getScore(),image2.getImage());
                         Log.d("onResponse:aaa ", "1");
                     } else {
@@ -617,6 +618,8 @@ public class JAppActivity extends JCompatActivity {
             @Override
             public void onFailure(Call<ResponseFaceCompare> call, Throwable t) {
                 Log.d("onResponse:aaa ", "3" + t.toString());
+                alertDialogPutUser("รูปภาพไม้สมบูรณ์ กรุณาทำรายการใหม่");
+                return;
             }
         });
 
@@ -1327,19 +1330,28 @@ public class JAppActivity extends JCompatActivity {
                 personalPic.recycle();
 
                 String string = generalInformation[THAIFULLNAME];
+//                String string = "นาย ภูเบศ  จิรธิติ ณ ลำปาง";
                 Log.d(TAG, "OnReady: string 10 " + string);
-                String[] parts = string.split("\\s+");
-                String part1 = parts[1];
-                String part2 = parts[2];
+//                String[] parts = string.split("\\s+");
+//                String part1 = parts[1];
+//                String part2 = parts[2];
 
-                Log.d(TAG, "OnReady: 11 " + part1);
-                Log.d(TAG, "OnReady: 12 " + part2);
+                String[] name = string.split("  ");
+
+                String[] part = name[0].split(" ");
+
+                String name_title = part[0];
+                String first_name = part[1];
+                String last_name = name[1];
+
+                Log.d(TAG, "OnReady: 11 " + first_name);
+                Log.d(TAG, "OnReady: 12 " + last_name);
 
 
                 Dopa dopa = new Dopa();
                 dopa.setPID(generalInformation[CID]);
-                dopa.setFirstName(part1);
-                dopa.setLastName(part2);
+                dopa.setFirstName(first_name);
+                dopa.setLastName(last_name);
                 dopa.setBirthDay(generalInformation[BIRTH]);
                 dopa.setLaser(generalInformation[LASER_ID]);
 
