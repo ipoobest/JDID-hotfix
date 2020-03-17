@@ -107,8 +107,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.1.1";
-    public static final String APP_DATE_UPDATE = "14/03/63";
+    public static final String APP_VERSION = "release 1.1.3";
+    public static final String APP_DATE_UPDATE = "17/03/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -1356,10 +1356,10 @@ public class JAppActivity extends JCompatActivity {
                 mProgressDialog.dismiss();
                 mProgressDialog = null;
 
-                JAppActivity.this.mcardAcquireFragment.updateEventLog(true, true, "อ่านข้อมูลจากบัตรแล้ว");
-                JAppActivity.this.mcardAcquireFragment.setNextStep();
+//                JAppActivity.this.mcardAcquireFragment.updateEventLog(true, true, "อ่านข้อมูลจากบัตรแล้ว");
+//                JAppActivity.this.mcardAcquireFragment.setNextStep();
 
-//                checkDopa(dopa);
+                checkDopa(dopa);
 
             }
 

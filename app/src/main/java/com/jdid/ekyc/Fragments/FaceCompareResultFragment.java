@@ -33,6 +33,8 @@ import com.jdid.ekyc.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
+
 public class FaceCompareResultFragment extends Fragment {
 
     private static final int VERIFY_EKYC = 0;
@@ -120,7 +122,7 @@ public class FaceCompareResultFragment extends Fragment {
 
         txtResult = view.findViewById(R.id.tvResult);
         txtResultDescription = view.findViewById(R.id.txtResultDescription);
-//        txtScore = view.findViewById(R.id.tvScore);
+        txtScore = view.findViewById(R.id.tvScore);
         imageFromCard = view.findViewById(R.id.imageFromCard);
         imageFromCam = view.findViewById(R.id.imageFromCam);
         byteImage = ((JAppActivity) getActivity()).getByteImage();
@@ -175,11 +177,12 @@ public class FaceCompareResultFragment extends Fragment {
     }
 
     private void checkResultBuidu(double result) {
-        String re = String.valueOf(result);
-        if (result >= 85) {
+        String number = new DecimalFormat("0.00").format(result);
+//        String re = String.valueOf(result);
+        if (result >= 80) {
             txtResult.setText(R.string.compare_success);
             txtResultDescription.setText(R.string.compare_success_description);
-//            txtScore.setText(re);
+            txtScore.setText(number);
             txtResultDescription.setTextColor(getResources().getColor(R.color.success_color));
             btnNextStep.setText(R.string.next_step);
             mfNextStep = true;
@@ -189,7 +192,7 @@ public class FaceCompareResultFragment extends Fragment {
             txtResult.setText(R.string.compare_fail);
             txtResultDescription.setText(R.string.compare_fail_description);
             txtResultDescription.setTextColor(getResources().getColor(R.color.error_color));
-//            txtScore.setText(re);
+            txtScore.setText(number);
             btnNextStep.setText(R.string.try_again);
             mfNextStep = false;
         }
