@@ -107,8 +107,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.1.3";
-    public static final String APP_DATE_UPDATE = "17/03/63";
+    public static final String APP_VERSION = "release 1.1.4";
+    public static final String APP_DATE_UPDATE = "19/03/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -599,7 +599,7 @@ public class JAppActivity extends JCompatActivity {
 
                     ResultFaceCompare result = res.getResultFaceCompare();
                     if (result == null){
-                        alertDialogPutUser("รูปภาพไม้สมบูรณ์ กรุณาทำรายการใหม่");
+                        alertDialogPutUser("รูปภาพไม่สมบูรณ์ กรุณาทำรายการใหม่");
                         return;
                     }
                     if (result.getScore() >= 20.00) {
@@ -608,17 +608,20 @@ public class JAppActivity extends JCompatActivity {
                         Log.d("onResponse:aaa ", "1");
                     } else {
                         Log.d("onResponse:aaa ", "1.1");
+                        alertDialogPutUser("รูปภาพไม่สมบูรณ์ กรุณาทำรายการใหม่(1)");
+                        return;
                     }
                 } else {
                     Log.d("onResponse:aaa ", "2");
-
+                    alertDialogPutUser("รูปภาพไม้สมบูรณ์ กรุณาทำรายการใหม่(2)");
+                    return;
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseFaceCompare> call, Throwable t) {
                 Log.d("onResponse:aaa ", "3" + t.toString());
-                alertDialogPutUser("รูปภาพไม้สมบูรณ์ กรุณาทำรายการใหม่");
+                alertDialogPutUser("รูปภาพไม่สมบูรณ์ กรุณาทำรายการใหม่(3)");
                 return;
             }
         });
@@ -1330,14 +1333,9 @@ public class JAppActivity extends JCompatActivity {
                 personalPic.recycle();
 
                 String string = generalInformation[THAIFULLNAME];
-//                String string = "นาย ภูเบศ  จิรธิติ ณ ลำปาง";
                 Log.d(TAG, "OnReady: string 10 " + string);
-//                String[] parts = string.split("\\s+");
-//                String part1 = parts[1];
-//                String part2 = parts[2];
 
                 String[] name = string.split("  ");
-
                 String[] part = name[0].split(" ");
 
                 String name_title = part[0];

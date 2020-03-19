@@ -179,7 +179,7 @@ public class FaceCompareResultFragment extends Fragment {
     private void checkResultBuidu(double result) {
         String number = new DecimalFormat("0.00").format(result);
 //        String re = String.valueOf(result);
-        if (result >= 80) {
+        if (result >= 78) {
             txtResult.setText(R.string.compare_success);
             txtResultDescription.setText(R.string.compare_success_description);
             txtScore.setText(number);
