@@ -103,12 +103,13 @@ public class FaceCompareResultFragment extends Fragment {
         spCompanyRef.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                Toast.makeText(getContext(),
-//                        "Select : " + companyName[position],
-//                        Toast.LENGTH_SHORT).show();
 
-                companyRef = companyName[position];
-                ((JAppActivity) getActivity()).fieldsList[JAppActivity.REF_COMPANY] = companyRef;
+                if (parent.getItemAtPosition(position).equals("กรุณาเลือก ชื่อบริษัท")) {
+                    companyRef = null;
+                } else {
+                    companyRef = companyName[position];
+                    ((JAppActivity) getActivity()).fieldsList[JAppActivity.REF_COMPANY] = companyRef;
+                }
             }
 
             @Override
@@ -155,8 +156,10 @@ public class FaceCompareResultFragment extends Fragment {
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                if (mfNextStep) {
+                if (companyRef == null){
+                    Toast.makeText(getContext(), "กรุณาเลือกบริษัท", Toast.LENGTH_SHORT).show();
+                }
+                else if (mfNextStep) {
                     switch (((JAppActivity) getActivity()).isVerifyPerson()) {
                         case VERIFY_EKYC:
                             ((JAppActivity) getActivity()).showFormFillFragment();
@@ -165,6 +168,7 @@ public class FaceCompareResultFragment extends Fragment {
                             ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_PERSON);
                             break;
                         case VERIFY_DIP_CHIP:
+
                             ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_DIP_CHIP);
                             break;
                     }
