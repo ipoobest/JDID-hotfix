@@ -602,6 +602,7 @@ public class JAppActivity extends JCompatActivity {
                         alertDialogPutUser("รูปภาพไม่สมบูรณ์ กรุณาทำรายการใหม่");
                         return;
                     }
+                    //TODO :: Check image if dipchip
                     if (result.getScore() >= 20.00) {
                         Toast.makeText(context,result.getScore()+"", Toast.LENGTH_SHORT).show();
                         showFaceCompareResult(result.getScore(),image2.getImage());
