@@ -156,20 +156,25 @@ public class FaceCompareResultFragment extends Fragment {
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (companyRef == null){
-                    Toast.makeText(getContext(), "กรุณาเลือกบริษัท", Toast.LENGTH_SHORT).show();
-                }
-                else if (mfNextStep) {
+
+                if (mfNextStep) {
                     switch (((JAppActivity) getActivity()).isVerifyPerson()) {
                         case VERIFY_EKYC:
                             ((JAppActivity) getActivity()).showFormFillFragment();
                             break;
                         case VERIFY_PERSON:
-                            ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_PERSON);
+                            if (companyRef == null){
+                                Toast.makeText(getContext(), "กรุณาเลือกบริษัท", Toast.LENGTH_SHORT).show();
+                            }else {
+                                ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_PERSON);
+                            }
                             break;
                         case VERIFY_DIP_CHIP:
-
-                            ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_DIP_CHIP);
+                            if (companyRef == null){
+                                Toast.makeText(getContext(), "กรุณาเลือกบริษัท", Toast.LENGTH_SHORT).show();
+                            } else {
+                                ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_DIP_CHIP);
+                            }
                             break;
                     }
                 } else {
