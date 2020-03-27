@@ -1297,6 +1297,11 @@ public class JAppActivity extends JCompatActivity {
 
 //                CardInfo
 
+                String[] nameInfo = getName(info.NameTH);
+                String first_name = nameInfo[1];
+                String last_name = nameInfo[2];
+                String sex = nameInfo[3];
+
                 Log.d(TAG, "OnReady0.1: " + info.CardInfo);
 
                 generalInformation[CID] = info.PersonalID;
@@ -1311,7 +1316,7 @@ public class JAppActivity extends JCompatActivity {
                 generalInformation[BIRTH] = info.BirthDate;
                 Log.d(TAG, "OnReady3: " + generalInformation[BIRTH]);
 
-                generalInformation[GENDER] = parsingSex(info.NameTH);
+                generalInformation[GENDER] = sex;
                 Log.d(TAG, "OnReady4: " + generalInformation[GENDER]);
 
                 generalInformation[ISSUER] = info.IssuerCode;
@@ -1336,19 +1341,6 @@ public class JAppActivity extends JCompatActivity {
                 personalPic.compress(Bitmap.CompressFormat.PNG,100, stream);
                 byteImage = stream.toByteArray();
                 personalPic.recycle();
-
-                String string = generalInformation[THAIFULLNAME];
-                Log.d(TAG, "OnReady: string 10 " + string);
-
-                String[] name = string.split("  ");
-                String[] part = name[0].split(" ");
-
-                String name_title = part[0];
-                String first_name = part[1];
-                String last_name = name[1];
-
-                Log.d(TAG, "OnReady: 11 " + first_name);
-                Log.d(TAG, "OnReady: 12 " + last_name);
 
 
                 Dopa dopa = new Dopa();
@@ -1807,6 +1799,33 @@ public class JAppActivity extends JCompatActivity {
 
     public String toHex(String arg) throws UnsupportedEncodingException {
         return String.format("%040x__", new BigInteger(1, arg.getBytes("TIS620")));
+    }
+
+// spit name
+    private String[] getName(String nameFromCard){
+        String sex;
+        String fullName = nameFromCard;
+        String[] name =  fullName.split("  ");
+
+        String title_and_name = name[0];
+        int last_space = title_and_name.lastIndexOf(' ');
+        String title_name = name[0].substring(0,last_space );
+        String first_name = name[0].substring(last_space + 1);
+        String last_name = name[1];
+
+        //check sex
+        if (title_name == "ดร.") {
+            //TODO:: dialog choose sex
+            sex = "n/a";
+        }
+        else if(title_name.contains("หญิง") || title_name.contains("นาง") || title_name.contains("น.ส.")){
+            sex = "หญิง";
+        }else{
+            sex = "ชาย";
+        }
+
+        return new String[]{title_name, first_name,last_name, sex};
+
     }
 
 
