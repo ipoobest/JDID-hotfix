@@ -1813,12 +1813,7 @@ public class JAppActivity extends JCompatActivity {
         String first_name = name[0].substring(last_space + 1);
         String last_name = name[1];
 
-        //check sex
-        if (title_name == "ดร.") {
-            //TODO:: dialog choose sex
-            sex = "n/a";
-        }
-        else if(title_name.contains("หญิง") || title_name.contains("นาง") || title_name.contains("น.ส.")){
+      if(title_name.contains("หญิง") || title_name.contains("นาง") || title_name.contains("น.ส.")){
             sex = "หญิง";
         }else{
             sex = "ชาย";
