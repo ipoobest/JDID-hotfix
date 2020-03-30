@@ -18,7 +18,7 @@
     <string name="verify_person">ตรวจสอบบุคคล</string>
     <string name="dip_chip">Dip Chip</string>
     <string name="register_ekyc">ลงทะเบียน eKYC</string>
-    <string name="get_data_from_card">กรุณากดเพื่ออ่านข้อมูลจากบัตร</string>
+    <string name="get_data_from_card">กรุณากดเพื่อข้อมูลจากบัตร</string>
     <string name="compare_success">สำเร็จ</string>
     <string name="compare_success_description">อัตลักษณ์ภาพถ่ายตรงกัน</string>
     <string name="compare_fail">ล้มเหลว</string>
@@ -37,7 +37,7 @@
         <item>บริษัท เจ ฟินเทค จำกัด</item>
         <item>บริษัท เจ เวนเจอร์ส จำกัด</item>
         <item>บริษัท เจมาร์ท โมบาย จำกัด</item>
-        <item>บริษัท เจพี ประกันภัย จำกัด (มหาชน)​</item>
+        <item>บริษัท เจพี ประกันภัย จำกัด (มหาชน)</item>
         <item>บริษัท เจเอเอส แอสเซ็ท จํากัด (มหาชน)</item>
         <item>บริษัท เจ เอ็ม ที เน็ตเวิร์ค เซอร์วิสเซ็ท จำกัด (มหาชน)</item>
         <item>บริษัท ซิงเกอร์ ประเทศไทย จำกัด</item>

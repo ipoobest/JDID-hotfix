@@ -21,6 +21,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viva.ekyc.JAppActivity;
 import com.viva.ekyc.R;
 import com.viva.ekyc.models.RetrofitInstance;
@@ -29,6 +31,7 @@ import com.viva.ekyc.models.pojo.RequestOTPForRegister;
 import com.viva.ekyc.models.pojo.RequestOTPForVerify;
 import com.viva.ekyc.models.pojo.ResponseOTPForRegister;
 import com.viva.ekyc.models.pojo.ResponseOTPForVerify;
+
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,6 +50,8 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     private String mPhoneNumber;
     private String mPhonePerson;
     private String mRef;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     private final TextWatcher mTextEditorWatcher = new TextWatcher() {
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -78,6 +83,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         setHasOptionsMenu(true);
         mPhoneNumber = ((JAppActivity) getActivity()).fieldsList[JAppActivity.CONTACT_NUMBER];
         Log.d( "mPhoneNumber xxx ::: ", mPhoneNumber);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
         setupUI(view);
         requestOTP();
         return view;
@@ -161,7 +167,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                     mProgressDialog = null;
                     ResponseOTPForRegister result = response.body();
                     String otpRef = result.getOtpRef().getOtpRef();
-//                    Log.d("onResponsexxx: ",otpRef);
+
                     txtOTPREF.setText("OTP Ref : " + otpRef);
                     mRef = otpRef;
                 } else {
@@ -207,13 +213,13 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 mProgressDialog = null;
                 if (response.isSuccessful()) {
                     if (response.body().getStatusCode() == 200) {
-//                        saveUser();
                         ((JAppActivity) getActivity()).SaveInformation();
                     } else {
                         Log.d("res bodyxx: ", "xxxxxxxx");
                         Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
                     }
                 } else {
+
                     response.errorBody();
                     Log.d("error : ", response.errorBody().getClass().getName());
                     Toast.makeText(getContext(), "OTP หมดอายุ กรุณาขอ OTP ใหม่", Toast.LENGTH_LONG).show();

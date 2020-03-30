@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +30,8 @@ import com.viva.ekyc.JAppActivity;
 import com.viva.ekyc.R;
 
 import java.io.ByteArrayOutputStream;
+
+import java.text.DecimalFormat;
 
 public class FaceCompareResultFragment extends Fragment {
 
@@ -102,9 +105,6 @@ public class FaceCompareResultFragment extends Fragment {
         spCompanyRef.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                Toast.makeText(getContext(),
-//                        "Select : " + companyName[position],
-//                        Toast.LENGTH_SHORT).show();
 
                 if (parent.getItemAtPosition(position).equals("กรุณาเลือก ชื่อบริษัท")) {
                     companyRef = null;
@@ -126,7 +126,7 @@ public class FaceCompareResultFragment extends Fragment {
 
         txtResult = view.findViewById(R.id.tvResult);
         txtResultDescription = view.findViewById(R.id.txtResultDescription);
-//        txtScore = view.findViewById(R.id.tvScore);
+        txtScore = view.findViewById(R.id.tvScore);
         imageFromCard = view.findViewById(R.id.imageFromCard);
         imageFromCam = view.findViewById(R.id.imageFromCam);
         byteImage = ((JAppActivity) getActivity()).getByteImage();
@@ -169,10 +169,20 @@ public class FaceCompareResultFragment extends Fragment {
                             ((JAppActivity) getActivity()).showFormFillFragment();
                             break;
                         case VERIFY_PERSON:
-                            ((JAppActivity) getActivity()).successFragment();
+
+                            if (companyRef == null){
+                                Toast.makeText(getContext(), "กรุณาเลือกบริษัท", Toast.LENGTH_SHORT).show();
+                            }else {
+                                ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_PERSON);
+                            }
                             break;
                         case VERIFY_DIP_CHIP:
-                            ((JAppActivity) getActivity()).successFragment();
+                            if (companyRef == null){
+                                Toast.makeText(getContext(), "กรุณาเลือกบริษัท", Toast.LENGTH_SHORT).show();
+                            } else {
+                                ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_DIP_CHIP);
+                            }
+
                             break;
                     }
                 }else {
@@ -210,20 +220,23 @@ public class FaceCompareResultFragment extends Fragment {
     }
 
     private void checkResultBuidu(double result) {
-        String re = String.valueOf(result);
-        if (result >= 90) {
+
+        String number = new DecimalFormat("0.00").format(result);
+//        String re = String.valueOf(result);
+        if (result >= 78) {
             txtResult.setText(R.string.compare_success);
             txtResultDescription.setText(R.string.compare_success_description);
-//            txtScore.setText(re);
-
+            txtScore.setText(number);
             txtResultDescription.setTextColor(getResources().getColor(R.color.success_color));
             btnNextStep.setText(R.string.next_step);
             mfNextStep = true;
         } else {
+            Log.d("image score", "checkResultBuidu: " + result);
+            Toast.makeText(getContext(), result+"", Toast.LENGTH_SHORT).show();
             txtResult.setText(R.string.compare_fail);
             txtResultDescription.setText(R.string.compare_fail_description);
             txtResultDescription.setTextColor(getResources().getColor(R.color.error_color));
-//            txtScore.setText(re);
+            txtScore.setText(number);
             btnNextStep.setText(R.string.try_again);
             mfNextStep = false;
         }

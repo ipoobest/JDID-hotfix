@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.ContentValues.TAG;
+import static com.viva.ekyc.JAppActivity.ADDRESS;
 
 public class FormFillFragment extends Fragment {
 
@@ -46,6 +48,7 @@ public class FormFillFragment extends Fragment {
 
     private Spinner spPurpose;
     private EditText edOtherPurpose;
+    private CheckBox cbCurrentAddress;
     private EditText edCurrentAddress;
     private EditText edPhone;
     private Spinner spMarriageStatus;
@@ -198,6 +201,21 @@ public class FormFillFragment extends Fragment {
         edWork = view.findViewById(R.id.edWork);
         edWorkAddress = view.findViewById(R.id.edWorkAddress);
         edIncome = view.findViewById(R.id.edIncome);
+        //checkbox current address
+        cbCurrentAddress = view.findViewById(R.id.checkBoxAddress);
+        cbCurrentAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
+                if (cbCurrentAddress.isChecked()){
+                    edCurrentAddress.setText(generalInformation[ADDRESS]);
+//                    Toast.makeText(getContext(),"ที่อยู่ปัจจุบัน", Toast.LENGTH_SHORT).show();
+                } else {
+                    edCurrentAddress.setText("");
+//                    Toast.makeText(getContext(),"uncheck", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         //spReferByCompany
         spReferByCompany = view.findViewById(R.id.spReferByCompany);
         final String[] companyName = getResources().getStringArray(R.array.companyList);

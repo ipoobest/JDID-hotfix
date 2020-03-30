@@ -25,11 +25,13 @@ import androidx.fragment.app.Fragment;
 import com.viva.ekyc.JAppActivity;
 import com.viva.ekyc.R;
 
+
 import static com.viva.ekyc.JAppActivity.ADDRESS;
 import static com.viva.ekyc.JAppActivity.BIRTH;
 import static com.viva.ekyc.JAppActivity.CID;
 import static com.viva.ekyc.JAppActivity.ENGLISHFULLNAME;
 import static com.viva.ekyc.JAppActivity.GENDER;
+import static com.viva.ekyc.JAppActivity.LASER_ID;
 import static com.viva.ekyc.JAppActivity.THAIFULLNAME;
 
 public class CardInfoFragment extends Fragment {
@@ -47,6 +49,7 @@ public class CardInfoFragment extends Fragment {
     private EditText edBirthDate;
     private EditText edGender;
     private EditText edAddress;
+    private EditText edLaser;
     private Button btnNextStep;
     private Button btnBack;
 
@@ -83,6 +86,8 @@ public class CardInfoFragment extends Fragment {
         edBirthDate = view.findViewById(R.id.edBirthDate);
         edGender = view.findViewById(R.id.edGender);
         edAddress = view.findViewById(R.id.edAddress);
+        edLaser = view.findViewById(R.id.edLaser);
+
 
 
         btnNextStep = view.findViewById(R.id.btnNextStep);
@@ -119,12 +124,14 @@ public class CardInfoFragment extends Fragment {
 
     private void fillCardInformation() {
         String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
+
         edCID.setText(parsingCID(generalInformation[CID]));
         edThaiName.setText(generalInformation[THAIFULLNAME]);
         edEnglishName.setText(generalInformation[ENGLISHFULLNAME]);
         edBirthDate.setText(parsingDate(generalInformation[BIRTH]));
-        edGender.setText(parsingSex(generalInformation[GENDER]));
+        edGender.setText(generalInformation[GENDER]);
         edAddress.setText(generalInformation[ADDRESS]);
+        edLaser.setText(generalInformation[LASER_ID]);
     }
 
 

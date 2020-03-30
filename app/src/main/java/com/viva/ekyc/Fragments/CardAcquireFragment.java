@@ -2,6 +2,7 @@ package com.viva.ekyc.Fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,9 @@ import androidx.fragment.app.Fragment;
 
 import com.viva.ekyc.JAppActivity;
 import com.viva.ekyc.R;
+
+import co.advancedlogic.thainationalidcard.SmartCardDevice;
+import co.advancedlogic.thainationalidcard.ThaiSmartCard;
 
 public class CardAcquireFragment extends Fragment implements CardAcquireInterface {
 
@@ -35,6 +39,7 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
     private ImageView[] imageInfo = new ImageView[tvCount];
 
     private boolean mfNextStep = false;
+    SmartCardDevice device;
 
     @Nullable
     @Override
@@ -68,7 +73,8 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
                 if (mfNextStep) {
                     ((JAppActivity) getActivity()).showCardInformation();
                 } else {
-                    ((JAppActivity) getActivity()).StartGrapInformation();
+                    ((JAppActivity) getActivity()).cardInformation();
+
                 }
             }
         });

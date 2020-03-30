@@ -12,7 +12,7 @@ public class ResponseFaceCompare {
     private String errorMsg;
     @SerializedName("log_id")
     @Expose
-    private Integer logId;
+    private float logId;
     @SerializedName("timestamp")
     @Expose
     private Integer timestamp;
@@ -39,11 +39,11 @@ public class ResponseFaceCompare {
         this.errorMsg = errorMsg;
     }
 
-    public Integer getLogId() {
+    public float getLogId() {
         return logId;
     }
 
-    public void setLogId(Integer logId) {
+    public void setLogId(float logId) {
         this.logId = logId;
     }
 

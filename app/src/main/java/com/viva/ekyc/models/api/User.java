@@ -1,8 +1,7 @@
 package com.viva.ekyc.models.api;
 
+
 import com.viva.ekyc.models.pojo.RequestOTPForVerify;
-import com.viva.ekyc.models.pojo.RequestCreateUser;
-import com.viva.ekyc.models.pojo.RequestPutUser;
 import com.viva.ekyc.models.pojo.ResponseVerifyUser;
 import com.viva.ekyc.models.pojo.ResponseCreateUser;
 import com.viva.ekyc.models.pojo.UserInformation;
@@ -20,7 +19,7 @@ public interface User {
     // USER CREATE USER
     @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
     @POST("/user")
-    Call<ResponseCreateUser> createUser(@Body RequestCreateUser user);
+    Call<ResponseCreateUser> createUser(@Body com.viva.ekyc.models.pojo.User user);
 
     // USER VERIFY USeR
     @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
@@ -30,7 +29,7 @@ public interface User {
     // EDIT USER
     @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")
     @PUT("/user/{id}")
-    Call<ResponseVerifyUser> editteUser(@Path("id") String id,@Body RequestPutUser user);
+    Call<ResponseVerifyUser> editteUser(@Path("id") String id,@Body com.viva.ekyc.models.pojo.User user);
 
     //GET USRT
     @Headers("X-API-KEY: 3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb")

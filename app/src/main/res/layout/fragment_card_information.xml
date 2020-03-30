@@ -143,6 +143,22 @@
                     android:inputType="none"
                     android:focusable="false"
                     android:clickable="false"/>
+                <TextView
+                    android:id="@+id/txtLarser"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/kanit"
+                    android:text="หมายเลขหลังบัตร"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edLaser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="false"/>
 
             </LinearLayout>
         </ScrollView>
