@@ -504,47 +504,6 @@ public class JAppActivity extends JCompatActivity {
     /* ******************************************************* */
     /* Facial comPareImage                                */
     /* ******************************************************* */
-    private void comPareImage(String imageDB, String imageCam){
-        final String imageQuery = imageCam;
-        FaceCompareRequest request = new FaceCompareRequest();
-        request.setDatabaseImageContent(imageDB);
-        request.setDatabaseImageType(101);
-        request.setQueryImageContent(imageQuery);
-        request.setQueryImageType(301);
-        request.setTrueNegativeRate("99.9");
-        FaceCompare service = RetrofitFaceCompare.getRetrofitInstance().create(FaceCompare.class);
-        Call<FaceCompareResult> call = service.faceCompareBase(request);
-        call.enqueue(new Callback<FaceCompareResult>() {
-            @Override
-            public void onResponse(Call<FaceCompareResult> call, Response<FaceCompareResult> response) {
-                if (response.isSuccessful()){
-//                    if ((result != null) && (result.toString().length() != 0)
-//                            && (result.getInt("rtn") == 0 || result.getInt("rtn") == -6131)
-//                            && (result.getInt("pair_verify_similarity") >= 95)) {
-//
-//                    }
-                    FaceCompareResult result = response.body();
-                    if (result.getPairVerifySimilarity() != null){
-                        int score = result.getPairVerifySimilarity();
-                        showFaceCompareResult(score,imageQuery);
-                    } else {
-                        showFaceCompareResult();
-                    }
-
-                }else {
-                    Log.d(TAG, "onResponse: sssssssss");
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<FaceCompareResult> call, Throwable t) {
-                Log.d(TAG, "onFailure: " + t.toString());
-            }
-        });
-
-    }
-
 
     private void comPareImageBuidu(String imageDB, final String imageCam){
         RequestFaceCompare image1 = new RequestFaceCompare();
@@ -1347,10 +1306,12 @@ public class JAppActivity extends JCompatActivity {
                 mProgressDialog.dismiss();
                 mProgressDialog = null;
 
-//                JAppActivity.this.mcardAcquireFragment.updateEventLog(true, true, "อ่านข้อมูลจากบัตรแล้ว");
-//                JAppActivity.this.mcardAcquireFragment.setNextStep();
+                //TODO :: (1.1) ลบบรรทัดนี้ออกเพื่อน check dopa
+                JAppActivity.this.mcardAcquireFragment.updateEventLog(true, true, "อ่านข้อมูลจากบัตรแล้ว");
+                JAppActivity.this.mcardAcquireFragment.setNextStep();
 
-                checkDopa(dopa);
+                // TODO :: (1) check บัตรประชาชน
+//                checkDopa(dopa);
 
             }
 

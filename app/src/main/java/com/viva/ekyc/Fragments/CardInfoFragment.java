@@ -40,7 +40,7 @@ public class CardInfoFragment extends Fragment {
     private static final int VERIFY_PERSON = 1;
     private static final int VERIFY_DIP_CHIP = 2;
 
-    private static final String TAG = "CardInforxxx : ";
+    private static final String TAG = "CardInformation : ";
 
     private ImageView imageFromCard;
     private EditText edCID;
@@ -96,7 +96,10 @@ public class CardInfoFragment extends Fragment {
             public void onClick(View view) {
                 String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
                 if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_DIP_CHIP){
-                    ((JAppActivity) getActivity()).getUser(generalInformation[CID]);
+                    //TODO (2.1) delete this line when compare user
+                    ((JAppActivity) getActivity()).successFragment();
+                    //TODO (2.2) uncomment this line when compare user
+//                    ((JAppActivity) getActivity()).getUser(generalInformation[CID]);
                 }else {
                     ((JAppActivity) getActivity()).captureFragment();
                 }

@@ -272,6 +272,7 @@ public class FormFillFragment extends Fragment {
         ((JAppActivity) getActivity()).fieldsList[JAppActivity.INCOME] = edIncome.getText().toString();
         ((JAppActivity) getActivity()).fieldsList[JAppActivity.REF_COMPANY] = refCompany;
         ((JAppActivity) getActivity()).hideKeyboard();
+
         ((JAppActivity) getActivity()).showOTPVerifyFragment(VERIFY_EKYC);
     }
 

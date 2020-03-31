@@ -173,14 +173,18 @@ public class FaceCompareResultFragment extends Fragment {
                             if (companyRef == null){
                                 Toast.makeText(getContext(), "กรุณาเลือกบริษัท", Toast.LENGTH_SHORT).show();
                             }else {
-                                ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_PERSON);
+                                ((JAppActivity) getActivity()).successFragment();
+                                //TODO :: (3.1) uncomments this and delete above line
+//                                ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_PERSON);
                             }
                             break;
                         case VERIFY_DIP_CHIP:
                             if (companyRef == null){
                                 Toast.makeText(getContext(), "กรุณาเลือกบริษัท", Toast.LENGTH_SHORT).show();
                             } else {
-                                ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_DIP_CHIP);
+                                ((JAppActivity) getActivity()).successFragment();
+                                //TODO :: (3.2) uncomments this and delete above line
+//                                ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_DIP_CHIP);
                             }
 
                             break;
