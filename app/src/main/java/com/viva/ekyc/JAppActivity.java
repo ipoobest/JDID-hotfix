@@ -43,7 +43,6 @@ import com.acs.smartcard.Features;
 import com.acs.smartcard.Reader;
 import com.acs.smartcard.ReaderException;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viva.ekyc.Fragments.CardAcquireFragment;
 import com.viva.ekyc.Fragments.CardInfoFragment;
 import com.viva.ekyc.Fragments.ConfirmOTPRegisterFragment;
@@ -266,8 +265,6 @@ public class JAppActivity extends JCompatActivity {
     public int scoreCompareImage;
     Toolbar toolbar;
 
-    //log
-    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -280,8 +277,6 @@ public class JAppActivity extends JCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        mFirebaseAnalytics.setUserProperty("test_create", "test");
 
 
         if (getIntent().getBooleanExtra("ToFormFill", false)) {
@@ -730,7 +725,6 @@ public class JAppActivity extends JCompatActivity {
                     } else if (status == 200) {
                         Bundle params = new Bundle();
                         params.putString("create", result.getStatusCode().toString());
-                        mFirebaseAnalytics.logEvent("createUser", params);
                         Log.d("onResponse: xx ", result.getMessage());
                         sentConfirmOtp(generalInformation[CID], result);
                     }else if (status == 411){
@@ -744,13 +738,11 @@ public class JAppActivity extends JCompatActivity {
                             Log.d("create xx : ", result.getStatusCode().toString());
                             Log.d("create: xx ", result.getMessage());
                             params.putString("invalid_create_message", result.getMessage());
-                            mFirebaseAnalytics.logEvent("createUser", params);
                         }
                         String err = response.errorBody().string();
                         Log.d("invalid_create xx : ",err);
                         params.putString("invalid_create", err);
                         alertDialogPutUser("ระบบขัดข้องไม่สามารถ บันทึกได้กรุณาติดต่อเจ้าหน้าที่");
-                        mFirebaseAnalytics.logEvent("createUser", params);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -853,7 +845,6 @@ public class JAppActivity extends JCompatActivity {
                         ResponseVerifyUser responseVerifyUser = response.body();
                         Bundle params = new Bundle();
                         params.putString("time", responseVerifyUser.getVerifiedAt());
-                        mFirebaseAnalytics.logEvent("put_user", params);
                         Toast.makeText(getAppContext(), "ยืนยันสำเร็จ", Toast.LENGTH_SHORT).show();
 
                         mProgressDialog.dismiss();
