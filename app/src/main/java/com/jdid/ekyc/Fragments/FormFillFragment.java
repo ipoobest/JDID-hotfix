@@ -64,84 +64,10 @@ public class FormFillFragment extends Fragment {
 
     private List<String> slPurpose;
     String refCompany;
+    String purposeCompany;
 
     private ProgressDialog mProgressDialog;
 
-    /* ******************************************************* */
-    private class GetPurpose extends AsyncTask<Void, Void, JSONObject> {
-
-        @Override
-        protected void onPreExecute() {
-            mProgressDialog = ProgressDialog.show(getContext(),
-                    null, "กำลังทำการอ่านข้อมูล", true, false);
-        }
-
-        @Override
-        protected JSONObject doInBackground(Void... voids) {
-            JSONObject result;
-            result = _getPurpose();
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject result) {
-
-            if (result == null) {
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
-                return;
-            }
-
-            if (result != null) {
-                try {
-                    JSONArray ar = result.getJSONArray("purpose");
-                    slPurpose = new ArrayList<String>();
-                    for (int idx = 0; idx < ar.length(); idx++) {
-                        JSONObject obj = (JSONObject) ar.get(idx);
-                        slPurpose.add(obj.getString("purpose"));
-                    }
-                    ArrayAdapter<String> adapterPurpose = new ArrayAdapter<String>(((JAppActivity) getActivity()).getApplicationContext(),
-                            android.R.layout.simple_spinner_item, slPurpose);
-                    spPurpose.setAdapter(adapterPurpose);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
-    }
-
-    private JSONObject _getPurpose() {
-        JSONObject responseJson = null;
-        try {
-            URL obj = new URL("https://e-kyc.dome.cloud/purpose");
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-//            conn.setRequestProperty("Authorization", "Basic ZWt5Y2Rldjpla3ljZGV2");
-            conn.setRequestProperty("X-API-KEY", "3Oi6FUtmmf0aLt6LzVS2FhZXMmEguCMb");
-
-            conn.setRequestMethod("GET");
-            int responseCode = conn.getResponseCode();
-            BufferedReader in = new BufferedReader(new InputStreamReader(
-                    conn.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            JSONArray array = new JSONArray(response.toString());
-            responseJson = new JSONObject();
-            responseJson.put("purpose", array);
-            in.close();
-
-            conn.disconnect();
-
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-
-        return responseJson;
-    }
 
     @Nullable
     @Override
@@ -149,8 +75,6 @@ public class FormFillFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_form_fill, container, false);
         setHasOptionsMenu(true);
         initialize(view);
-        GetPurpose purpose = new GetPurpose();
-        purpose.execute();
         return view;
     }
 
@@ -219,6 +143,29 @@ public class FormFillFragment extends Fragment {
                 }
             }
         });
+
+        final String[] purposeList = getResources().getStringArray(R.array.purposeList);
+        ArrayAdapter<String> spPurposeList = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, purposeList);
+        spPurpose.setAdapter(spPurposeList);
+
+        spPurpose.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if (spPurpose.getSelectedItemPosition() == 0) {
+                    edOtherPurpose.setVisibility(View.VISIBLE);
+                } else {
+                    edOtherPurpose.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         //spReferByCompany
         spReferByCompany = view.findViewById(R.id.spReferByCompany);
         final String[] companyName = getResources().getStringArray(R.array.companyList);

@@ -43,4 +43,13 @@
         <item>บริษัท ซิงเกอร์ ประเทศไทย จำกัด</item>
         <item>บริษัท บีนส์แอนด์บราวน์ จำกัด</item>
     </string-array>
+
+    <string-array name="purposeList">
+        <item>ไม่ระบุ/อื่น</item>
+        <item>Enjoycard</item>
+        <item>ป๋า</item>
+        <item>J-money</item>
+        <item>ซิงเกอร์</item>
+        <item>บีนส์แอนด์บราวน์</item>
+    </string-array>
 </resources>
