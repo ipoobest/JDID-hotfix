@@ -82,7 +82,7 @@ public class FormFillPersonRegisterFragment extends Fragment {
     }
 
     private boolean finishedFormFill() {
-        if (edPhone.getText().length() < 9 ) {
+        if (edPhone.getText().length() <= 9 ) {
             edPhone.requestFocus();
             return false;
         }

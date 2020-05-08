@@ -532,6 +532,8 @@ public class JAppActivity extends JCompatActivity {
 
 
     private void comPareImageBuidu(String imageDB, final String imageCam){
+        mProgressDialog = ProgressDialog.show(JAppActivity.this,
+                null, "ระบบกำลังตรวจสอบ", true, false);
         RequestFaceCompare image1 = new RequestFaceCompare();
         final RequestFaceCompare image2 = new RequestFaceCompare();
         //image 1
@@ -568,21 +570,28 @@ public class JAppActivity extends JCompatActivity {
 
                     ResultFaceCompare result = res.getResultFaceCompare();
                     if (result == null){
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
                         alertDialogPutUser("รูปภาพไม่สมบูรณ์ กรุณาทำรายการใหม่");
                         return;
                     }
 
                     if (result.getScore() >= 20.00) {
-                        Toast.makeText(context,result.getScore()+"", Toast.LENGTH_SHORT).show();
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
                         showFaceCompareResult(result.getScore(),image2.getImage());
                         Log.d("onResponse:aaa ", "1");
                     } else {
                         Log.d("onResponse:aaa ", "1.1");
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
                         alertDialogPutUser("รูปภาพไม่สมบูรณ์ กรุณาทำรายการใหม่(1)");
                         return;
                     }
                 } else {
                     Log.d("onResponse:aaa ", "2");
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
                     alertDialogPutUser("รูปภาพไม้สมบูรณ์ กรุณาทำรายการใหม่(2)");
                     return;
                 }
@@ -591,6 +600,8 @@ public class JAppActivity extends JCompatActivity {
             @Override
             public void onFailure(Call<ResponseFaceCompare> call, Throwable t) {
                 Log.d("onResponse:aaa ", "3" + t.toString());
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
                 alertDialogPutUser("รูปภาพไม่สมบูรณ์ กรุณาทำรายการใหม่(3)");
                 return;
             }
