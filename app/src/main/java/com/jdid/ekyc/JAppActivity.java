@@ -49,6 +49,7 @@ import com.jdid.ekyc.Fragments.ConfirmOTPRegisterFragment;
 import com.jdid.ekyc.Fragments.ConfirmOTPRegisterUserFragment;
 import com.jdid.ekyc.Fragments.FaceCompareResultFragment;
 import com.jdid.ekyc.Fragments.FormFillFragment;
+import com.jdid.ekyc.Fragments.FormFillPersonRegisterFragment;
 import com.jdid.ekyc.Fragments.HomeFragment;
 import com.jdid.ekyc.Fragments.PinCodeFragment;
 import com.jdid.ekyc.Fragments.SuccessFragment;
@@ -107,8 +108,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.1.5";
-    public static final String APP_DATE_UPDATE = "13/04/63";
+    public static final String APP_VERSION = "release 1.1.6";
+    public static final String APP_DATE_UPDATE = "09/05/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -372,6 +373,13 @@ public class JAppActivity extends JCompatActivity {
                 .replace(R.id.container_view, fragment).addToBackStack(null).commit();
     }
 
+    public void showFormFillPersonRegisterFragment() {
+        final FormFillPersonRegisterFragment fragment = new FormFillPersonRegisterFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container_view, fragment).addToBackStack(null).commit();
+    }
+
+
     public void showOTPVerifyFragment(int type) {
         mVerifyDipChip = type;
         final ConfirmOTPRegisterFragment fragment = new ConfirmOTPRegisterFragment();
@@ -520,46 +528,7 @@ public class JAppActivity extends JCompatActivity {
     /* ******************************************************* */
     /* Facial comPareImage                                */
     /* ******************************************************* */
-    private void comPareImage(String imageDB, String imageCam){
-        final String imageQuery = imageCam;
-        FaceCompareRequest request = new FaceCompareRequest();
-        request.setDatabaseImageContent(imageDB);
-        request.setDatabaseImageType(101);
-        request.setQueryImageContent(imageQuery);
-        request.setQueryImageType(301);
-        request.setTrueNegativeRate("99.9");
-        FaceCompare service = RetrofitFaceCompare.getRetrofitInstance().create(FaceCompare.class);
-        Call<FaceCompareResult> call = service.faceCompareBase(request);
-        call.enqueue(new Callback<FaceCompareResult>() {
-            @Override
-            public void onResponse(Call<FaceCompareResult> call, Response<FaceCompareResult> response) {
-                if (response.isSuccessful()){
-//                    if ((result != null) && (result.toString().length() != 0)
-//                            && (result.getInt("rtn") == 0 || result.getInt("rtn") == -6131)
-//                            && (result.getInt("pair_verify_similarity") >= 95)) {
-//
-//                    }
-                    FaceCompareResult result = response.body();
-                    if (result.getPairVerifySimilarity() != null){
-                        int score = result.getPairVerifySimilarity();
-                        showFaceCompareResult(score,imageQuery);
-                    } else {
-                        showFaceCompareResult();
-                    }
 
-                }else {
-                    Log.d(TAG, "onResponse: sssssssss");
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<FaceCompareResult> call, Throwable t) {
-                Log.d(TAG, "onFailure: " + t.toString());
-            }
-        });
-
-    }
 
 
     private void comPareImageBuidu(String imageDB, final String imageCam){
@@ -710,7 +679,6 @@ public class JAppActivity extends JCompatActivity {
         }
 
         request.setNameTh(generalInformation[THAIFULLNAME]);
-//        request.setNameTh("ภูเบศ222");
         request.setNameEn(generalInformation[ENGLISHFULLNAME]);
         request.setBirthdate(generalInformation[BIRTH]);
         request.setId(generalInformation[CID]);
@@ -733,6 +701,26 @@ public class JAppActivity extends JCompatActivity {
 
         createUser(request);
 
+    }
+
+    public void SavePersonalInformationPersonal() {
+        Log.d("SaveInformationPersonal", "SaveInformationPersonal");
+        String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        User request = new User();
+        request.setNameTh(generalInformation[THAIFULLNAME]);
+        request.setNameEn(generalInformation[ENGLISHFULLNAME]);
+        request.setBirthdate(generalInformation[BIRTH]);
+        request.setId(generalInformation[CID]);
+        request.setGender(generalInformation[GENDER]);
+        request.setOfficialAddress(generalInformation[ADDRESS]);
+        request.setNationality("Thai");
+        request.setContactNumber(fieldsList[CONTACT_NUMBER]);
+        request.setBackIdcard(generalInformation[LASER_ID]);
+        request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
+        request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
+        request.setVerifyBy(mStrDeviceID);
+
+        createUser(request);
     }
 
     public void PutInformationForPerson(int verify_type) {

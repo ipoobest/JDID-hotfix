@@ -40,6 +40,7 @@ import retrofit2.Response;
 
 public class ConfirmOTPRegisterFragment extends Fragment {
 
+    private static final int VERIFY_EKYC = 0;
     private static final int VERIFY_PERSON = 1;
     private static final int VERIFY_DIP_CHIP = 2;
 
@@ -92,9 +93,17 @@ public class ConfirmOTPRegisterFragment extends Fragment {
 
     private void setupUI(View view) {
         // Toolbar
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Confirm OTP");
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        switch (((JAppActivity) getActivity()).isVerifyPerson()) {
+            case VERIFY_EKYC:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.kyc_title);
+                break;
+            case VERIFY_PERSON:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
+                break;
+        }
 
         btnNextStep = view.findViewById(R.id.btnNextStep);
         btnNextStep.setOnClickListener(new View.OnClickListener() {
@@ -150,13 +159,10 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         RequestOTPForRegister request = new RequestOTPForRegister();
         if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
             request.setPhoneNo(((JAppActivity) getActivity()).getMobilePhone());
-        } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
-            request.setPhoneNo(mPhonePerson);
         } else {
             request.setPhoneNo(mPhoneNumber);
         }
 
-        Log.d("phoxx : ", request.getPhoneNo());
 
         Admin service = RetrofitInstance.getRetrofitInstance().create(Admin.class);
         Call<ResponseOTPForRegister> call = service.sentOTP(request);
@@ -195,8 +201,8 @@ public class ConfirmOTPRegisterFragment extends Fragment {
 
         if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
             request.setPhoneNo(((JAppActivity) getActivity()).getMobilePhone());
-        } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
-            request.setPhoneNo(mPhonePerson);
+//        } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
+//            request.setPhoneNo(mPhonePerson);
         } else {
             request.setPhoneNo(mPhoneNumber);
         }
@@ -213,7 +219,11 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 mProgressDialog = null;
                 if (response.isSuccessful()) {
                     if (response.body().getStatusCode() == 200) {
-                        ((JAppActivity) getActivity()).SaveInformation();
+                        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)){
+                            ((JAppActivity) getActivity()).SavePersonalInformationPersonal();
+                        }else {
+                            ((JAppActivity) getActivity()).SaveInformation();
+                        }
                     } else {
                         Log.d("res bodyxx: ", "xxxxxxxx");
                         Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();

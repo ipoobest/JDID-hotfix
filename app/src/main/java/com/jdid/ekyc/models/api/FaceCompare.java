@@ -19,9 +19,7 @@ public interface FaceCompare {
     @POST("/face-api/v3/face/match")
     Call<ResponseFaceCompare> faceCompare(@Body List<RequestFaceCompare> requestFaceCompare);
 
-    @Headers("Content-Type: application/json")
-    @POST("/face/v1/algorithm/recognition/face_pair_verification")
-    Call<FaceCompareResult> faceCompareBase(@Body FaceCompareRequest faceCompare);
+
 }
 
 

@@ -81,15 +81,13 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
 
         if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
             request.setPhoneNo(((JAppActivity) getActivity()).getMobilePhone());
-        } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
-            request.setPhoneNo(mPhonePerson);
         } else {
             request.setPhoneNo(mPhoneNumber);
         }
         request.setOtp(edOTP.getText().toString());
         request.setOtpRef(mRef);
 
-        Log.d("mPhonePerson: ", request.getPhoneNo());
+
         User service = RetrofitInstance.getRetrofitInstance().create(User.class);
         Call<ResponseVerifyUser> call = service.verifyUser(id, request);
         call.enqueue(new Callback<ResponseVerifyUser>() {

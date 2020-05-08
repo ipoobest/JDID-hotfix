@@ -89,6 +89,8 @@ public class FaceCompareResultFragment extends Fragment {
                 break;
             case VERIFY_PERSON:
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
+                spCompanyRef.setVisibility(View.GONE);
+                tvRefBy.setVisibility(View.GONE);
                 break;
             case VERIFY_DIP_CHIP:
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
@@ -163,11 +165,7 @@ public class FaceCompareResultFragment extends Fragment {
                             ((JAppActivity) getActivity()).showFormFillFragment();
                             break;
                         case VERIFY_PERSON:
-                            if (companyRef == null){
-                                Toast.makeText(getContext(), "กรุณาเลือกบริษัท", Toast.LENGTH_SHORT).show();
-                            }else {
-                                ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_PERSON);
-                            }
+                            ((JAppActivity) getActivity()).showFormFillPersonRegisterFragment();
                             break;
                         case VERIFY_DIP_CHIP:
                             if (companyRef == null){
