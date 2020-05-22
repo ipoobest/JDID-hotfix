@@ -108,8 +108,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.1.6";
-    public static final String APP_DATE_UPDATE = "09/05/63";
+    public static final String APP_VERSION = "release 1.1.7";
+    public static final String APP_DATE_UPDATE = "22/05/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -589,10 +589,9 @@ public class JAppActivity extends JCompatActivity {
                         return;
                     }
                 } else {
-                    Log.d("onResponse:aaa ", "2");
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
-                    alertDialogPutUser("รูปภาพไม้สมบูรณ์ กรุณาทำรายการใหม่(2)");
+                    alertDialogPutUser("รูปภาพไม้สมบูรณ์ กรุณาทำรายการใหม่");
                     return;
                 }
             }
@@ -714,25 +713,28 @@ public class JAppActivity extends JCompatActivity {
 
     }
 
-    public void SavePersonalInformationPersonal() {
-        Log.d("SaveInformationPersonal", "SaveInformationPersonal");
-        String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        User request = new User();
-        request.setNameTh(generalInformation[THAIFULLNAME]);
-        request.setNameEn(generalInformation[ENGLISHFULLNAME]);
-        request.setBirthdate(generalInformation[BIRTH]);
-        request.setId(generalInformation[CID]);
-        request.setGender(generalInformation[GENDER]);
-        request.setOfficialAddress(generalInformation[ADDRESS]);
-        request.setNationality("Thai");
-        request.setContactNumber(fieldsList[CONTACT_NUMBER]);
-        request.setBackIdcard(generalInformation[LASER_ID]);
-        request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
-        request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
-        request.setVerifyBy(mStrDeviceID);
-
-        createUser(request);
-    }
+//    public void SavePersonalInformationPersonal() {
+//        Log.d("SaveInformationPersonal", "SaveInformationPersonal");
+//        String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+//        User request = new User();
+//        if (isVerifyPerson() == VERIFY_PERSON){
+//            request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
+//        }
+//        request.setNameTh(generalInformation[THAIFULLNAME]);
+//        request.setNameEn(generalInformation[ENGLISHFULLNAME]);
+//        request.setBirthdate(generalInformation[BIRTH]);
+//        request.setId(generalInformation[CID]);
+//        request.setGender(generalInformation[GENDER]);
+//        request.setOfficialAddress(generalInformation[ADDRESS]);
+//        request.setNationality("Thai");
+//        request.setContactNumber(fieldsList[CONTACT_NUMBER]);
+//        request.setBackIdcard(generalInformation[LASER_ID]);
+//        request.setReferBy(fieldsList[REF_COMPANY]);
+//        request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
+//        request.setVerifyBy(mStrDeviceID);
+//
+//        putUser(request);
+//    }
 
     public void PutInformationForPerson(int verify_type) {
 
@@ -773,6 +775,9 @@ public class JAppActivity extends JCompatActivity {
     }
 
     private void createUser(User user) {
+        mProgressDialog = ProgressDialog.show(JAppActivity.this,
+                null, "กำลังดำเนินการ", true, false);
+
         com.jdid.ekyc.models.api.User service = RetrofitInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.User.class);
         Call<ResponseCreateUser> call = service.createUser(user);
         call.enqueue(new Callback<ResponseCreateUser>() {
@@ -782,14 +787,21 @@ public class JAppActivity extends JCompatActivity {
                     ResponseCreateUser result = response.body();
                     int status = result.getStatusCode();
                     if (status == 409) {
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
                         alertDialogPhone("เบอร์โทรศัพท์นี้ถูกใช้งานแล้ว กรุณาเปลี่ยนใหม่");
                     } else if (status == 200) {
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
+
                         Bundle params = new Bundle();
                         params.putString("create", result.getStatusCode().toString());
                         mFirebaseAnalytics.logEvent("createUser", params);
                         Log.d("onResponse: xx ", result.getMessage());
                         sentConfirmOtp(generalInformation[CID], result);
                     }else if (status == 411){
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
                         alertDialogPhone("ข้อมูลชื่อ นามสกุล หรือวันเกิดไม่ตรงกับเลขบัตรนี้");
                     }
                 } else {
@@ -797,17 +809,23 @@ public class JAppActivity extends JCompatActivity {
                         Bundle params = new Bundle();
                         ResponseCreateUser result = response.body();
                         if (result != null){
+                            mProgressDialog.dismiss();
+                            mProgressDialog = null;
                             Log.d("create xx : ", result.getStatusCode().toString());
                             Log.d("create: xx ", result.getMessage());
                             params.putString("invalid_create_message", result.getMessage());
                             mFirebaseAnalytics.logEvent("createUser", params);
                         }
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
                         String err = response.errorBody().string();
                         Log.d("invalid_create xx : ",err);
                         params.putString("invalid_create", err);
                         alertDialogPutUser("ระบบขัดข้องไม่สามารถ บันทึกได้กรุณาติดต่อเจ้าหน้าที่");
                         mFirebaseAnalytics.logEvent("createUser", params);
                     } catch (IOException e) {
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
                         e.printStackTrace();
                     }
                 }
@@ -815,6 +833,8 @@ public class JAppActivity extends JCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseCreateUser> call, Throwable t) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
                 Log.d("onFailure", t.toString());
             }
         });
@@ -841,9 +861,6 @@ public class JAppActivity extends JCompatActivity {
                         mProgressDialog.dismiss();
                         mProgressDialog = null;
 
-//                        Log.d("onResponse:xxxxxxx ", image.length() + "");
-                        //TODO :: compare image
-//                        comPareImage(imageDB,image);
                         comPareImageBuidu(imageDB,image);
 //
                     } else if (image != null && image.length() <= 999) {
@@ -886,8 +903,6 @@ public class JAppActivity extends JCompatActivity {
             public void onFailure(Call<UserInformation> call, Throwable t) {
                 mProgressDialog.dismiss();
                 mProgressDialog = null;
-                Log.d("getUser: ", "4");
-                Log.d("onResponse: ", "exxxxxxxxxxxxxxx");
             }
         });
     }
@@ -920,7 +935,7 @@ public class JAppActivity extends JCompatActivity {
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
                     Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
-                    alertDialogPutUser("กรุณาทำ ekyc มาก่อน");
+                    alertDialogPutUser("กรุณาทำ ekyc ก่อน");
                 }
             }
 
@@ -929,8 +944,7 @@ public class JAppActivity extends JCompatActivity {
                 mProgressDialog.dismiss();
                 mProgressDialog = null;
                 Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
-                alertDialogPutUser("กรุณาทำ ekyc มาก่อน");
-//                Toast.makeText(getAppContext(), "ปปปหหหหหหปป", Toast.LENGTH_SHORT).show();
+                alertDialogPutUser("กรุณาทำ ekyc ก่อน");
             }
         });
     }
@@ -942,13 +956,13 @@ public class JAppActivity extends JCompatActivity {
             @Override
             public void onResponse(Call<ResponseDopa> call, Response<ResponseDopa> response) {
                 if (response.isSuccessful()){
-                    Log.d(TAG, "DOPA 1 : ");
+//                    Log.d(TAG, "DOPA 1 : ");
 
                     ResponseDopa result = response.body();
-                    Log.d(TAG, "DOPA 1.1 : " + result.getCode());
+//                    Log.d(TAG, "DOPA 1.1 : " + result.getCode());
 
                     if (result.getCode().equals("0")){
-                        Log.d(TAG, "DOPA 2 : " + result.getDesc());
+//                        Log.d(TAG, "DOPA 2 : " + result.getDesc());
 
                         JAppActivity.this.mcardAcquireFragment.updateEventLog(true, true, "อ่านข้อมูลจากบัตรแล้ว");
                         JAppActivity.this.mcardAcquireFragment.setNextStep();
@@ -1008,8 +1022,6 @@ public class JAppActivity extends JCompatActivity {
         String imageDB = Base64.encodeToString(imageDb, Base64.NO_WRAP);
 //        String imageURL = Base64.encodeToString(imageFormUrl, Base64.NO_WRAP);
 //        String imageURL = image;
-        Log.d("ssss: xx ", imageFormUrl + " " + imageFormUrl.getClass().getName());
-        Log.d("compareImageUrl: xx", imageDB + " " + imageDB.getClass().getName());
         JSONObject result = new JSONObject();
         try {
             result = _compareImage(imageDB, imageFormUrl);
@@ -1273,7 +1285,7 @@ public class JAppActivity extends JCompatActivity {
                     Toast.makeText(getApplicationContext(), "Read Smart Card information failed", Toast.LENGTH_LONG).show();
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
-                    alertDialogPutUser("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณาทำรายการใหม่ info");
+                    alertDialogPutUser("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณาทำรายการใหม่");
                     return;
                 }
 
@@ -1286,7 +1298,7 @@ public class JAppActivity extends JCompatActivity {
                     Toast.makeText(getApplicationContext(), "Read Smart Card personal picture failed", Toast.LENGTH_LONG).show();
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
-                    alertDialogPutUser("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณาทำรายการใหม่ pic");
+                    alertDialogPutUser("ไม่สามารถอ่านข้อมูลจากบัตรได้กรุณาทำรายการใหม่ ");
                     return;
                 }
 

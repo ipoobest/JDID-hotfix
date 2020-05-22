@@ -56,7 +56,16 @@ public class FormFillPersonRegisterFragment extends Fragment {
         // ToolBar
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
+
+        switch (((JAppActivity) getActivity()).isVerifyPerson()) {
+            case VERIFY_PERSON:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
+                break;
+            case VERIFY_DIP_CHIP:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
+                break;
+        }
+
 
         edPhone =  view.findViewById(R.id.edPhone);
         btnSaveAndGo = view.findViewById(R.id.btnNextStep);
@@ -78,7 +87,11 @@ public class FormFillPersonRegisterFragment extends Fragment {
 
         ((JAppActivity) getActivity()).fieldsList[JAppActivity.CONTACT_NUMBER] = edPhone.getText().toString();
         ((JAppActivity) getActivity()).hideKeyboard();
-        ((JAppActivity) getActivity()).showOTPVerifyFragment(VERIFY_PERSON);
+        if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_PERSON){
+            ((JAppActivity) getActivity()).showOTPVerifyFragment(VERIFY_PERSON);
+        } else {
+            ((JAppActivity) getActivity()).showOTPVerifyFragment(VERIFY_DIP_CHIP);
+        }
     }
 
     private boolean finishedFormFill() {

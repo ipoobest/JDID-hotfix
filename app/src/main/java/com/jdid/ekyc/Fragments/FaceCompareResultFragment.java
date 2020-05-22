@@ -89,8 +89,8 @@ public class FaceCompareResultFragment extends Fragment {
                 break;
             case VERIFY_PERSON:
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
-                spCompanyRef.setVisibility(View.GONE);
-                tvRefBy.setVisibility(View.GONE);
+//                spCompanyRef.setVisibility(View.GONE);
+//                tvRefBy.setVisibility(View.GONE);
                 break;
             case VERIFY_DIP_CHIP:
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
@@ -159,21 +159,15 @@ public class FaceCompareResultFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                if (mfNextStep) {
-                    switch (((JAppActivity) getActivity()).isVerifyPerson()) {
-                        case VERIFY_EKYC:
-                            ((JAppActivity) getActivity()).showFormFillFragment();
-                            break;
-                        case VERIFY_PERSON:
+                if (mfNextStep){
+                    if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_EKYC){
+                        ((JAppActivity) getActivity()).showFormFillFragment();
+                    } else {
+                        if (companyRef == null){
+                            Toast.makeText(getContext(), "กรุณาเลือกบริษัท", Toast.LENGTH_SHORT).show();
+                        } else {
                             ((JAppActivity) getActivity()).showFormFillPersonRegisterFragment();
-                            break;
-                        case VERIFY_DIP_CHIP:
-                            if (companyRef == null){
-                                Toast.makeText(getContext(), "กรุณาเลือกบริษัท", Toast.LENGTH_SHORT).show();
-                            } else {
-                                ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_DIP_CHIP);
-                            }
-                            break;
+                        }
                     }
                 } else {
                     ((JAppActivity) getActivity()).OpenCameraForCapture();

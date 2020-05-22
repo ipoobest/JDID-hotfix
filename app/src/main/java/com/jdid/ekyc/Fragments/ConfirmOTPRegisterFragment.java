@@ -195,17 +195,11 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     /* ******************************************************* */
     private void verifyOTP() {
         mProgressDialog = ProgressDialog.show(getActivity(),
-                null, "กำลังทำการรตรวจรหัส OTP", true, false);
+                null, "กำลังตรวจสอบรหัส OTP", true, false);
 
         RequestOTPForVerify request = new RequestOTPForVerify();
 
-        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
-            request.setPhoneNo(((JAppActivity) getActivity()).getMobilePhone());
-//        } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
-//            request.setPhoneNo(mPhonePerson);
-        } else {
-            request.setPhoneNo(mPhoneNumber);
-        }
+        request.setPhoneNo(mPhoneNumber);
 
         request.setOtp(edOTP.getText().toString());
         request.setOtpRef(mRef);
@@ -215,20 +209,31 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         call.enqueue(new Callback<ResponseOTPForVerify>() {
             @Override
             public void onResponse(Call<ResponseOTPForVerify> call, Response<ResponseOTPForVerify> response) {
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
+
                 if (response.isSuccessful()) {
                     if (response.body().getStatusCode() == 200) {
-                        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)){
-                            ((JAppActivity) getActivity()).SavePersonalInformationPersonal();
-                        }else {
+                        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_EKYC)) {
+                            mProgressDialog.dismiss();
+                            mProgressDialog = null;
                             ((JAppActivity) getActivity()).SaveInformation();
+                        } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
+                            mProgressDialog.dismiss();
+                            mProgressDialog = null;
+                            ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_PERSON);
+                        } else {
+                            mProgressDialog.dismiss();
+                            mProgressDialog = null;
+                            ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_DIP_CHIP);
+
                         }
                     } else {
-                        Log.d("res bodyxx: ", "xxxxxxxx");
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
                         Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
                     }
                 } else {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
 
                     response.errorBody();
                     Log.d("error : ", response.errorBody().getClass().getName());
