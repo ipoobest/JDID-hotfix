@@ -108,12 +108,13 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.1.7";
-    public static final String APP_DATE_UPDATE = "22/05/63";
+    public static final String APP_VERSION = "release 1.1.11";
+    public static final String APP_DATE_UPDATE = "29/06/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
 
+//    private static final int VERIFY_EKYC = 0;
     private static final int VERIFY_PERSON = 1;
     private static final int VERIFY_DIPCHIP = 2;
 
@@ -255,6 +256,7 @@ public class JAppActivity extends JCompatActivity {
     public String mBranch;
     public String mPhone;
     public String mEMail;
+    public boolean skip = false;
 
     //registration person mobile phone
     public String mPhonePerson;
@@ -706,35 +708,95 @@ public class JAppActivity extends JCompatActivity {
         request.setIncome(income);
         request.setVerifyBy(mStrDeviceID);
         request.setReferBy(fieldsList[REF_COMPANY]);
+        request.setSkip(skip);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
         request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
-
+        Log.d("personal", request.toString());
+        Log.d("personal", request.isSkip() + "");
         createUser(request);
 
     }
 
-//    public void SavePersonalInformationPersonal() {
-//        Log.d("SaveInformationPersonal", "SaveInformationPersonal");
-//        String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-//        User request = new User();
-//        if (isVerifyPerson() == VERIFY_PERSON){
-//            request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
-//        }
-//        request.setNameTh(generalInformation[THAIFULLNAME]);
-//        request.setNameEn(generalInformation[ENGLISHFULLNAME]);
-//        request.setBirthdate(generalInformation[BIRTH]);
-//        request.setId(generalInformation[CID]);
-//        request.setGender(generalInformation[GENDER]);
-//        request.setOfficialAddress(generalInformation[ADDRESS]);
-//        request.setNationality("Thai");
-//        request.setContactNumber(fieldsList[CONTACT_NUMBER]);
-//        request.setBackIdcard(generalInformation[LASER_ID]);
-//        request.setReferBy(fieldsList[REF_COMPANY]);
-//        request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
-//        request.setVerifyBy(mStrDeviceID);
-//
-//        putUser(request);
+    public void SavePersonalInformationPersonal() {
+        Log.d("SaveInformationPersonal", "SaveInformationPersonal");
+        String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        User request = new User();
+        if (isVerifyPerson() == VERIFY_PERSON){
+            request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
+        }
+        request.setNameTh(generalInformation[THAIFULLNAME]);
+        request.setNameEn(generalInformation[ENGLISHFULLNAME]);
+        request.setBirthdate(generalInformation[BIRTH]);
+        request.setId(generalInformation[CID]);
+        request.setGender(generalInformation[GENDER]);
+        request.setOfficialAddress(generalInformation[ADDRESS]);
+        request.setNationality("Thai");
+        request.setContactNumber(fieldsList[CONTACT_NUMBER]);
+        request.setBackIdcard(generalInformation[LASER_ID]);
+        request.setReferBy(fieldsList[REF_COMPANY]);
+        request.setSkip(skip);
+        request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
+        request.setVerifyBy(mStrDeviceID);
+
+        Log.d("personal", request.isSkip() + "");
+        createUser(request);
+    }
+
+
+//    String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
+//                if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_DIP_CHIP){
+//        ((JAppActivity) getActivity()).getUser(generalInformation[CID]);
+//    }else {
+//        ((JAppActivity) getActivity()).captureFragment();
 //    }
+
+    public void CheckTypePersonal() {
+        mProgressDialog = ProgressDialog.show(JAppActivity.this,
+                null, "กำลังอตรวจสอบข้อมูลจากระบบ", true, false);
+        String[] generalInformation = getGeneralInformation();
+        String id = generalInformation[CID];
+        Log.d(TAG, "CheckTypePersonal:1 " + id);
+        com.jdid.ekyc.models.api.User service = RetrofitInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.User.class);
+        Call<UserInformation> call = service.getUser(id);
+        call.enqueue(new Callback<UserInformation>() {
+            @Override
+            public void onResponse(Call<UserInformation> call, Response<UserInformation> response) {
+                if (response.isSuccessful() && response.code() == 200) {
+
+                    UserInformation result = response.body();
+                    Log.d(TAG, "CheckTypePersonal:2  "+ result);
+                    if (result == null){
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
+                        Log.d("get user : ", result.getId());
+                        SavePersonalInformationPersonal();
+                    } else {
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
+                        Log.d("get user != null : ", result.getId());
+                        PutInformationForPerson(VERIFY_PERSON);
+                    }
+                }else {
+                    Log.d(TAG, "CheckTypePersonal:3  ");
+
+//                    Log.d("get user: ", "xxxxx");
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+//                    Log.d("get user : ", "xxxx");
+                    SavePersonalInformationPersonal();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserInformation> call, Throwable t) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+                Toast.makeText(context, "ระบบขัดข้อง กรุณาทำรายการใหม่", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
 
     public void PutInformationForPerson(int verify_type) {
 
@@ -758,6 +820,7 @@ public class JAppActivity extends JCompatActivity {
         request.setOfficialAddress(generalInformation[ADDRESS]);
         request.setBackIdcard(generalInformation[LASER_ID]);
         request.setReferBy(fieldsList[REF_COMPANY]);
+        request.setSkip(skip);
         request.setNationality("Thai");
         request.setVerifyBy(mStrDeviceID);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
@@ -790,6 +853,7 @@ public class JAppActivity extends JCompatActivity {
                         mProgressDialog.dismiss();
                         mProgressDialog = null;
                         alertDialogPhone("เบอร์โทรศัพท์นี้ถูกใช้งานแล้ว กรุณาเปลี่ยนใหม่");
+
                     } else if (status == 200) {
                         mProgressDialog.dismiss();
                         mProgressDialog = null;
@@ -798,6 +862,7 @@ public class JAppActivity extends JCompatActivity {
                         params.putString("create", result.getStatusCode().toString());
                         mFirebaseAnalytics.logEvent("createUser", params);
                         Log.d("onResponse: xx ", result.getMessage());
+//                        successFragment();
                         sentConfirmOtp(generalInformation[CID], result);
                     }else if (status == 411){
                         mProgressDialog.dismiss();
@@ -918,8 +983,8 @@ public class JAppActivity extends JCompatActivity {
             public void onResponse(Call<ResponseVerifyUser> call, Response<ResponseVerifyUser> response) {
                 if (response.isSuccessful()) {
                     if (response.code() == 404) {
-                        Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
-                        alertDialogPutUser("กรุณาทำ ekyc มาก่อน");
+//                        Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
+                        alertDialogPutUser("ไม่พบข้อมูลของท่านในระบบกรุณาทำ ekyc ");
                     } else {
                         ResponseVerifyUser responseVerifyUser = response.body();
                         Bundle params = new Bundle();
@@ -934,8 +999,8 @@ public class JAppActivity extends JCompatActivity {
                 } else {
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
-                    Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
-                    alertDialogPutUser("กรุณาทำ ekyc ก่อน");
+//                    Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
+                    alertDialogPutUser("ไม่พบข้อมูลของท่านในระบบกรุณาทำ ekyc ");
                 }
             }
 
@@ -943,8 +1008,9 @@ public class JAppActivity extends JCompatActivity {
             public void onFailure(Call<ResponseVerifyUser> call, Throwable t) {
                 mProgressDialog.dismiss();
                 mProgressDialog = null;
-                Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
-                alertDialogPutUser("กรุณาทำ ekyc ก่อน");
+//                Toast.makeText(getAppContext(), "กรุณาทำ ekyc มาก่อน", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onFailureok: " + t.toString());
+                alertDialogPutUser("ระบบขัดข้องกรุณาทำรายการใหม่ภายหลัง ");
             }
         });
     }
@@ -1271,9 +1337,7 @@ public class JAppActivity extends JCompatActivity {
 
         deviceName = getDeviceName();
 
-        Log.d(TAG, "cardInformation: devicename " + deviceName);
-
-        SmartCardDevice.getSmartCardDevice(getApplicationContext(), deviceName, new SmartCardDevice.SmartCardDeviceEvent() {
+        SmartCardDevice device  = SmartCardDevice.getSmartCardDevice(getApplicationContext(), deviceName, new SmartCardDevice.SmartCardDeviceEvent() {
             @Override
             public void OnReady(SmartCardDevice device) {
                 ThaiSmartCard thaiSmartCard = new ThaiSmartCard(device);
@@ -1386,7 +1450,12 @@ public class JAppActivity extends JCompatActivity {
                 Toast.makeText(getApplicationContext(), "Smart Card is removed", Toast.LENGTH_LONG).show();
             }
         });
-        Toast.makeText(JAppActivity.this, deviceName, Toast.LENGTH_SHORT).show();
+
+        if (device == null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+            alertDialogOtg("กรุณาเปิด OTG");
+        }
     }
 
     public void StartGrapInformation() {
@@ -1854,7 +1923,13 @@ public class JAppActivity extends JCompatActivity {
                 .setCancelable(false)
                 .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        showFormFillFragment();
+                        if (isVerifyPerson() == VERIFY_DIPCHIP){
+                            showFormFillPersonRegisterFragment();
+                        } else if (isVerifyPerson() == VERIFY_PERSON){
+                            showFormFillPersonRegisterFragment();
+                        }else {
+                            showFormFillFragment();
+                        }
                     }
                 })
                 .show();
@@ -1862,6 +1937,19 @@ public class JAppActivity extends JCompatActivity {
     }
 
     private void alertDialogPutUser(String text) {
+        new AlertDialog.Builder(this)
+                .setMessage(text)
+                .setCancelable(false)
+                .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        showHomeFragment();
+                    }
+                })
+                .show();
+
+    }
+
+    private void alertDialogOtg(String text) {
         new AlertDialog.Builder(this)
                 .setMessage(text)
                 .setCancelable(false)

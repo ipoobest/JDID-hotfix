@@ -46,6 +46,7 @@ public class FaceCompareResultFragment extends Fragment {
     private TextView txtResult;
     private TextView txtResultDescription;
     private TextView txtScore;
+    private TextView txtSkip;
     private Button btnNextStep;
     private byte[] byteImage;
     private String byteImageUrl;
@@ -126,6 +127,7 @@ public class FaceCompareResultFragment extends Fragment {
         txtResult = view.findViewById(R.id.tvResult);
         txtResultDescription = view.findViewById(R.id.txtResultDescription);
         txtScore = view.findViewById(R.id.tvScore);
+        txtSkip = view.findViewById(R.id.tvSkip);
         imageFromCard = view.findViewById(R.id.imageFromCard);
         imageFromCam = view.findViewById(R.id.imageFromCam);
         byteImage = ((JAppActivity) getActivity()).getByteImage();
@@ -136,14 +138,16 @@ public class FaceCompareResultFragment extends Fragment {
         if (byteImageUrl != null) {
             byte[] decodedString = Base64.decode(byteImageUrl, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            imageFromCam.setImageBitmap(decodedByte);
             imageFromCam.setMinimumHeight(metrics.heightPixels);
             imageFromCam.setMinimumWidth(metrics.widthPixels);
+            imageFromCam.setImageBitmap(decodedByte);
+
         } else {
             imageFromCam = view.findViewById(R.id.imageFromCam);
-            imageFromCam.setImageURI(((JAppActivity) getActivity()).imageUri);
             imageFromCam.setMinimumHeight(metrics.heightPixels);
             imageFromCam.setMinimumWidth(metrics.widthPixels);
+            imageFromCam.setImageURI(((JAppActivity) getActivity()).imageUri);
+
         }
         imageFromCard.setMinimumHeight(metrics.heightPixels);
         imageFromCard.setMinimumWidth(metrics.widthPixels);
@@ -154,11 +158,26 @@ public class FaceCompareResultFragment extends Fragment {
         windowManager.getDefaultDisplay().getMetrics(metrics);
 
         checkResultBuidu(result);
+        txtSkip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((JAppActivity) getActivity()).skip = true;
+                if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_EKYC){
+                    ((JAppActivity) getActivity()).showFormFillFragment();
+                } else {
+                    if (companyRef == null){
+                        Toast.makeText(getContext(), "กรุณาเลือกบริษัท", Toast.LENGTH_SHORT).show();
+                    } else {
+                        ((JAppActivity) getActivity()).showFormFillPersonRegisterFragment();
+                    }
+                }
+            }
+        });
 
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                ((JAppActivity) getActivity()).skip = false;
                 if (mfNextStep){
                     if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_EKYC){
                         ((JAppActivity) getActivity()).showFormFillFragment();
@@ -184,12 +203,13 @@ public class FaceCompareResultFragment extends Fragment {
             txtResult.setText(R.string.compare_success);
             txtResultDescription.setText(R.string.compare_success_description);
             txtScore.setText(number);
+            txtSkip.setVisibility(View.GONE);
             txtResultDescription.setTextColor(getResources().getColor(R.color.success_color));
             btnNextStep.setText(R.string.next_step);
             mfNextStep = true;
         } else {
-            Log.d("image score", "checkResultBuidu: " + result);
-            Toast.makeText(getContext(), result+"", Toast.LENGTH_SHORT).show();
+//            Log.d("image score", "checkResultBuidu: " + result);
+//            Toast.makeText(getContext(), result+"", Toast.LENGTH_SHORT).show();
             txtResult.setText(R.string.compare_fail);
             txtResultDescription.setText(R.string.compare_fail_description);
             txtResultDescription.setTextColor(getResources().getColor(R.color.error_color));

@@ -66,6 +66,18 @@ public class User {
     @Expose
     private String backIdcard;
 
+    @SerializedName("skip")
+    @Expose
+    private boolean skip;
+
+    public boolean isSkip() {
+        return skip;
+    }
+
+    public void setSkip(boolean skip) {
+        this.skip = skip;
+    }
+
     public String getBackIdcard() {
         return backIdcard;
     }

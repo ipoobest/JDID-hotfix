@@ -83,6 +83,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_otp_register, container, false);
         setHasOptionsMenu(true);
+        //TODO OTP 1
         mPhoneNumber = ((JAppActivity) getActivity()).fieldsList[JAppActivity.CONTACT_NUMBER];
         Log.d( "mPhoneNumber xxx ::: ", mPhoneNumber);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
@@ -157,11 +158,8 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         mProgressDialog = ProgressDialog.show(getActivity(),
                 null, "กำลังทำการร้องขอรหัส OTP", true, false);
         RequestOTPForRegister request = new RequestOTPForRegister();
-        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
-            request.setPhoneNo(((JAppActivity) getActivity()).getMobilePhone());
-        } else {
-            request.setPhoneNo(mPhoneNumber);
-        }
+        Log.d( "OTP requestOTP: ", mPhoneNumber);
+        request.setPhoneNo(mPhoneNumber);
 
 
         Admin service = RetrofitInstance.getRetrofitInstance().create(Admin.class);
@@ -219,7 +217,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                         } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
                             mProgressDialog.dismiss();
                             mProgressDialog = null;
-                            ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_PERSON);
+                            ((JAppActivity) getActivity()).CheckTypePersonal();
                         } else {
                             mProgressDialog.dismiss();
                             mProgressDialog = null;

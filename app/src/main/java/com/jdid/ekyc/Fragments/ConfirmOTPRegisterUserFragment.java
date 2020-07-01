@@ -72,18 +72,9 @@ public class ConfirmOTPRegisterUserFragment extends Fragment {
         mProgressDialog = ProgressDialog.show(getActivity(),
                 null, "กำลังทำการรตรวจรหัส OTP", true, false);
         RequestOTPForVerify request = new RequestOTPForVerify();
-//        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
-//            request.setPhoneNo(((JAppActivity) getActivity()).getMobilePhone());
-//
-//        } else {
-//            request.setPhoneNo(mPhoneNumber);
-//        }
 
-        if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP)) {
-            request.setPhoneNo(((JAppActivity) getActivity()).getMobilePhone());
-        } else {
-            request.setPhoneNo(mPhoneNumber);
-        }
+        request.setPhoneNo(mPhoneNumber);
+
         request.setOtp(edOTP.getText().toString());
         request.setOtpRef(mRef);
 
