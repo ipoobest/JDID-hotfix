@@ -108,8 +108,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.1.11";
-    public static final String APP_DATE_UPDATE = "29/06/63";
+    public static final String APP_VERSION = "release 1.1.12";
+    public static final String APP_DATE_UPDATE = "03/07/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -257,6 +257,8 @@ public class JAppActivity extends JCompatActivity {
     public String mPhone;
     public String mEMail;
     public boolean skip = false;
+    public int skipNumber = 0;
+
 
     //registration person mobile phone
     public String mPhonePerson;

@@ -131,6 +131,7 @@ public class FaceCompareResultFragment extends Fragment {
         imageFromCard = view.findViewById(R.id.imageFromCard);
         imageFromCam = view.findViewById(R.id.imageFromCam);
         byteImage = ((JAppActivity) getActivity()).getByteImage();
+        txtSkip.setVisibility(View.GONE);
         Bitmap bm = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
         DisplayMetrics metrics = new DisplayMetrics();
 
@@ -162,6 +163,7 @@ public class FaceCompareResultFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ((JAppActivity) getActivity()).skip = true;
+                ((JAppActivity) getActivity()).skipNumber = 1;
                 if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_EKYC){
                     ((JAppActivity) getActivity()).showFormFillFragment();
                 } else {
@@ -203,13 +205,17 @@ public class FaceCompareResultFragment extends Fragment {
             txtResult.setText(R.string.compare_success);
             txtResultDescription.setText(R.string.compare_success_description);
             txtScore.setText(number);
-            txtSkip.setVisibility(View.GONE);
+
             txtResultDescription.setTextColor(getResources().getColor(R.color.success_color));
             btnNextStep.setText(R.string.next_step);
             mfNextStep = true;
         } else {
 //            Log.d("image score", "checkResultBuidu: " + result);
 //            Toast.makeText(getContext(), result+"", Toast.LENGTH_SHORT).show();
+            ((JAppActivity) getActivity()).skipNumber += 1;
+            if (((JAppActivity) getActivity()).skipNumber == 3) {
+                txtSkip.setVisibility(View.VISIBLE);
+            }
             txtResult.setText(R.string.compare_fail);
             txtResultDescription.setText(R.string.compare_fail_description);
             txtResultDescription.setTextColor(getResources().getColor(R.color.error_color));
