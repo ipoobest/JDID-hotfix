@@ -471,7 +471,7 @@ public class JAppActivity extends JCompatActivity {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                 byteImageCam = stream.toByteArray();
-                Log.d("onActivityResult:xxxxx", "xxxxxx");
+//                Log.d("onActivityResult:xxxxx", "xxxxxx");
 
 
             } catch (Exception e) {

@@ -181,6 +181,7 @@ public class FormFillFragment extends Fragment {
                     refCompany = null;
                 } else {
                     refCompany = companyName[position];
+                    ((JAppActivity) getActivity()).fieldsList[JAppActivity.REF_COMPANY] = refCompany;
                 }
             }
 
