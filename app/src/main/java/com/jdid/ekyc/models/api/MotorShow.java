@@ -30,7 +30,7 @@ public interface MotorShow {
     Call<ResponseSubjectMegvii> postData(@Body RequestSubjectMegvii request);
 
     @Headers("X-Parse-Application-Id: 928f24ed35d8876dee76d0a5460ef078")
-    @POST("/classes/MotorShow20Coffee")
+    @POST("/parse/classes/MotorShow20Coffee")
     Call<ResponseParse> postDataToParse(@Body RequestUserMotorShow request);
 
 }

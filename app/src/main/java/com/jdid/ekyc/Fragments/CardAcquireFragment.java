@@ -35,6 +35,7 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
     private static final int VERIFY_EKYC = 0;
     private static final int VERIFY_PERSON = 1;
     private static final int VERIFY_DIP_CHIP = 2;
+    private static final int VERIFY_DIPCHIP_MOTORSHOW = 3;
 
     private Button btnNextStep;
 
@@ -67,6 +68,8 @@ public class CardAcquireFragment extends Fragment implements CardAcquireInterfac
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
         } else if ((((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_DIP_CHIP)){
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
+        } else if ((((JAppActivity)getActivity()).isVerifyPerson()==VERIFY_DIPCHIP_MOTORSHOW)){
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip_motorshow);
         }
 
         miCurrentLog = 0;

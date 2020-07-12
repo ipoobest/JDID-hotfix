@@ -17,6 +17,7 @@
     <string name="finish">เสร็จสิ้น</string>
     <string name="verify_person">ตรวจสอบบุคคล</string>
     <string name="dip_chip">Dip Chip</string>
+    <string name="dip_chip_motorshow">Dip Chip mortorshow</string>
     <string name="register_ekyc">ลงทะเบียน eKYC</string>
     <string name="get_data_from_card">กรุณากดเพื่อข้อมูลจากบัตร</string>
     <string name="compare_success">สำเร็จ</string>

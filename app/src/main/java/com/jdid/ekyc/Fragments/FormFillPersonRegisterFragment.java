@@ -35,6 +35,7 @@ public class FormFillPersonRegisterFragment extends Fragment {
     private static final int VERIFY_EKYC = 0;
     private static final int VERIFY_PERSON = 1;
     private static final int VERIFY_DIP_CHIP = 2;
+    private static final int VERIFY_DIP_CHIP_MOTORSHOW = 3;
 
     private Button btnSaveAndGo;
     private EditText edPhone;
@@ -64,6 +65,9 @@ public class FormFillPersonRegisterFragment extends Fragment {
             case VERIFY_DIP_CHIP:
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
                 break;
+            case VERIFY_DIP_CHIP_MOTORSHOW:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip_motorshow);
+                break;
         }
 
 
@@ -89,6 +93,8 @@ public class FormFillPersonRegisterFragment extends Fragment {
         ((JAppActivity) getActivity()).hideKeyboard();
         if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_PERSON){
             ((JAppActivity) getActivity()).showOTPVerifyFragment(VERIFY_PERSON);
+        } else if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_DIP_CHIP_MOTORSHOW){
+            ((JAppActivity) getActivity()).showOTPVerifyFragment(VERIFY_DIP_CHIP_MOTORSHOW);
         } else {
             ((JAppActivity) getActivity()).showOTPVerifyFragment(VERIFY_DIP_CHIP);
         }
@@ -102,26 +108,26 @@ public class FormFillPersonRegisterFragment extends Fragment {
 
         return true;
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            confirmBack();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void confirmBack() {
-        new AlertDialog.Builder(getContext())
-                .setMessage("ต้องการหยุดทำรายการ และกลับไปหน้าเมนูหลัก หรือไม่?")
-                .setCancelable(false)
-                .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        ((JAppActivity) getActivity()).showHomeFragment();
-                    }
-                })
-                .setNegativeButton("ยกเลิก", null)
-                .show();
-    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        if (item.getItemId() == android.R.id.home) {
+//            confirmBack();
+//            return true;
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
+//
+//    private void confirmBack() {
+//        new AlertDialog.Builder(getContext())
+//                .setMessage("ต้องการหยุดทำรายการ และกลับไปหน้าเมนูหลัก หรือไม่?")
+//                .setCancelable(false)
+//                .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        ((JAppActivity) getActivity()).showHomeFragment();
+//                    }
+//                })
+//                .setNegativeButton("ยกเลิก", null)
+//                .show();
+//    }
 }

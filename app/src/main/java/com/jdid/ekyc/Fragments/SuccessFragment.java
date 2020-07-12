@@ -26,7 +26,7 @@ public class SuccessFragment extends Fragment {
     private void initialize(View view) {
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("ตรวจสอบบุคคล");
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("ลงทะเบียนสำเร็จ");
         view.findViewById(R.id.btnNextStep).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

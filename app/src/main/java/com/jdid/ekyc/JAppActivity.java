@@ -5,13 +5,11 @@ import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -35,7 +33,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -65,13 +62,14 @@ import com.jdid.ekyc.base.JCompatActivity;
 import com.jdid.ekyc.models.RetrofitFaceInstance;
 import com.jdid.ekyc.models.RetrofitInstance;
 import com.jdid.ekyc.models.RetrofitMotorShowInstance;
+import com.jdid.ekyc.models.RetrofitMotorShowParseInstance;
 import com.jdid.ekyc.models.api.FaceCompare;
 import com.jdid.ekyc.models.api.Device;
 import com.jdid.ekyc.models.pojo.Data;
 import com.jdid.ekyc.models.pojo.Dopa;
 import com.jdid.ekyc.models.pojo.OtpRef;
+import com.jdid.ekyc.models.pojo.Photo;
 import com.jdid.ekyc.models.pojo.RequestFaceCompare;
-import com.jdid.ekyc.models.pojo.RequestImageMegvii;
 import com.jdid.ekyc.models.pojo.RequestSubjectMegvii;
 import com.jdid.ekyc.models.pojo.RequestUserMotorShow;
 import com.jdid.ekyc.models.pojo.RequestVrifyPin;
@@ -93,10 +91,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -104,15 +100,12 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.TimeoutException;
 
 
@@ -138,6 +131,8 @@ public class JAppActivity extends JCompatActivity {
 //    private static final int VERIFY_EKYC = 0;
     private static final int VERIFY_PERSON = 1;
     private static final int VERIFY_DIPCHIP = 2;
+    private static final int VERIFY_DIPCHIP_MOTORSHOW = 3;
+
 
     private PFCodeView mCodeView;
 
@@ -816,6 +811,9 @@ public class JAppActivity extends JCompatActivity {
         if (isVerifyPerson() == VERIFY_PERSON){
             request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
         }
+        if (isVerifyPerson() == VERIFY_DIPCHIP_MOTORSHOW) {
+            fieldsList[CONTACT_NUMBER] = "motorshow";
+        }
         request.setNameTh(generalInformation[THAIFULLNAME]);
         request.setNameEn(generalInformation[ENGLISHFULLNAME]);
         request.setBirthdate(generalInformation[BIRTH]);
@@ -1178,7 +1176,7 @@ public class JAppActivity extends JCompatActivity {
                 // TODO :: 3 request to subject && parse
                 if (response.isSuccessful()) {
                     ResponseImageMegvii result = response.body();
-                    Log.d(TAG , "onResponse: " + result.getData().getId());
+//                    Log.d(TAG , "onResponse: " + result.getData().getId());
                     int photoId = result.getData().getId();
                     Log.d(TAG, "onResponse: " + photoId + mortorName);
                     mProgressDialog.dismiss();
@@ -1208,7 +1206,7 @@ public class JAppActivity extends JCompatActivity {
 
         photoId.add(photoIds);
         groupId.add(0);
-        RequestSubjectMegvii request = new RequestSubjectMegvii();
+        final RequestSubjectMegvii request = new RequestSubjectMegvii();
         request.setBirthday(0);
         request.setEntryDate(0);
         request.setGender(0);
@@ -1223,15 +1221,18 @@ public class JAppActivity extends JCompatActivity {
             @Override
             public void onResponse(Call<ResponseSubjectMegvii> call, Response<ResponseSubjectMegvii> response) {
                 if (response.isSuccessful()) {
-                    ResponseSubjectMegvii resutls = response.body();
-                    List<Data> data = resutls.getPhotos();
+                    ResponseSubjectMegvii results = response.body();
+                    List<Photo> data = results.getData().getPhotos();
+
                     int subjectId = data.get(0).getSubjectId();
                     int photoId = data.get(0).getId();
+                    String url = data.get(0).getUrl();
+                    String urls = "http:/" + url;
                     // TODO :: sent to parse class MotorShow20Coffee
-                    Log.d(TAG, "onResponse: " + resutls);
+                    Log.d(TAG, "onResponse: " + urls);
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
-                    requestDataToSubjectParse(subjectId, photoId, mortorName);
+                    requestDataToSubjectParse(subjectId, photoId, mortorName, urls);
 
                 }else {
                     mProgressDialog.dismiss();
@@ -1249,17 +1250,18 @@ public class JAppActivity extends JCompatActivity {
 
     }
 
-    private void requestDataToSubjectParse(int subjectId, int photoId, String photoUrl) {
+    private void requestDataToSubjectParse(int subjectId, int photoId, String name ,String photoUrl) {
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
                 null, "ระบบกำลังดำเนินการกรุณารอสักครู่", true, false);
         RequestUserMotorShow request = new RequestUserMotorShow();
         request.setSubjectId(subjectId);
         request.setPhotoId(photoId);
+        request.setFullname(name);
         request.setPhotoUrl(photoUrl);
         request.setCoffee("");
-        request.setStatus("create");
+        request.setStatus("created");
 
-        com.jdid.ekyc.models.api.MotorShow service = RetrofitInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
+        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorShowParseInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
         Call<ResponseParse> call = service.postDataToParse(request);
         call.enqueue(new Callback<ResponseParse>() {
             @Override

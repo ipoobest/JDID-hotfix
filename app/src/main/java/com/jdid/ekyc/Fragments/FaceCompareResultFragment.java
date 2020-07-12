@@ -40,6 +40,7 @@ public class FaceCompareResultFragment extends Fragment {
     private static final int VERIFY_EKYC = 0;
     private static final int VERIFY_PERSON = 1;
     private static final int VERIFY_DIP_CHIP = 2;
+    private static final int VERIFY_DIP_CHIP_MOTORSHOW = 3;
 
     private ImageView imageFromCard;
     private ImageView imageFromCam;
@@ -95,6 +96,11 @@ public class FaceCompareResultFragment extends Fragment {
                 break;
             case VERIFY_DIP_CHIP:
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
+                break;
+            case VERIFY_DIP_CHIP_MOTORSHOW:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip_motorshow);
+                spCompanyRef.setVisibility(View.GONE);
+                tvRefBy.setVisibility(View.GONE);
                 break;
         }
 
@@ -183,7 +189,11 @@ public class FaceCompareResultFragment extends Fragment {
                 if (mfNextStep){
                     if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_EKYC){
                         ((JAppActivity) getActivity()).showFormFillFragment();
-                    } else {
+
+                    } else if(((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_DIP_CHIP_MOTORSHOW){
+                        ((JAppActivity) getActivity()).showFormFillPersonRegisterFragment();
+                    }
+                    else {
                         if (companyRef == null){
                             Toast.makeText(getContext(), "กรุณาเลือกบริษัท", Toast.LENGTH_SHORT).show();
                         } else {

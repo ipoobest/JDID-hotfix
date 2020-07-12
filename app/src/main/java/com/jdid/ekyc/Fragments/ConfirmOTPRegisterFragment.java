@@ -43,6 +43,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     private static final int VERIFY_EKYC = 0;
     private static final int VERIFY_PERSON = 1;
     private static final int VERIFY_DIP_CHIP = 2;
+    private static final int VERIFY_DIP_CHIP_MOTORSHOW = 3;
 
     private ProgressDialog mProgressDialog;
     private EditText edOTP;
@@ -103,6 +104,9 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 break;
             case VERIFY_PERSON:
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
+                break;
+            case VERIFY_DIP_CHIP_MOTORSHOW:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip_motorshow);
                 break;
         }
 
@@ -215,6 +219,10 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                             mProgressDialog = null;
                             ((JAppActivity) getActivity()).SaveInformation();
                         } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
+                            mProgressDialog.dismiss();
+                            mProgressDialog = null;
+                            ((JAppActivity) getActivity()).CheckTypePersonal();
+                        } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP_MOTORSHOW)) {
                             mProgressDialog.dismiss();
                             mProgressDialog = null;
                             ((JAppActivity) getActivity()).CheckTypePersonal();
