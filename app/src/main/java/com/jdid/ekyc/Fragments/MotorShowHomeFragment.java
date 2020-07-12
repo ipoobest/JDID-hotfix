@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,18 +17,21 @@ import androidx.fragment.app.Fragment;
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
 
-public class HomeFragment extends Fragment {
+public class MotorShowHomeFragment extends Fragment {
 
     private static final String TAG = "HomeFragment : ";
 
     private static final int VERIFY_EKYC = 0;
     private static final int VERIFY_PERSON = 1;
     private static final int VERIFY_DIP_CHIP = 2;
+    private static final int MOTORSHOW_DIP_CHIP = 3;
+    private static final int MOTORSHOW_REGISTER = 4;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_home, container, false);
+        final View view = inflater.inflate(R.layout.fragment_motorshow, container, false);
         initialize(view);
         return view;
     }
@@ -46,9 +48,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void initialize(View view) {
-        view.findViewById(R.id.btnRegisterEKYC).setOnClickListener(mOnKeyClickListener);
         view.findViewById(R.id.btnVerifyPerson).setOnClickListener(mOnKeyClickListener);
-        view.findViewById(R.id.btnVerifyDipChip).setOnClickListener(mOnKeyClickListener);
         view.findViewById(R.id.btnRegisterMotorShow).setOnClickListener(mOnKeyClickListener);
 
         ((TextView)view.findViewById(R.id.tvAppVersion)).setText("อัพเดทเมื่อ " + ((JAppActivity)getActivity()).APP_DATE_UPDATE + " VERSION : " +((JAppActivity)getActivity()).APP_VERSION);
@@ -68,27 +68,13 @@ public class HomeFragment extends Fragment {
                 final String string = ((TextView) v).getText().toString();
 
                 switch (v.getId()){
-                    case R.id.btnRegisterEKYC:
-                        ((JAppActivity)getActivity()).acquireCardData(VERIFY_EKYC);
-                        break;
                     case R.id.btnVerifyPerson:
-                        ((JAppActivity)getActivity()).acquireCardData(VERIFY_PERSON);
-                        break;
-                    case R.id.btnVerifyDipChip:
-                        ((JAppActivity)getActivity()).acquireCardData(VERIFY_DIP_CHIP);
+                        ((JAppActivity)getActivity()).acquireCardData(MOTORSHOW_DIP_CHIP);
                         break;
                     case R.id.btnRegisterMotorShow:
-                        ((JAppActivity)getActivity()).showMotorShowFragment();
+                        ((JAppActivity)getActivity()).FormFillMotorShowRegisterFragment();
                         break;
                 }
-
-//                if (id==R.id.btnRegisterEKYC) {
-//                    ((JAppActivity)getActivity()).acquireCardData(VERIFY_EKYC);
-//                } else if (id==R.id.btnVerifyPerson) {
-//                    ((JAppActivity)getActivity()).acquireCardData(VERIFY_PERSON);
-//                } else if (id == R.id.btnVerifyDipChip){
-//                    ((JAppActivity)getActivity()).acquireCardData(VERIFY_DIP_CHIP);
-//                }
             }
         }
     };

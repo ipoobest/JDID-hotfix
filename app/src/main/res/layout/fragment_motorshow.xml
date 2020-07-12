@@ -5,6 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="588dp" />
+
 
     <RelativeLayout
         android:id="@+id/relativeLayout"
@@ -58,73 +65,51 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/relativeLayout" />
 
-    <TextView
-        android:id="@+id/btnRegisterMotorShow"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:fontFamily="@font/kanit"
-        android:text="ลงทะเบียนงาน Motor Show"
-        android:textColor="@color/colorAccent"
-        android:textSize="18sp"
-        android:theme="@style/HomeButtonStyle"
-        app:layout_constraintTop_toBottomOf="@+id/txtHomeTitle"/>
-
-
-
-    <TextView
-        android:id="@+id/btnRegisterEKYC"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:fontFamily="@font/kanit"
-        android:text="ลงทะเบียน eKYC"
-        android:textColor="@color/colorAccent"
-        android:textSize="18sp"
-        android:theme="@style/HomeButtonStyle"
-        app:layout_constraintTop_toBottomOf="@+id/btnRegisterMotorShow"/>
-
-
-    <TextView
-        android:id="@+id/btnVerifyPerson"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:fontFamily="@font/kanit"
-        android:text="บริการตรวจสอบบุคคล"
-        android:textColor="@color/colorAccent"
-        android:textSize="18sp"
-        android:theme="@style/HomeButtonStyle"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnRegisterEKYC"/>
+        app:layout_constraintTop_toTopOf="@+id/txtHomeTitle">
+
+        <TextView
+            android:id="@+id/btnRegisterMotorShow"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/kanit"
+            android:gravity="center"
+            android:text="ลงทะเบียนงาน Motor Show"
+            android:textColor="@color/colorAccent"
+            android:textSize="18sp"
+            android:theme="@style/HomeButtonStyle"
+            app:layout_constraintTop_toBottomOf="@+id/txtHomeTitle" />
 
 
-    <TextView
-        android:id="@+id/btnVerifyDipChip"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:fontFamily="@font/kanit"
-        android:gravity="center"
-        android:text="Dip Chip"
-        android:textColor="@color/colorAccent"
-        android:textSize="18sp"
-        android:theme="@style/HomeButtonStyle"
-        app:layout_constraintEnd_toEndOf="@+id/btnVerifyPerson"
-        app:layout_constraintStart_toStartOf="@+id/btnVerifyPerson"
-        app:layout_constraintTop_toBottomOf="@+id/btnVerifyPerson" />
+        <TextView
+            android:layout_marginTop="32dp"
+            android:id="@+id/btnVerifyPerson"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/kanit"
+            android:gravity="center"
+            android:text="บริการตรวจสอบบุคคล"
+            android:textColor="@color/colorAccent"
+            android:textSize="18sp"
+            android:theme="@style/HomeButtonStyle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnRegisterMotorShow" />
+    </LinearLayout>
+
+
+
 
     <TextView
         android:textAlignment="center"

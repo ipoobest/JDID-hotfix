@@ -11,12 +11,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -33,11 +35,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 
 import com.acs.smartcard.Features;
 import com.acs.smartcard.Reader;
@@ -49,28 +53,35 @@ import com.jdid.ekyc.Fragments.ConfirmOTPRegisterFragment;
 import com.jdid.ekyc.Fragments.ConfirmOTPRegisterUserFragment;
 import com.jdid.ekyc.Fragments.FaceCompareResultFragment;
 import com.jdid.ekyc.Fragments.FormFillFragment;
+import com.jdid.ekyc.Fragments.FormFillMotorShowRegisterFragment;
 import com.jdid.ekyc.Fragments.FormFillPersonRegisterFragment;
 import com.jdid.ekyc.Fragments.HomeFragment;
+import com.jdid.ekyc.Fragments.MotorShowHomeFragment;
+import com.jdid.ekyc.Fragments.MotorShowPreviewFace;
 import com.jdid.ekyc.Fragments.PinCodeFragment;
 import com.jdid.ekyc.Fragments.SuccessFragment;
 import com.jdid.ekyc.Fragments.WaitForAuthoriseFragment;
 import com.jdid.ekyc.base.JCompatActivity;
-import com.jdid.ekyc.models.RetrofitFaceCompare;
 import com.jdid.ekyc.models.RetrofitFaceInstance;
 import com.jdid.ekyc.models.RetrofitInstance;
+import com.jdid.ekyc.models.RetrofitMotorShowInstance;
 import com.jdid.ekyc.models.api.FaceCompare;
 import com.jdid.ekyc.models.api.Device;
 import com.jdid.ekyc.models.pojo.Data;
 import com.jdid.ekyc.models.pojo.Dopa;
-import com.jdid.ekyc.models.pojo.FaceCompareRequest;
-import com.jdid.ekyc.models.pojo.FaceCompareResult;
 import com.jdid.ekyc.models.pojo.OtpRef;
 import com.jdid.ekyc.models.pojo.RequestFaceCompare;
+import com.jdid.ekyc.models.pojo.RequestImageMegvii;
+import com.jdid.ekyc.models.pojo.RequestSubjectMegvii;
+import com.jdid.ekyc.models.pojo.RequestUserMotorShow;
 import com.jdid.ekyc.models.pojo.RequestVrifyPin;
 import com.jdid.ekyc.models.pojo.ResponVerifyPin;
 import com.jdid.ekyc.models.pojo.ResponseCreateUser;
 import com.jdid.ekyc.models.pojo.ResponseDopa;
 import com.jdid.ekyc.models.pojo.ResponseFaceCompare;
+import com.jdid.ekyc.models.pojo.ResponseImageMegvii;
+import com.jdid.ekyc.models.pojo.ResponseParse;
+import com.jdid.ekyc.models.pojo.ResponseSubjectMegvii;
 import com.jdid.ekyc.models.pojo.ResponseVerifyUser;
 import com.jdid.ekyc.models.pojo.ResultFaceCompare;
 import com.jdid.ekyc.models.pojo.RetrofitDopaInstance;
@@ -82,8 +93,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,15 +104,23 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeoutException;
 
 
 import co.advancedlogic.thainationalidcard.SmartCardDevice;
 import co.advancedlogic.thainationalidcard.ThaiSmartCard;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -237,6 +258,10 @@ public class JAppActivity extends JCompatActivity {
         return JAppActivity.byteImage;
     }
 
+    public byte[] getByteImageCam() {
+        return JAppActivity.byteImageCam;
+    }
+
     public final static int PURPOSE = 0;
     public final static int CONTACT_NUMBER = 1;
     public final static int CENSUS_ADDRESS = 2;
@@ -258,6 +283,10 @@ public class JAppActivity extends JCompatActivity {
     public String mEMail;
     public boolean skip = false;
     public int skipNumber = 0;
+    public boolean mortorshowRegister = false;
+    public String mortorName;
+    public String mortorPhone;
+
 
 
     //registration person mobile phone
@@ -371,6 +400,13 @@ public class JAppActivity extends JCompatActivity {
         OpenCameraForCapture();
     }
 
+//
+    public void FormFillMotorShowRegisterFragment() {
+        final FormFillMotorShowRegisterFragment fragment = new FormFillMotorShowRegisterFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container_view, fragment).addToBackStack(null).commit();
+    }
+
     public void showFormFillFragment() {
         final FormFillFragment fragment = new FormFillFragment();
         getSupportFragmentManager().beginTransaction()
@@ -418,6 +454,18 @@ public class JAppActivity extends JCompatActivity {
 //        getSupportFragmentManager().beginTransaction()
 //                .replace(R.id.container_view, fragment).commit();
 //    }
+
+    public void showMotorShowFragment() {
+        final MotorShowHomeFragment fragment = new MotorShowHomeFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container_view, fragment).commit();
+    }
+
+    public void showMotorShowPreviewFaceFragment(String name, int id) {
+        final MotorShowPreviewFace fragment = new MotorShowPreviewFace(name , id);
+        getSupportFragmentManager().beginTransaction().replace(R.id.container_view, fragment).commit();
+    }
+
+
     public void acquireCardData(int type) {
         mfVerifyPerson = type;
         final CardAcquireFragment fragment = new CardAcquireFragment();
@@ -448,43 +496,84 @@ public class JAppActivity extends JCompatActivity {
         }
     }
 
+    File photoFile = null;
     private void openCamera() {
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "New Picture");
-        values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera");
-        imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        startActivityForResult(cameraIntent, IMAGE_CAPTURE_CODE);
+//        ContentValues values = new ContentValues();
+//        values.put(MediaStore.Images.Media.TITLE, "New Picture");
+//        values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera");
+//        imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        try {
+            photoFile = createImageFile();
+        } catch (IOException ex) {
+            // Error occurred while creating the File
+
+        }
+        if (photoFile != null){
+            imageUri = FileProvider.getUriForFile(this,  BuildConfig.APPLICATION_ID + ".provider", photoFile);
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            startActivityForResult(cameraIntent, IMAGE_CAPTURE_CODE);
+        }
+
+    }
+    String currentPhotoPath;
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        }
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 
     @SuppressLint("MissingSuperCall")
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent resultIntent) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent resultIntent) {
         if ((resultCode == RESULT_OK) && (requestCode == IMAGE_CAPTURE_CODE)) {
 
             imageBuffer.setImageURI(imageUri);
-            Log.d(TAG, imageUri.toString());
+//            Log.d(TAG, imageUri.toString());
             try {
                 Bitmap bitmap = convertImageViewToBitmap(imageBuffer);
                 bitmap = getResizedBitmap(bitmap, 297, 355);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                 byteImageCam = stream.toByteArray();
-//                Log.d("onActivityResult:xxxxx", "xxxxxx");
-
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            String imageDB = Base64.encodeToString(byteImage, Base64.NO_WRAP);
-            String imageCam = Base64.encodeToString(byteImageCam, Base64.NO_WRAP);
-//            comPareImage(imageDB, imageCam);
-            comPareImageBuidu(imageDB, imageCam);
+            if (mortorshowRegister) {
+                Log.d(TAG, "byteImageCam: "+ imageUri.getPath());
+                //write the bytes in file
+                // 1. get files
+                requestImageToMegvii(photoFile);
+
+//                String path = imageUri.getPath();
+
+                // 2. request files
+
+            } else {
+               String imageDB = Base64.encodeToString(byteImage, Base64.NO_WRAP);
+               String imageCam = Base64.encodeToString(byteImageCam, Base64.NO_WRAP);
+               comPareImageBuidu(imageDB, imageCam);
+            }
 
         }
     }
+
 
 
     /* ******************************************************* */
@@ -611,6 +700,7 @@ public class JAppActivity extends JCompatActivity {
         });
 
     }
+
     private Bitmap convertImageViewToBitmap(ImageView v) {
         Bitmap bm = ((BitmapDrawable) v.getDrawable()).getBitmap();
         return bm;
@@ -798,7 +888,6 @@ public class JAppActivity extends JCompatActivity {
         });
 
     }
-
 
     public void PutInformationForPerson(int verify_type) {
 
@@ -1066,6 +1155,132 @@ public class JAppActivity extends JCompatActivity {
         if (otp != null) {
             showOTPVerifyUserFragment(id, otp, mPhonePerson);
         }
+    }
+
+    private void requestImageToMegvii(File image) {
+        mProgressDialog = ProgressDialog.show(JAppActivity.this,
+                null, "ระบบกำลังดำเนินการกรุณารอสักครู่", true, false);
+        RequestBody requestFile =
+                RequestBody.create(
+                        MediaType.parse("image/*"),
+                        image
+                );
+
+        MultipartBody.Part body =
+                MultipartBody.Part.createFormData("photo", image.getName(), requestFile);
+
+        Log.d(TAG, "requestImageToMegvii: " + image.getName());
+        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorShowInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
+        Call<ResponseImageMegvii> call = service.postImage(body);
+        call.enqueue(new Callback<ResponseImageMegvii>() {
+            @Override
+            public void onResponse(Call<ResponseImageMegvii> call, Response<ResponseImageMegvii> response) {
+                // TODO :: 3 request to subject && parse
+                if (response.isSuccessful()) {
+                    ResponseImageMegvii result = response.body();
+                    Log.d(TAG , "onResponse: " + result.getData().getId());
+                    int photoId = result.getData().getId();
+                    Log.d(TAG, "onResponse: " + photoId + mortorName);
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                    showMotorShowPreviewFaceFragment(mortorName ,photoId);
+                    //TODO :: 4 request ID and NAME
+                } else {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseImageMegvii> call, Throwable t) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+            }
+        });
+
+    }
+
+    public void requestDataToSubjectMegvii(String name, int photoIds) {
+        mProgressDialog = ProgressDialog.show(JAppActivity.this,
+                null, "ระบบกำลังดำเนินการกรุณารอสักครู่", true, false);
+        List<Integer> photoId = new ArrayList<Integer>();
+        List<Object> groupId = new ArrayList<Object>();
+
+        photoId.add(photoIds);
+        groupId.add(0);
+        RequestSubjectMegvii request = new RequestSubjectMegvii();
+        request.setBirthday(0);
+        request.setEntryDate(0);
+        request.setGender(0);
+        request.setGroupIds(groupId);
+        request.setName(name);
+        request.setPhotoIds(photoId);
+        request.setSubjectType(0);
+
+        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorShowInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow .class);
+        Call<ResponseSubjectMegvii> call = service.postData(request);
+        call.enqueue(new Callback<ResponseSubjectMegvii>() {
+            @Override
+            public void onResponse(Call<ResponseSubjectMegvii> call, Response<ResponseSubjectMegvii> response) {
+                if (response.isSuccessful()) {
+                    ResponseSubjectMegvii resutls = response.body();
+                    List<Data> data = resutls.getPhotos();
+                    int subjectId = data.get(0).getSubjectId();
+                    int photoId = data.get(0).getId();
+                    // TODO :: sent to parse class MotorShow20Coffee
+                    Log.d(TAG, "onResponse: " + resutls);
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                    requestDataToSubjectParse(subjectId, photoId, mortorName);
+
+                }else {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseSubjectMegvii> call, Throwable t) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+            }
+        });
+
+
+    }
+
+    private void requestDataToSubjectParse(int subjectId, int photoId, String photoUrl) {
+        mProgressDialog = ProgressDialog.show(JAppActivity.this,
+                null, "ระบบกำลังดำเนินการกรุณารอสักครู่", true, false);
+        RequestUserMotorShow request = new RequestUserMotorShow();
+        request.setSubjectId(subjectId);
+        request.setPhotoId(photoId);
+        request.setPhotoUrl(photoUrl);
+        request.setCoffee("");
+        request.setStatus("create");
+
+        com.jdid.ekyc.models.api.MotorShow service = RetrofitInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
+        Call<ResponseParse> call = service.postDataToParse(request);
+        call.enqueue(new Callback<ResponseParse>() {
+            @Override
+            public void onResponse(Call<ResponseParse> call, Response<ResponseParse> response) {
+                if (response.isSuccessful()){
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                    successFragment();
+                } else {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseParse> call, Throwable t) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+            }
+        });
+
     }
 
     public byte[] recoverImageFromUrl(String urlText) throws Exception {

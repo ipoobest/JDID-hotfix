@@ -30,6 +30,10 @@ public class SuccessFragment extends Fragment {
         view.findViewById(R.id.btnNextStep).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (((JAppActivity)getActivity()).mortorshowRegister){
+                    ((JAppActivity)getActivity()).showMotorShowFragment();
+                    (((JAppActivity)getActivity()).mortorshowRegister) = false;
+                }
                 ((JAppActivity)getActivity()).showHomeFragment();
             }
         });
