@@ -1227,7 +1227,7 @@ public class JAppActivity extends JCompatActivity {
                     int subjectId = data.get(0).getSubjectId();
                     int photoId = data.get(0).getId();
                     String url = data.get(0).getUrl();
-                    String urls = "http:/" + url;
+                    String urls = "http://megvii-manage.ap.ngrok.io" + url;
                     // TODO :: sent to parse class MotorShow20Coffee
                     Log.d(TAG, "onResponse: " + urls);
                     mProgressDialog.dismiss();
