@@ -1,6 +1,7 @@
 package com.jdid.ekyc.Fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -82,5 +84,7 @@ public class MotorShowHomeFragment extends Fragment {
     public static boolean hasUsbHostFeature(Context context) {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_USB_HOST);
     }
+
+
 
 }

@@ -10,9 +10,9 @@ public class ResponseImageMegvii {
     @SerializedName("data")
     @Expose
     private Data data;
-    @SerializedName("page")
+    @SerializedName("desc")
     @Expose
-    private Page page;
+    private String desc;
     @SerializedName("timecost")
     @Expose
     private Integer timecost;
@@ -33,12 +33,12 @@ public class ResponseImageMegvii {
         this.data = data;
     }
 
-    public Page getPage() {
-        return page;
+    public String getDesc() {
+        return desc;
     }
 
-    public void setPage(Page page) {
-        this.page = page;
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     public Integer getTimecost() {

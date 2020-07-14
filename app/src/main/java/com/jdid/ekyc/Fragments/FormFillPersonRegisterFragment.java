@@ -108,26 +108,26 @@ public class FormFillPersonRegisterFragment extends Fragment {
 
         return true;
     }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        if (item.getItemId() == android.R.id.home) {
-//            confirmBack();
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
-//
-//    private void confirmBack() {
-//        new AlertDialog.Builder(getContext())
-//                .setMessage("ต้องการหยุดทำรายการ และกลับไปหน้าเมนูหลัก หรือไม่?")
-//                .setCancelable(false)
-//                .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        ((JAppActivity) getActivity()).showHomeFragment();
-//                    }
-//                })
-//                .setNegativeButton("ยกเลิก", null)
-//                .show();
-//    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            confirmBack();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void confirmBack() {
+        new AlertDialog.Builder(getContext())
+                .setMessage("ต้องการหยุดทำรายการ และกลับไปหน้าเมนูหลัก หรือไม่?")
+                .setCancelable(false)
+                .setPositiveButton("ยืนยัน", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ((JAppActivity) getActivity()).showHomeFragment();
+                    }
+                })
+                .setNegativeButton("ยกเลิก", null)
+                .show();
+    }
 }

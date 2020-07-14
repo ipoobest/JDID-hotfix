@@ -122,8 +122,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.1.12";
-    public static final String APP_DATE_UPDATE = "03/07/63";
+    public static final String APP_VERSION = "release 1.1.15";
+    public static final String APP_DATE_UPDATE = "14/07/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -281,7 +281,7 @@ public class JAppActivity extends JCompatActivity {
     public boolean mortorshowRegister = false;
     public String mortorName;
     public String mortorPhone;
-
+    public File photoFile;
 
 
     //registration person mobile phone
@@ -491,7 +491,7 @@ public class JAppActivity extends JCompatActivity {
         }
     }
 
-    File photoFile = null;
+
     private void openCamera() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 //        ContentValues values = new ContentValues();
@@ -812,7 +812,7 @@ public class JAppActivity extends JCompatActivity {
             request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
         }
         if (isVerifyPerson() == VERIFY_DIPCHIP_MOTORSHOW) {
-            fieldsList[CONTACT_NUMBER] = "motorshow";
+            fieldsList[JAppActivity.REF_COMPANY] = "motorshow";
         }
         request.setNameTh(generalInformation[THAIFULLNAME]);
         request.setNameEn(generalInformation[ENGLISHFULLNAME]);
@@ -832,13 +832,6 @@ public class JAppActivity extends JCompatActivity {
         createUser(request);
     }
 
-
-//    String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
-//                if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_DIP_CHIP){
-//        ((JAppActivity) getActivity()).getUser(generalInformation[CID]);
-//    }else {
-//        ((JAppActivity) getActivity()).captureFragment();
-//    }
 
     public void CheckTypePersonal() {
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
@@ -928,7 +921,7 @@ public class JAppActivity extends JCompatActivity {
 
     private void createUser(User user) {
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
-                null, "กำลังดำเนินการ", true, false);
+                null, "กำลังดำเนินการจัดเก็บข้อมูล", true, false);
 
         com.jdid.ekyc.models.api.User service = RetrofitInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.User.class);
         Call<ResponseCreateUser> call = service.createUser(user);
@@ -951,12 +944,19 @@ public class JAppActivity extends JCompatActivity {
                         params.putString("create", result.getStatusCode().toString());
                         mFirebaseAnalytics.logEvent("createUser", params);
                         Log.d("onResponse: xx ", result.getMessage());
-//                        successFragment();
+
+
                         sentConfirmOtp(generalInformation[CID], result);
+
                     }else if (status == 411){
                         mProgressDialog.dismiss();
                         mProgressDialog = null;
                         alertDialogPhone("ข้อมูลชื่อ นามสกุล หรือวันเกิดไม่ตรงกับเลขบัตรนี้");
+                    }else {
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
+//                        sentConfirmOtp(generalInformation[CID], result);
+                        successFragment();
                     }
                 } else {
                     try {
@@ -1155,13 +1155,14 @@ public class JAppActivity extends JCompatActivity {
         }
     }
 
-    private void requestImageToMegvii(File image) {
+    public void requestImageToMegvii(File image) {
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
                 null, "ระบบกำลังดำเนินการกรุณารอสักครู่", true, false);
         RequestBody requestFile =
                 RequestBody.create(
-                        MediaType.parse("image/*"),
-                        image
+                        image,
+                        MediaType.parse("image/*")
+
                 );
 
         MultipartBody.Part body =
@@ -1177,15 +1178,27 @@ public class JAppActivity extends JCompatActivity {
                 if (response.isSuccessful()) {
                     ResponseImageMegvii result = response.body();
 //                    Log.d(TAG , "onResponse: " + result.getData().getId());
-                    int photoId = result.getData().getId();
-                    Log.d(TAG, "onResponse: " + photoId + mortorName);
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
-                    showMotorShowPreviewFaceFragment(mortorName ,photoId);
+                    Log.d("result.getData()", result.getData() + "");
+                    if (result.getData().getId() != null) {
+                        int photoId = result.getData().getId();
+                        Log.d(TAG, "onResponse: " + photoId + mortorName);
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
+                        photoFile = null;
+                        showMotorShowPreviewFaceFragment(mortorName ,photoId);
+                    } else {
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
+                        photoFile = null;
+                        Toast.makeText(context, "รูปภาพไม่สมบูรณ์ กรุณาถ่ายใหม่", Toast.LENGTH_SHORT).show();
+                    }
                     //TODO :: 4 request ID and NAME
                 } else {
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
+                    photoFile = null;
+                    Toast.makeText(context, "เครื่อง nuc ปิด", Toast.LENGTH_SHORT).show();
+
                 }
             }
 
@@ -1193,6 +1206,7 @@ public class JAppActivity extends JCompatActivity {
             public void onFailure(Call<ResponseImageMegvii> call, Throwable t) {
                 mProgressDialog.dismiss();
                 mProgressDialog = null;
+                photoFile = null;
             }
         });
 
@@ -2144,7 +2158,9 @@ public class JAppActivity extends JCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         if (isVerifyPerson() == VERIFY_DIPCHIP){
                             showFormFillPersonRegisterFragment();
-                        } else if (isVerifyPerson() == VERIFY_PERSON){
+                        } else if (isVerifyPerson() == VERIFY_PERSON) {
+                            showFormFillPersonRegisterFragment();
+                        } else if(isVerifyPerson() == VERIFY_DIPCHIP_MOTORSHOW){
                             showFormFillPersonRegisterFragment();
                         }else {
                             showFormFillFragment();

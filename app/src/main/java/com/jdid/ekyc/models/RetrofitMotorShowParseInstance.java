@@ -20,8 +20,8 @@ public class RetrofitMotorShowParseInstance {
             interceptor.level(HttpLoggingInterceptor.Level.BODY);
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(interceptor)
-                    .readTimeout(80, TimeUnit.SECONDS)
-                    .connectTimeout(80, TimeUnit.SECONDS)
+                    .readTimeout(120, TimeUnit.SECONDS)
+                    .connectTimeout(120, TimeUnit.SECONDS)
                     .build();
 
 

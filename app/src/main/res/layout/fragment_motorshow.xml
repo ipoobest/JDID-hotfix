@@ -75,31 +75,32 @@
         app:layout_constraintTop_toTopOf="@+id/txtHomeTitle">
 
         <TextView
-            android:id="@+id/btnRegisterMotorShow"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/kanit"
-            android:gravity="center"
-            android:text="ลงทะเบียนงาน Motor Show"
-            android:textColor="@color/colorAccent"
-            android:textSize="18sp"
-            android:theme="@style/HomeButtonStyle"
-            app:layout_constraintTop_toBottomOf="@+id/txtHomeTitle" />
-
-
-        <TextView
-            android:layout_marginTop="32dp"
             android:id="@+id/btnVerifyPerson"
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/kanit"
             android:gravity="center"
-            android:text="บริการตรวจสอบบุคคล"
+            android:text="ลงทะเบียน ekyc"
+            android:textColor="@color/colorAccent"
+            android:textSize="18sp"
+            android:theme="@style/HomeButtonStyle"
+            app:layout_constraintTop_toBottomOf="@+id/txtHomeTitle" />
+<!--        btnVerifyPerson-->
+<!--        btnRegisterMotorShow-->
+
+        <TextView
+            android:layout_marginTop="32dp"
+            android:id="@+id/btnRegisterMotorShow"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/kanit"
+            android:gravity="center"
+            android:text="ลงทะเบียน ถ่ายภาพ"
             android:textColor="@color/colorAccent"
             android:textSize="18sp"
             android:theme="@style/HomeButtonStyle"

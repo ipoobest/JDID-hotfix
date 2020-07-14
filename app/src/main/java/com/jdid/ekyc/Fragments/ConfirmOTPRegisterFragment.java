@@ -22,21 +22,37 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.gson.JsonObject;
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
 import com.jdid.ekyc.models.RetrofitInstance;
+import com.jdid.ekyc.models.RetrofitMotorShowInstance;
+import com.jdid.ekyc.models.RetrofitMotorShowParseInstance;
 import com.jdid.ekyc.models.api.Admin;
+import com.jdid.ekyc.models.pojo.Photo;
 import com.jdid.ekyc.models.pojo.RequestOTPForRegister;
 import com.jdid.ekyc.models.pojo.RequestOTPForVerify;
+import com.jdid.ekyc.models.pojo.RequestSubjectMegvii;
+import com.jdid.ekyc.models.pojo.RequestUserMotorShow;
+import com.jdid.ekyc.models.pojo.ResponseImageMegvii;
 import com.jdid.ekyc.models.pojo.ResponseOTPForRegister;
 import com.jdid.ekyc.models.pojo.ResponseOTPForVerify;
+import com.jdid.ekyc.models.pojo.ResponseParse;
+import com.jdid.ekyc.models.pojo.ResponseSubjectMegvii;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.jdid.ekyc.JAppActivity.CID;
+import static com.jdid.ekyc.JAppActivity.THAIFULLNAME;
 
 public class ConfirmOTPRegisterFragment extends Fragment {
 
@@ -198,7 +214,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     private void verifyOTP() {
         mProgressDialog = ProgressDialog.show(getActivity(),
                 null, "กำลังตรวจสอบรหัส OTP", true, false);
-
+        Log.d("response", "verifyOTP");
         RequestOTPForVerify request = new RequestOTPForVerify();
 
         request.setPhoneNo(mPhoneNumber);
@@ -217,18 +233,28 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                         if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_EKYC)) {
                             mProgressDialog.dismiss();
                             mProgressDialog = null;
+                            Log.d("response", "1");
+
                             ((JAppActivity) getActivity()).SaveInformation();
                         } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_PERSON)) {
+
                             mProgressDialog.dismiss();
                             mProgressDialog = null;
+                            Log.d("response", "2");
                             ((JAppActivity) getActivity()).CheckTypePersonal();
                         } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP_MOTORSHOW)) {
                             mProgressDialog.dismiss();
                             mProgressDialog = null;
-                            ((JAppActivity) getActivity()).CheckTypePersonal();
+                            // TODO 6 :: sent image to
+
+                            Log.d("response", "3");
+                            Log.d("onResponse: ",((JAppActivity) getActivity()).photoFile.getName() );
+                            requestImageToMegvii(((JAppActivity) getActivity()).photoFile);
+
                         } else {
                             mProgressDialog.dismiss();
                             mProgressDialog = null;
+                            Log.d("response", "4");
                             ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_DIP_CHIP);
 
                         }
@@ -243,7 +269,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
 
                     response.errorBody();
                     Log.d("error : ", response.errorBody().getClass().getName());
-                    Toast.makeText(getContext(), "OTP หมดอายุ กรุณาขอ OTP ใหม่", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -255,6 +281,198 @@ public class ConfirmOTPRegisterFragment extends Fragment {
             }
 
         });
+    }
+
+
+    private void requestImageToMegvii(File image) {
+        mProgressDialog = ProgressDialog.show(getContext(),
+                null, "ระบบกำลังจัดเก็บข้อมูล", true, false);
+        RequestBody requestFile =
+                RequestBody.create(
+                        MediaType.parse("image/*"),
+                        image
+                );
+
+        MultipartBody.Part body =
+                MultipartBody.Part.createFormData("photo", image.getName(), requestFile);
+
+        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorShowInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
+        Call<ResponseImageMegvii> call = service.postImage(body);
+        call.enqueue(new Callback<ResponseImageMegvii>() {
+            @Override
+            public void onResponse(Call<ResponseImageMegvii> call, Response<ResponseImageMegvii> response) {
+                if (response.isSuccessful()) {
+                    ResponseImageMegvii result = response.body();
+//                    Log.d(TAG , "onResponse: " + result.getData().getId());
+                    if (result.getCode() ==  0) {
+                        int photoId = result.getData().getId();
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
+                        ((JAppActivity) getActivity()).photoFile = null;
+                        String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
+                        String name = generalInformation[THAIFULLNAME];
+                        Log.d("photoId 1 ", photoId + "");
+//
+                        requestDataToSubjectMegvii(name, photoId);
+
+                    } else {
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
+                        ((JAppActivity) getActivity()).photoFile = null;
+//                        Toast.makeText(getContext(), "", Toast.LENGTH_SHORT).show();
+                        alertDialogPhone("ไม่สามารถทำรายการใหม่ได้ กรุณาลองใหม่อีกครั้ง");
+                    }
+
+                } else {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                    ((JAppActivity) getActivity()).photoFile = null;
+                    alertDialogPhone("ไม่สามารถทำรายการใหม่ได้ กรุณาลองใหม่อีกครั้ง");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseImageMegvii> call, Throwable t) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+                ((JAppActivity) getActivity()).photoFile = null;
+            }
+        });
+
+    }
+
+    private void requestDataToSubjectMegvii(String name, int photoIds) {
+        mProgressDialog = ProgressDialog.show(getContext(),
+                null, "ระบบกำลังดำเนินการกรุณารอสักครู่", true, false);
+        final List<Integer> photoId = new ArrayList<>();
+        List<Object> groupId = new ArrayList<>();
+
+        Log.d("photo ID", photoIds + "");
+
+        photoId.add(photoIds);
+        groupId.add(0);
+        RequestSubjectMegvii request = new RequestSubjectMegvii();
+        request.setBirthday(0);
+        request.setEntryDate(0);
+        request.setGender(0);
+        request.setGroupIds(groupId);
+        request.setName(name);
+        request.setPhotoIds(photoId);
+        request.setSubjectType(0);
+
+        Log.d("request xxx", request.toString());
+
+        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorShowInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow .class);
+        Call<ResponseSubjectMegvii> call = service.postData(request);
+        call.enqueue(new Callback<ResponseSubjectMegvii>() {
+            @Override
+            public void onResponse(Call<ResponseSubjectMegvii> call, Response<ResponseSubjectMegvii> response) {
+                if (response.isSuccessful()) {
+                    int subjectId = 0 ;
+                    int photoId = 0;
+                    String url ="";
+                    String urls = "";
+                    String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
+                    ResponseSubjectMegvii results = response.body();
+                    if (results.getCode() == 0) {
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
+                        if (!results.getData().getPhotos().isEmpty()) {
+                            List<Photo> data = results.getData().getPhotos();
+                            subjectId = data.get(0).getSubjectId();
+                            photoId = data.get(0).getId();
+                            url = data.get(0).getUrl();
+                            urls = "http://megvii-manage.ap.ngrok.io" + url;
+
+                            String name = generalInformation[THAIFULLNAME];
+                            Log.d("response: ", name);
+                            Log.d("response: ", "6");
+
+                            requestDataToSubjectParse(subjectId, photoId, name, urls);
+                        } else {
+//                            Toast.makeText(getContext(), , Toast.LENGTH_SHORT).show();
+                            alertDialogPhone("กรุณาทำรายการใหม่อีกครั้ง");
+                        }
+
+                    } else {
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
+                        String name = generalInformation[THAIFULLNAME];
+                        requestDataToSubjectParse(subjectId, photoId, name, urls);
+                    }
+
+                }else {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                    alertDialogPhone("ไม่สามารถทำรายการใหม่ได้ กรุณาลองใหม่อีกครั้ง");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseSubjectMegvii> call, Throwable t) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+                alertDialogPhone("ไม่สามารถทำรายการใหม่ได้ กรุณาลองใหม่อีกครั้ง");
+            }
+        });
+
+
+    }
+
+    private void requestDataToSubjectParse(int subjectId, int photoId, String name ,String photoUrl) {
+//        mProgressDialog = ProgressDialog.show(getContext(),
+//                null, "ระบบกำลังดำเนินการจัดเก็บข้อมูล", true, false);
+
+        Log.d("response", "requestDataToSubjectParse: ");
+        RequestUserMotorShow request = new RequestUserMotorShow();
+        request.setSubjectId(subjectId);
+        request.setPhotoId(photoId);
+        request.setFullname(name);
+        request.setPhotoUrl(photoUrl);
+        request.setCoffee("");
+        request.setStatus("created");
+
+        Log.d("request xxx", request.toString());
+
+        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorShowParseInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
+        Call<ResponseParse> call = service.postDataToParse(request);
+        call.enqueue(new Callback<ResponseParse>() {
+            @Override
+            public void onResponse(Call<ResponseParse> call, Response<ResponseParse> response) {
+                if (response.isSuccessful()){
+                    Log.d("response", "onResponse: if");
+
+//                    mProgressDialog.dismiss();
+//                    mProgressDialog = null;
+//                    successFragment();
+                    ((JAppActivity) getActivity()).CheckTypePersonal();
+                } else {
+                    Log.d("response", "onResponse: else");
+//                    mProgressDialog.dismiss();
+//                    mProgressDialog = null;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseParse> call, Throwable t) {
+                Log.d("onFailure", "onFailure: " + t.toString());
+//                mProgressDialog.dismiss();
+//                mProgressDialog = null;
+            }
+        });
+
+    }
+    private void alertDialogPhone(String message) {
+        new AlertDialog.Builder(getContext())
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ((JAppActivity) getActivity()).showMotorShowFragment();
+                    }
+                })
+                .show();
+
     }
 
 }

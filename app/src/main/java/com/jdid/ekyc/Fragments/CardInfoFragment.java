@@ -43,6 +43,8 @@ public class CardInfoFragment extends Fragment {
     private static final int VERIFY_EKYC = 0;
     private static final int VERIFY_PERSON = 1;
     private static final int VERIFY_DIP_CHIP = 2;
+    private static final int VERIFY_DIP_CHIP_MOTORSHOW = 3;
+
 
     private static final String TAG = "CardInforxxx : ";
 
@@ -81,6 +83,9 @@ public class CardInfoFragment extends Fragment {
             case VERIFY_DIP_CHIP:
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip);
                 break;
+            case VERIFY_DIP_CHIP_MOTORSHOW:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip_motorshow);
+                break;
         }
 
 
@@ -98,7 +103,7 @@ public class CardInfoFragment extends Fragment {
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("click : ", "xxxxxx");
+//                Log.d("click : ", "xxxxxx");
                 String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
                 if (((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_DIP_CHIP){
                     ((JAppActivity) getActivity()).getUser(generalInformation[CID]);
