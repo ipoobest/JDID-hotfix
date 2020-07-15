@@ -45,13 +45,18 @@ public class FormFillMotorShowRegisterFragment extends Fragment {
     private EditText edOtp;
     private TextView txtOTPREF;
     private TextView tvOtpRefText;
+    private boolean photo;
 
     String mRef;
     String mPhoneNumber;
 
     private ProgressDialog mProgressDialog;
 
+    public FormFillMotorShowRegisterFragment() { }
 
+    public FormFillMotorShowRegisterFragment(boolean takePhoto) {
+        this.photo = takePhoto;
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -69,6 +74,7 @@ public class FormFillMotorShowRegisterFragment extends Fragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("ลงทะเบียนงาน Motor Show");
 
 
+
         edName =  view.findViewById(R.id.edName);
         edPhone =  view.findViewById(R.id.edPhone);
         edOtp =  view.findViewById(R.id.edOtp);
@@ -80,12 +86,12 @@ public class FormFillMotorShowRegisterFragment extends Fragment {
         txtOTPREF.setVisibility(View.INVISIBLE);
 
 
-
+        btnSaveAndGo = view.findViewById(R.id.btnNextStep);
         btnRequestOtp = view.findViewById(R.id.btnRequestOtp);
+
         btnRequestOtp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO :: request OTP
                 mPhoneNumber = edPhone.getText().toString();
                 Log.d("mPhoneNumber", mPhoneNumber);
                 edOtp.setVisibility(View.VISIBLE);
@@ -95,21 +101,28 @@ public class FormFillMotorShowRegisterFragment extends Fragment {
 
             }
         });
-        btnSaveAndGo = view.findViewById(R.id.btnNextStep);
+
+        if (photo) {
+            btnRequestOtp.setVisibility(View.INVISIBLE);
+            btnSaveAndGo.setText("ลองอีกครั้ง");
+        }
+
         btnSaveAndGo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (finishedFormFill()) {
-//                    authenOTP();
-                    // TODO 1 :: open camera
-                    ((JAppActivity) getActivity()).mortorshowRegister = true;
-//                    ((JAppActivity) getActivity()).mortorName = String.valueOf(edName.getText());
-                    ((JAppActivity) getActivity()).mortorName = edName.getText().toString();
-                    verifyOTP();
+                if (photo) {
+                    ((JAppActivity) getActivity()).OpenCameraForCapture();
+                }
+                else {
+                    if (finishedFormFill()) {
+                        ((JAppActivity) getActivity()).mortorshowRegister = true;
+                        ((JAppActivity) getActivity()).mortorName = edName.getText().toString();
+                        verifyOTP();
 
 //                    ((JAppActivity) getActivity()).OpenCameraForCapture();
-                } else {
-                    Toast.makeText(getActivity(), "กรุณากรอกข้อมูลให้ถูกต้อง", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getActivity(), "กรุณากรอกข้อมูลให้ถูกต้อง", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -185,7 +198,6 @@ public class FormFillMotorShowRegisterFragment extends Fragment {
             public void onResponse(Call<ResponseOTPForVerify> call, Response<ResponseOTPForVerify> response) {
 
                 if (response.isSuccessful()) {
-                    // TODO : go to preview iamge and request imge to mevii
                     Log.d("otp ref", "onResponse: " + response.body().getStatusCode());
                     if (response.body().getStatusCode() == 200) {
                         mProgressDialog.dismiss();

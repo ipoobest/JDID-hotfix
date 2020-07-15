@@ -38,6 +38,7 @@ import com.jdid.ekyc.models.pojo.ResponseOTPForRegister;
 import com.jdid.ekyc.models.pojo.ResponseOTPForVerify;
 import com.jdid.ekyc.models.pojo.ResponseParse;
 import com.jdid.ekyc.models.pojo.ResponseSubjectMegvii;
+import com.jdid.ekyc.models.pojo.RetrofitMotorImageInstance;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,6 +72,9 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     private String mRef;
 
     private FirebaseAnalytics mFirebaseAnalytics;
+//
+//    String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
+//    String name = generalInformation[THAIFULLNAME];
 
     private final TextWatcher mTextEditorWatcher = new TextWatcher() {
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -243,9 +247,8 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                             Log.d("response", "2");
                             ((JAppActivity) getActivity()).CheckTypePersonal();
                         } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP_MOTORSHOW)) {
-                            mProgressDialog.dismiss();
-                            mProgressDialog = null;
-                            // TODO 6 :: sent image to
+//                            mProgressDialog.dismiss();
+//                            mProgressDialog = null;
 
                             Log.d("response", "3");
                             Log.d("onResponse: ",((JAppActivity) getActivity()).photoFile.getName() );
@@ -285,47 +288,54 @@ public class ConfirmOTPRegisterFragment extends Fragment {
 
 
     private void requestImageToMegvii(File image) {
-        mProgressDialog = ProgressDialog.show(getContext(),
-                null, "ระบบกำลังจัดเก็บข้อมูล", true, false);
+//        mProgressDialog = ProgressDialog.show(getContext(),
+//                null, "ระบบกำลังจัดเก็บข้อมูล", true, false);
         RequestBody requestFile =
                 RequestBody.create(
                         MediaType.parse("image/*"),
                         image
                 );
-
+//
+    String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
+    String name = generalInformation[THAIFULLNAME];
         MultipartBody.Part body =
                 MultipartBody.Part.createFormData("photo", image.getName(), requestFile);
+        RequestBody requestName = RequestBody.create(name, MediaType.parse("text/plain"));
 
-        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorShowInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
-        Call<ResponseImageMegvii> call = service.postImage(body);
+        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorImageInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
+        Call<ResponseImageMegvii> call = service.postImage(body, requestName);
         call.enqueue(new Callback<ResponseImageMegvii>() {
             @Override
             public void onResponse(Call<ResponseImageMegvii> call, Response<ResponseImageMegvii> response) {
                 if (response.isSuccessful()) {
                     ResponseImageMegvii result = response.body();
 //                    Log.d(TAG , "onResponse: " + result.getData().getId());
-                    if (result.getCode() ==  0) {
-                        int photoId = result.getData().getId();
-                        mProgressDialog.dismiss();
-                        mProgressDialog = null;
+                    if (result.getStatus() ==  1) {
+//                        int photoId = result.getData();
+//                        mProgressDialog.dismiss();
+//                        mProgressDialog = null;
                         ((JAppActivity) getActivity()).photoFile = null;
+                        Photo photos = result.getData();
+                        int photoId = photos.getId();
+                        int subjectId = photos.getSubjectId();
+                        String url = photos.getUrl();
+                        String urls = "http://megvii-manage.ap.ngrok.io" + url;
                         String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
                         String name = generalInformation[THAIFULLNAME];
-                        Log.d("photoId 1 ", photoId + "");
-//
-                        requestDataToSubjectMegvii(name, photoId);
+                       requestDataToSubjectParse(subjectId, photoId, name, urls);
+//                        requestDataToSubjectMegvii(name, photoId);
 
                     } else {
-                        mProgressDialog.dismiss();
-                        mProgressDialog = null;
+//                        mProgressDialog.dismiss();
+//                        mProgressDialog = null;
                         ((JAppActivity) getActivity()).photoFile = null;
 //                        Toast.makeText(getContext(), "", Toast.LENGTH_SHORT).show();
                         alertDialogPhone("ไม่สามารถทำรายการใหม่ได้ กรุณาลองใหม่อีกครั้ง");
                     }
 
                 } else {
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
+//                    mProgressDialog.dismiss();
+//                    mProgressDialog = null;
                     ((JAppActivity) getActivity()).photoFile = null;
                     alertDialogPhone("ไม่สามารถทำรายการใหม่ได้ กรุณาลองใหม่อีกครั้ง");
                 }
@@ -333,8 +343,8 @@ public class ConfirmOTPRegisterFragment extends Fragment {
 
             @Override
             public void onFailure(Call<ResponseImageMegvii> call, Throwable t) {
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
+//                mProgressDialog.dismiss();
+//                mProgressDialog = null;
                 ((JAppActivity) getActivity()).photoFile = null;
             }
         });
@@ -372,7 +382,6 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                     int photoId = 0;
                     String url ="";
                     String urls = "";
-                    String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
                     ResponseSubjectMegvii results = response.body();
                     if (results.getCode() == 0) {
                         mProgressDialog.dismiss();
@@ -384,6 +393,8 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                             url = data.get(0).getUrl();
                             urls = "http://megvii-manage.ap.ngrok.io" + url;
 
+                            //
+                            String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
                             String name = generalInformation[THAIFULLNAME];
                             Log.d("response: ", name);
                             Log.d("response: ", "6");
@@ -397,6 +408,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                     } else {
                         mProgressDialog.dismiss();
                         mProgressDialog = null;
+                        String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
                         String name = generalInformation[THAIFULLNAME];
                         requestDataToSubjectParse(subjectId, photoId, name, urls);
                     }
@@ -431,6 +443,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         request.setPhotoUrl(photoUrl);
         request.setCoffee("");
         request.setStatus("created");
+        request.setDipchip(true);
 
         Log.d("request xxx", request.toString());
 
@@ -442,8 +455,8 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 if (response.isSuccessful()){
                     Log.d("response", "onResponse: if");
 
-//                    mProgressDialog.dismiss();
-//                    mProgressDialog = null;
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
 //                    successFragment();
                     ((JAppActivity) getActivity()).CheckTypePersonal();
                 } else {

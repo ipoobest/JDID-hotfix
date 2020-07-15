@@ -22,6 +22,17 @@ public class RequestUserMotorShow {
     @SerializedName("status")
     @Expose
     private String status;
+    @SerializedName("dipchip")
+    @Expose
+    private Boolean dipchip;
+
+    public Boolean getDipchip() {
+        return dipchip;
+    }
+
+    public void setDipchip(Boolean dipchip) {
+        this.dipchip = dipchip;
+    }
 
     public int getSubjectId() {
         return subjectId;

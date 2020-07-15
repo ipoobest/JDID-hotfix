@@ -32,14 +32,22 @@ public class MotorShowPreviewFace extends Fragment {
 
     private Button btnSaveAndGo;
     private ImageView imgPreview;
+    private TextView tvSuccess;
     private int id;
+    private int subjectId;
+    private int photoId;
     private String name;
+    private String urls;
+
     private byte[] byteImage;
 
     public MotorShowPreviewFace() {}
-    public MotorShowPreviewFace(String motorName, int idPhoto){
-        name = motorName;
-        id = idPhoto;
+    public MotorShowPreviewFace( int id, int subjectId, int photoId, String name, String urls){
+        this.id = id;
+        this.subjectId = subjectId;
+        this.photoId = photoId;
+        this.name = name;
+        this.urls = urls;
     }
 
     @Nullable
@@ -59,6 +67,9 @@ public class MotorShowPreviewFace extends Fragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("ลงทะเบียนงาน Motor Show");
         byteImage = ((JAppActivity) getActivity()).getByteImageCam();
 
+        tvSuccess = view.findViewById(R.id.tvSuccess);
+        tvSuccess.setVisibility(View.INVISIBLE);
+
         imgPreview =  view.findViewById(R.id.imgPreview);
 
         Bitmap bm = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
@@ -67,15 +78,30 @@ public class MotorShowPreviewFace extends Fragment {
         imgPreview.setMinimumWidth(metrics.widthPixels);
         imgPreview.setImageBitmap(bm);
 
-
-
         btnSaveAndGo = view.findViewById(R.id.btnNextStep);
+
+
+        if (id == 1) {
+            tvSuccess.setVisibility(View.INVISIBLE);
+        } else if (id == 5) {
+            tvSuccess.setVisibility(View.VISIBLE);
+            btnSaveAndGo.setText("กลับสู่หน้าหลัก");
+            tvSuccess.setText("ระบบยังไม่สามารถลงทะเบียนได้ตอนนี้ กรุณาลองใหม่ภายหลัง");
+        } else {
+            tvSuccess.setVisibility(View.VISIBLE);
+            btnSaveAndGo.setText("ลองใหม่อีกครั้ง");
+        }
+
         btnSaveAndGo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              // TODO 4 :: success
-                Log.d( "onClick: " , name + id);
-                ((JAppActivity) getActivity()).requestDataToSubjectMegvii(name, id);
+                if (id == 1 ) {
+                    ((JAppActivity) getActivity()).requestDataToSubjectParse(subjectId, photoId, name, urls);
+                } else  if (id == 5){
+                    ((JAppActivity) getActivity()).showMotorShowFragment();
+                } else {
+                    ((JAppActivity) getActivity()).OpenCameraForCapture();
+                }
             }
         });
     }

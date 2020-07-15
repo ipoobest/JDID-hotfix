@@ -4,48 +4,37 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class ResponseImageMegvii {
-    @SerializedName("code")
+    @SerializedName("status")
     @Expose
-    private Integer code;
+    private Integer status;
     @SerializedName("data")
     @Expose
-    private Data data;
-    @SerializedName("desc")
+    private Photo data;
+    @SerializedName("error")
     @Expose
-    private String desc;
-    @SerializedName("timecost")
-    @Expose
-    private Integer timecost;
+    private String error;
 
-    public Integer getCode() {
-        return code;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setCode(Integer code) {
-        this.code = code;
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
-    public Data getData() {
+    public Photo getData() {
         return data;
     }
 
-    public void setData(Data data) {
+    public void setData(Photo data) {
         this.data = data;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getError() {
+        return error;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public Integer getTimecost() {
-        return timecost;
-    }
-
-    public void setTimecost(Integer timecost) {
-        this.timecost = timecost;
+    public void setError(String error) {
+        this.error = error;
     }
 }

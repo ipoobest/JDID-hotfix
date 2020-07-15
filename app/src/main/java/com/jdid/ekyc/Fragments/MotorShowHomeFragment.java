@@ -74,7 +74,7 @@ public class MotorShowHomeFragment extends Fragment {
                         ((JAppActivity)getActivity()).acquireCardData(MOTORSHOW_DIP_CHIP);
                         break;
                     case R.id.btnRegisterMotorShow:
-                        ((JAppActivity)getActivity()).FormFillMotorShowRegisterFragment();
+                        ((JAppActivity)getActivity()).FormFillMotorShowRegisterFragment(false);
                         break;
                 }
             }

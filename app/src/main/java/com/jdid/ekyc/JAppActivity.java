@@ -83,6 +83,7 @@ import com.jdid.ekyc.models.pojo.ResponseSubjectMegvii;
 import com.jdid.ekyc.models.pojo.ResponseVerifyUser;
 import com.jdid.ekyc.models.pojo.ResultFaceCompare;
 import com.jdid.ekyc.models.pojo.RetrofitDopaInstance;
+import com.jdid.ekyc.models.pojo.RetrofitMotorImageInstance;
 import com.jdid.ekyc.models.pojo.User;
 import com.jdid.ekyc.models.pojo.UserInformation;
 import com.jdid.ekyc.views.PFCodeView;
@@ -122,8 +123,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.1.15";
-    public static final String APP_DATE_UPDATE = "14/07/63";
+    public static final String APP_VERSION = "release 1.1.16";
+    public static final String APP_DATE_UPDATE = "15/07/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -396,8 +397,8 @@ public class JAppActivity extends JCompatActivity {
     }
 
 //
-    public void FormFillMotorShowRegisterFragment() {
-        final FormFillMotorShowRegisterFragment fragment = new FormFillMotorShowRegisterFragment();
+    public void FormFillMotorShowRegisterFragment(boolean takePhoto) {
+        final FormFillMotorShowRegisterFragment fragment = new FormFillMotorShowRegisterFragment(takePhoto);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container_view, fragment).addToBackStack(null).commit();
     }
@@ -455,8 +456,9 @@ public class JAppActivity extends JCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.container_view, fragment).commit();
     }
 
-    public void showMotorShowPreviewFaceFragment(String name, int id) {
-        final MotorShowPreviewFace fragment = new MotorShowPreviewFace(name , id);
+    public void showMotorShowPreviewFaceFragment(int id, int subjectId, int photoId, String name, String urls) {
+//        result.getStatus() ,subjectId, photoId, mortorName, urls
+        final MotorShowPreviewFace fragment = new MotorShowPreviewFace(id, subjectId, photoId, name , urls);
         getSupportFragmentManager().beginTransaction().replace(R.id.container_view, fragment).commit();
     }
 
@@ -1167,38 +1169,46 @@ public class JAppActivity extends JCompatActivity {
 
         MultipartBody.Part body =
                 MultipartBody.Part.createFormData("photo", image.getName(), requestFile);
+        RequestBody name = RequestBody.create(mortorName, MediaType.parse("text/plain"));
 
         Log.d(TAG, "requestImageToMegvii: " + image.getName());
-        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorShowInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
-        Call<ResponseImageMegvii> call = service.postImage(body);
+        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorImageInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
+        Call<ResponseImageMegvii> call = service.postImage(body, name);
         call.enqueue(new Callback<ResponseImageMegvii>() {
             @Override
             public void onResponse(Call<ResponseImageMegvii> call, Response<ResponseImageMegvii> response) {
-                // TODO :: 3 request to subject && parse
+
                 if (response.isSuccessful()) {
                     ResponseImageMegvii result = response.body();
 //                    Log.d(TAG , "onResponse: " + result.getData().getId());
                     Log.d("result.getData()", result.getData() + "");
-                    if (result.getData().getId() != null) {
-                        int photoId = result.getData().getId();
-                        Log.d(TAG, "onResponse: " + photoId + mortorName);
+                    if (result.getStatus() == 1) {
                         mProgressDialog.dismiss();
                         mProgressDialog = null;
                         photoFile = null;
-                        showMotorShowPreviewFaceFragment(mortorName ,photoId);
+                        Photo photos = result.getData();
+                        int photoId = photos.getId();
+                        int subjectId = photos.getSubjectId();
+                        String url = photos.getUrl();
+                        String urls = "http://megvii-manage.ap.ngrok.io" + url;
+
+                        // TODO :: 1 request to subject && parse [name,id, photoId, url]
+//                        showMotorShowPreviewFaceFragment(mortorName ,photoId);
+                        showMotorShowPreviewFaceFragment(result.getStatus() ,subjectId, photoId, mortorName, urls);
                     } else {
                         mProgressDialog.dismiss();
                         mProgressDialog = null;
                         photoFile = null;
-                        Toast.makeText(context, "รูปภาพไม่สมบูรณ์ กรุณาถ่ายใหม่", Toast.LENGTH_SHORT).show();
+                        showMotorShowPreviewFaceFragment( result.getStatus(), 0 ,0 ,"","");
+//                        FormFillMotorShowRegisterFragment(true);
+//                        Toast.makeText(context, "รูปภาพไม่สมบูรณ์ กรุณาถ่ายใหม่", Toast.LENGTH_SHORT).show();
                     }
-                    //TODO :: 4 request ID and NAME
                 } else {
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
                     photoFile = null;
                     Toast.makeText(context, "เครื่อง nuc ปิด", Toast.LENGTH_SHORT).show();
-
+                    showMotorShowPreviewFaceFragment( 9, 0 ,0 ,"","");
                 }
             }
 
@@ -1207,6 +1217,7 @@ public class JAppActivity extends JCompatActivity {
                 mProgressDialog.dismiss();
                 mProgressDialog = null;
                 photoFile = null;
+                showMotorShowPreviewFaceFragment( 9, 0 ,0 ,"","");
             }
         });
 
@@ -1264,7 +1275,7 @@ public class JAppActivity extends JCompatActivity {
 
     }
 
-    private void requestDataToSubjectParse(int subjectId, int photoId, String name ,String photoUrl) {
+    public void requestDataToSubjectParse(int subjectId, int photoId, String name ,String photoUrl) {
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
                 null, "ระบบกำลังดำเนินการกรุณารอสักครู่", true, false);
         RequestUserMotorShow request = new RequestUserMotorShow();
@@ -1274,6 +1285,7 @@ public class JAppActivity extends JCompatActivity {
         request.setPhotoUrl(photoUrl);
         request.setCoffee("");
         request.setStatus("created");
+        request.setDipchip(false);
 
         com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorShowParseInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
         Call<ResponseParse> call = service.postDataToParse(request);

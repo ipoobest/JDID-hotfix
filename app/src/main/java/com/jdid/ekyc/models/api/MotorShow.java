@@ -8,6 +8,7 @@ import com.jdid.ekyc.models.pojo.ResponseParse;
 import com.jdid.ekyc.models.pojo.ResponseSubjectMegvii;
 
 import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Headers;
@@ -19,11 +20,20 @@ import retrofit2.http.Part;
 public interface MotorShow {
 
     // USER CREATE USER
+//    @Multipart
+//    @Headers("Cookie: session=a0d223e2-b6d4-42fb-8ccd-501ed67ae4d5")
+//
+//    @POST("/subject/photo")
+//    Call<ResponseImageMegvii> postImage(@Part MultipartBody.Part photo);
+
+    // USER CREATE USER
     @Multipart
     @Headers("Cookie: session=a0d223e2-b6d4-42fb-8ccd-501ed67ae4d5")
 
-    @POST("/subject/photo")
-    Call<ResponseImageMegvii> postImage(@Part MultipartBody.Part photo);
+    @POST("/megvii")
+    Call<ResponseImageMegvii> postImage(@Part MultipartBody.Part photo,
+                                        @Part("name") RequestBody name);
+
 
     @Headers("Cookie: session=a0d223e2-b6d4-42fb-8ccd-501ed67ae4d5")
     @POST("/subject")
