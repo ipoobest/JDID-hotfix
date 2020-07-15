@@ -70,6 +70,18 @@ public class User {
     @Expose
     private boolean skip;
 
+    @SerializedName("not_verify")
+    @Expose
+    private boolean not_verify;
+
+    public boolean isNot_verify() {
+        return not_verify;
+    }
+
+    public void setNot_verify(boolean not_verify) {
+        this.not_verify = not_verify;
+    }
+
     public boolean isSkip() {
         return skip;
     }

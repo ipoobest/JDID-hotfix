@@ -815,6 +815,7 @@ public class JAppActivity extends JCompatActivity {
         }
         if (isVerifyPerson() == VERIFY_DIPCHIP_MOTORSHOW) {
             fieldsList[JAppActivity.REF_COMPANY] = "motorshow";
+            request.setNot_verify(true);
         }
         request.setNameTh(generalInformation[THAIFULLNAME]);
         request.setNameEn(generalInformation[ENGLISHFULLNAME]);
@@ -945,11 +946,13 @@ public class JAppActivity extends JCompatActivity {
                         Bundle params = new Bundle();
                         params.putString("create", result.getStatusCode().toString());
                         mFirebaseAnalytics.logEvent("createUser", params);
-                        Log.d("onResponse: xx ", result.getMessage());
 
-
-                        sentConfirmOtp(generalInformation[CID], result);
-
+                        if (isVerifyPerson() == VERIFY_DIPCHIP_MOTORSHOW) {
+                            successFragment();
+                        }else {
+                            successFragment();
+                            sentConfirmOtp(generalInformation[CID], result);
+                        }
                     }else if (status == 411){
                         mProgressDialog.dismiss();
                         mProgressDialog = null;
