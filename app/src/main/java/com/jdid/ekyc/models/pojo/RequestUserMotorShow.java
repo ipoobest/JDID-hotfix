@@ -25,6 +25,17 @@ public class RequestUserMotorShow {
     @SerializedName("dipchip")
     @Expose
     private Boolean dipchip;
+    @SerializedName("phone_number")
+    @Expose
+    private String phonNumber;
+
+    public String getPhonNumber() {
+        return phonNumber;
+    }
+
+    public void setPhonNumber(String phonNumber) {
+        this.phonNumber = phonNumber;
+    }
 
     public Boolean getDipchip() {
         return dipchip;

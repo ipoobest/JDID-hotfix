@@ -11,10 +11,12 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Query;
 
 
 public interface MotorShow {
@@ -42,5 +44,10 @@ public interface MotorShow {
     @Headers("X-Parse-Application-Id: 928f24ed35d8876dee76d0a5460ef078")
     @POST("/parse/classes/MotorShow20Coffee")
     Call<ResponseParse> postDataToParse(@Body RequestUserMotorShow request);
+
+    @Headers("X-Parse-Application-Id: 928f24ed35d8876dee76d0a5460ef078")
+    @GET("/parse/classes/MotorShow20Coffee")
+    Call<ResponseParse> checkPhoneNumner(@Query("phone_number") String phoneNumber);
+
 
 }

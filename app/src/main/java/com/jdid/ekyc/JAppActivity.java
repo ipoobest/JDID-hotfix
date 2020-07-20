@@ -123,8 +123,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.1.16";
-    public static final String APP_DATE_UPDATE = "15/07/63";
+    public static final String APP_VERSION = "release 1.1.17";
+    public static final String APP_DATE_UPDATE = "18/07/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -1284,6 +1284,8 @@ public class JAppActivity extends JCompatActivity {
         RequestUserMotorShow request = new RequestUserMotorShow();
         request.setSubjectId(subjectId);
         request.setPhotoId(photoId);
+        //TODO :: setphone number
+        request.setPhonNumber("0");
         request.setFullname(name);
         request.setPhotoUrl(photoUrl);
         request.setCoffee("");

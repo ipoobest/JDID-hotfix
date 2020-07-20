@@ -221,18 +221,21 @@ public class FaceCompareResultFragment extends Fragment {
             btnNextStep.setText(R.string.next_step);
             mfNextStep = true;
         } else {
-//            Log.d("image score", "checkResultBuidu: " + result);
-//            Toast.makeText(getContext(), result+"", Toast.LENGTH_SHORT).show();
-            ((JAppActivity) getActivity()).skipNumber += 1;
-            if (((JAppActivity) getActivity()).skipNumber == 3) {
-                txtSkip.setVisibility(View.VISIBLE);
-            }
-            txtResult.setText(R.string.compare_fail);
-            txtResultDescription.setText(R.string.compare_fail_description);
-            txtResultDescription.setTextColor(getResources().getColor(R.color.error_color));
             txtScore.setText(number);
+            txtResultDescription.setTextColor(getResources().getColor(R.color.error_color));
             btnNextStep.setText(R.string.try_again);
             mfNextStep = false;
+            ((JAppActivity) getActivity()).skipNumber += 1;
+            if (((JAppActivity) getActivity()).skipNumber >= 3) {
+                txtSkip.setVisibility(View.VISIBLE);
+                spCompanyRef.setVisibility(View.VISIBLE);
+                tvRefBy.setVisibility(View.VISIBLE);
+            } else {
+                spCompanyRef.setVisibility(View.GONE);
+                tvRefBy.setVisibility(View.GONE);
+                txtResult.setText(R.string.compare_fail);
+                txtResultDescription.setText(R.string.compare_fail_description);
+            }
         }
     }
 
