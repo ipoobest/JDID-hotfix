@@ -265,7 +265,7 @@ public class RegisterFragment extends Fragment {
             edBranch.requestFocus();
             return false;
         }
-        if (edPhone.getText().length() == 0) {
+        if (edPhone.getText().length() != 10) {
             edPhone.requestFocus();
             return false;
         }

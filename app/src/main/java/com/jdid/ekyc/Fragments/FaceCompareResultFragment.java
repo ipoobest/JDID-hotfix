@@ -191,7 +191,6 @@ public class FaceCompareResultFragment extends Fragment {
                         ((JAppActivity) getActivity()).showFormFillFragment();
 
                     } else if(((JAppActivity) getActivity()).isVerifyPerson() == VERIFY_DIP_CHIP_MOTORSHOW){
-                        // TODO :: 5
                         ((JAppActivity) getActivity()).showFormFillPersonRegisterFragment();
                     }
                     else {

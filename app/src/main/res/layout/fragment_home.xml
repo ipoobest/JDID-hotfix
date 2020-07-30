@@ -58,22 +58,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/relativeLayout" />
 
-    <TextView
-        android:id="@+id/btnRegisterMotorShow"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:fontFamily="@font/kanit"
-        android:text="ลงทะเบียนงาน Motor Show"
-        android:textColor="@color/colorAccent"
-        android:textSize="18sp"
-        android:theme="@style/HomeButtonStyle"
-        app:layout_constraintTop_toBottomOf="@+id/txtHomeTitle"/>
-
-
 
     <TextView
         android:id="@+id/btnRegisterEKYC"
@@ -82,13 +66,15 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
-        android:gravity="center"
         android:fontFamily="@font/kanit"
+        android:gravity="center"
         android:text="ลงทะเบียน eKYC"
         android:textColor="@color/colorAccent"
         android:textSize="18sp"
         android:theme="@style/HomeButtonStyle"
-        app:layout_constraintTop_toBottomOf="@+id/btnRegisterMotorShow"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtHomeTitle" />
 
 
     <TextView

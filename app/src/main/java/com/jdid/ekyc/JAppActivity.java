@@ -61,16 +61,13 @@ import com.jdid.ekyc.Fragments.WaitForAuthoriseFragment;
 import com.jdid.ekyc.base.JCompatActivity;
 import com.jdid.ekyc.models.RetrofitFaceInstance;
 import com.jdid.ekyc.models.RetrofitInstance;
-import com.jdid.ekyc.models.RetrofitMotorShowInstance;
 import com.jdid.ekyc.models.RetrofitMotorShowParseInstance;
 import com.jdid.ekyc.models.api.FaceCompare;
 import com.jdid.ekyc.models.api.Device;
-import com.jdid.ekyc.models.pojo.Data;
 import com.jdid.ekyc.models.pojo.Dopa;
 import com.jdid.ekyc.models.pojo.OtpRef;
 import com.jdid.ekyc.models.pojo.Photo;
 import com.jdid.ekyc.models.pojo.RequestFaceCompare;
-import com.jdid.ekyc.models.pojo.RequestSubjectMegvii;
 import com.jdid.ekyc.models.pojo.RequestUserMotorShow;
 import com.jdid.ekyc.models.pojo.RequestVrifyPin;
 import com.jdid.ekyc.models.pojo.ResponVerifyPin;
@@ -79,11 +76,10 @@ import com.jdid.ekyc.models.pojo.ResponseDopa;
 import com.jdid.ekyc.models.pojo.ResponseFaceCompare;
 import com.jdid.ekyc.models.pojo.ResponseImageMegvii;
 import com.jdid.ekyc.models.pojo.ResponseParse;
-import com.jdid.ekyc.models.pojo.ResponseSubjectMegvii;
 import com.jdid.ekyc.models.pojo.ResponseVerifyUser;
 import com.jdid.ekyc.models.pojo.ResultFaceCompare;
 import com.jdid.ekyc.models.pojo.RetrofitDopaInstance;
-import com.jdid.ekyc.models.pojo.RetrofitMotorImageInstance;
+import com.jdid.ekyc.models.RetrofitMotorImageInstance;
 import com.jdid.ekyc.models.pojo.User;
 import com.jdid.ekyc.models.pojo.UserInformation;
 import com.jdid.ekyc.views.PFCodeView;
@@ -106,7 +102,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 
@@ -123,8 +118,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.1.17";
-    public static final String APP_DATE_UPDATE = "18/07/63";
+    public static final String APP_VERSION = "release 1.1.21";
+    public static final String APP_DATE_UPDATE = "30/07/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -279,9 +274,15 @@ public class JAppActivity extends JCompatActivity {
     public String mEMail;
     public boolean skip = false;
     public int skipNumber = 0;
+    // motorshow variable
     public boolean mortorshowRegister = false;
     public String mortorName;
     public String mortorPhone;
+    public String mortorBirthDate;
+    public String mortorIdCard;
+    public String mortorLaser;
+    public Boolean ekycFill = false;
+
     public File photoFile;
 
 
@@ -835,6 +836,28 @@ public class JAppActivity extends JCompatActivity {
         createUser(request);
     }
 
+    public void SavePersonalInformationPersonalMotorShow() {
+        String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        User request = new User();
+        if (isVerifyPerson() == VERIFY_PERSON){
+            request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
+        }
+        if (isVerifyPerson() == VERIFY_DIPCHIP_MOTORSHOW) {
+            fieldsList[JAppActivity.REF_COMPANY] = "motorshow";
+            request.setNot_verify(true);
+        }
+        request.setNameTh(mortorName);
+        request.setBirthdate(mortorBirthDate);
+        request.setId(mortorIdCard);
+        request.setNationality("Thai");
+        request.setContactNumber(mortorPhone);
+        request.setBackIdcard(mortorLaser);
+        request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
+        request.setVerifyBy(mStrDeviceID);
+
+        Log.d("personal", request.isSkip() + "");
+        createUser(request);
+    }
 
     public void CheckTypePersonal() {
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
@@ -949,8 +972,10 @@ public class JAppActivity extends JCompatActivity {
 
                         if (isVerifyPerson() == VERIFY_DIPCHIP_MOTORSHOW) {
                             successFragment();
-                        }else {
+                        } else if (ekycFill){
                             successFragment();
+                        }else {
+//                            successFragment();
                             sentConfirmOtp(generalInformation[CID], result);
                         }
                     }else if (status == 411){
@@ -1195,8 +1220,6 @@ public class JAppActivity extends JCompatActivity {
                         String url = photos.getUrl();
                         String urls = "http://megvii-manage.ap.ngrok.io" + url;
 
-                        // TODO :: 1 request to subject && parse [name,id, photoId, url]
-//                        showMotorShowPreviewFaceFragment(mortorName ,photoId);
                         showMotorShowPreviewFaceFragment(result.getStatus() ,subjectId, photoId, mortorName, urls);
                     } else {
                         mProgressDialog.dismiss();
@@ -1226,57 +1249,6 @@ public class JAppActivity extends JCompatActivity {
 
     }
 
-    public void requestDataToSubjectMegvii(String name, int photoIds) {
-        mProgressDialog = ProgressDialog.show(JAppActivity.this,
-                null, "ระบบกำลังดำเนินการกรุณารอสักครู่", true, false);
-        List<Integer> photoId = new ArrayList<Integer>();
-        List<Object> groupId = new ArrayList<Object>();
-
-        photoId.add(photoIds);
-        groupId.add(0);
-        final RequestSubjectMegvii request = new RequestSubjectMegvii();
-        request.setBirthday(0);
-        request.setEntryDate(0);
-        request.setGender(0);
-        request.setGroupIds(groupId);
-        request.setName(name);
-        request.setPhotoIds(photoId);
-        request.setSubjectType(0);
-
-        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorShowInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow .class);
-        Call<ResponseSubjectMegvii> call = service.postData(request);
-        call.enqueue(new Callback<ResponseSubjectMegvii>() {
-            @Override
-            public void onResponse(Call<ResponseSubjectMegvii> call, Response<ResponseSubjectMegvii> response) {
-                if (response.isSuccessful()) {
-                    ResponseSubjectMegvii results = response.body();
-                    List<Photo> data = results.getData().getPhotos();
-
-                    int subjectId = data.get(0).getSubjectId();
-                    int photoId = data.get(0).getId();
-                    String url = data.get(0).getUrl();
-                    String urls = "http://megvii-manage.ap.ngrok.io" + url;
-                    // TODO :: sent to parse class MotorShow20Coffee
-                    Log.d(TAG, "onResponse: " + urls);
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
-                    requestDataToSubjectParse(subjectId, photoId, mortorName, urls);
-
-                }else {
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseSubjectMegvii> call, Throwable t) {
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
-            }
-        });
-
-
-    }
 
     public void requestDataToSubjectParse(int subjectId, int photoId, String name ,String photoUrl) {
         mProgressDialog = ProgressDialog.show(JAppActivity.this,
@@ -1284,8 +1256,8 @@ public class JAppActivity extends JCompatActivity {
         RequestUserMotorShow request = new RequestUserMotorShow();
         request.setSubjectId(subjectId);
         request.setPhotoId(photoId);
-        //TODO :: setphone number
-        request.setPhonNumber("0");
+        //TODO 4 :: set phone number
+        request.setPhonNumber(mortorPhone);
         request.setFullname(name);
         request.setPhotoUrl(photoUrl);
         request.setCoffee("");
@@ -1300,7 +1272,13 @@ public class JAppActivity extends JCompatActivity {
                 if (response.isSuccessful()){
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
-                    successFragment();
+                    Log.d("ekycFill", ekycFill + "");
+                    if (ekycFill) {
+                        //TODO sent data to ekyc
+                        SavePersonalInformationPersonalMotorShow();
+                    } else {
+                        successFragment();
+                    }
                 } else {
                     mProgressDialog.dismiss();
                     mProgressDialog = null;

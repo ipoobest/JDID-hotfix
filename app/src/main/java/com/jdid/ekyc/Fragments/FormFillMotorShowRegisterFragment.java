@@ -1,7 +1,10 @@
 package com.jdid.ekyc.Fragments;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.icu.util.Calendar;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,12 +12,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -22,17 +27,23 @@ import androidx.fragment.app.Fragment;
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
 import com.jdid.ekyc.models.RetrofitInstance;
+import com.jdid.ekyc.models.RetrofitMotorShowParseInstance;
 import com.jdid.ekyc.models.api.Admin;
+import com.jdid.ekyc.models.api.MotorShow;
 import com.jdid.ekyc.models.pojo.RequestOTPForRegister;
 import com.jdid.ekyc.models.pojo.RequestOTPForVerify;
 import com.jdid.ekyc.models.pojo.ResponseOTPForRegister;
 import com.jdid.ekyc.models.pojo.ResponseOTPForVerify;
+import com.jdid.ekyc.models.pojo.ResponsePhoneNumber;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FormFillMotorShowRegisterFragment extends Fragment {
+public class FormFillMotorShowRegisterFragment extends Fragment implements View.OnClickListener {
 
     private static final int VERIFY_EKYC = 0;
     private static final int VERIFY_PERSON = 1;
@@ -43,9 +54,14 @@ public class FormFillMotorShowRegisterFragment extends Fragment {
     private EditText edPhone;
     private EditText edName;
     private EditText edOtp;
+    private EditText edBirthDate;
+    private EditText edIdCard;
+    private EditText edLaser;
     private TextView txtOTPREF;
     private TextView tvOtpRefText;
     private boolean photo;
+    private String birthDay;
+
 
     String mRef;
     String mPhoneNumber;
@@ -78,6 +94,9 @@ public class FormFillMotorShowRegisterFragment extends Fragment {
         edName =  view.findViewById(R.id.edName);
         edPhone =  view.findViewById(R.id.edPhone);
         edOtp =  view.findViewById(R.id.edOtp);
+        edBirthDate = view.findViewById(R.id.edBirthDate);
+        edIdCard = view.findViewById(R.id.edIdCard);
+        edLaser = view.findViewById(R.id.edLaser);
         txtOTPREF = view.findViewById(R.id.tvOtpRef);
         tvOtpRefText = view.findViewById(R.id.tvOtpRefText);
 
@@ -89,58 +108,33 @@ public class FormFillMotorShowRegisterFragment extends Fragment {
         btnSaveAndGo = view.findViewById(R.id.btnNextStep);
         btnRequestOtp = view.findViewById(R.id.btnRequestOtp);
 
-        btnRequestOtp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mPhoneNumber = edPhone.getText().toString();
-                Log.d("mPhoneNumber", mPhoneNumber);
-                edOtp.setVisibility(View.VISIBLE);
-                tvOtpRefText.setVisibility(View.VISIBLE);
-                txtOTPREF.setVisibility(View.VISIBLE);
-                requestOTP();
-
-            }
-        });
-
         if (photo) {
             btnRequestOtp.setVisibility(View.INVISIBLE);
             btnSaveAndGo.setText("ลองอีกครั้ง");
         }
 
-        btnSaveAndGo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (photo) {
-                    ((JAppActivity) getActivity()).OpenCameraForCapture();
-                }
-                else {
-                    if (finishedFormFill()) {
-                        ((JAppActivity) getActivity()).mortorshowRegister = true;
-                        ((JAppActivity) getActivity()).mortorName = edName.getText().toString();
-                        verifyOTP();
+        btnRequestOtp.setOnClickListener(this);
+        btnSaveAndGo.setOnClickListener(this);
 
-//                    ((JAppActivity) getActivity()).OpenCameraForCapture();
-                    } else {
-                        Toast.makeText(getActivity(), "กรุณากรอกข้อมูลให้ถูกต้อง", Toast.LENGTH_LONG).show();
-                    }
-                }
-            }
-        });
     }
 
 
     private boolean finishedFormFill() {
 
-        if (edName.getText().length() == 0) {
-            edName.requestFocus();
+        if (edName.getText().length() != 0 &&
+                edPhone.getText().length() == 10 &&
+                edBirthDate.getText().length() != 0 &&
+                edIdCard.getText().length() == 13 &&
+                edLaser.getText().length() == 12
+        ) {
+            ((JAppActivity) getActivity()).ekycFill = true;
+            return true;
+        } else if (edName.getText().length() == 0 &&
+                edPhone.getText().length() <= 9){
             return false;
+        } else {
+            return true;
         }
-        if (edPhone.getText().length() <= 9 ) {
-            edPhone.requestFocus();
-            return false;
-        }
-
-        return true;
     }
 
     private void requestOTP() {
@@ -228,6 +222,56 @@ public class FormFillMotorShowRegisterFragment extends Fragment {
         });
     }
 
+    /* ******************************************************* */
+    private void checkPhoneNumber(String phoneNumber) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("phone_number", phoneNumber);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        MotorShow service = RetrofitMotorShowParseInstance.getRetrofitInstance().create(MotorShow.class);
+        Call<ResponsePhoneNumber> call = service.checkPhoneNumber(obj.toString());
+        call.enqueue(new Callback<ResponsePhoneNumber>() {
+            @Override
+            public void onResponse(Call<ResponsePhoneNumber> call, Response<ResponsePhoneNumber> response) {
+                if (response.isSuccessful()){
+                    ResponsePhoneNumber results = response.body();
+                    if (results.getResults().isEmpty()){
+                        // TODO (1) : check phone_number parse done
+                        // TODO (2) : check form_input
+                        // TODO (2.1) : parse
+                        // TODO (2.2) : parse + ekyc
+                        requestOTP();
+                    } else {
+                        alertDialogOtg("หมายเลขโทรศัพท์นี้ถูกใช้งานแล้ว");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponsePhoneNumber> call, Throwable t) {
+                //false
+                alertDialogOtg("หมายเลขโทรศัพท์นี้ถูกใช้งานแล้ว");
+
+            }
+        });
+    }
+
+    private void alertDialogOtg(String text) {
+        new AlertDialog.Builder(getContext())
+                .setMessage(text)
+                .setCancelable(false)
+                .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                       return;
+                    }
+                })
+                .show();
+
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -249,5 +293,46 @@ public class FormFillMotorShowRegisterFragment extends Fragment {
                 })
                 .setNegativeButton("ยกเลิก", null)
                 .show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onClick(View v) {
+        if (v == btnSaveAndGo) {
+            if (photo) {
+                ((JAppActivity) getActivity()).OpenCameraForCapture();
+            }
+            else {
+                if (finishedFormFill()) {
+                    ((JAppActivity) getActivity()).mortorshowRegister = true;
+                    ((JAppActivity) getActivity()).mortorName = edName.getText().toString();
+                    ((JAppActivity) getActivity()).mortorPhone = edPhone.getText().toString();
+
+                    // TODO THIS EKYC FILL
+                    if (((JAppActivity) getActivity()).ekycFill == true) {
+                        ((JAppActivity) getActivity()).mortorBirthDate = edBirthDate.getText().toString();
+                        ((JAppActivity) getActivity()).mortorIdCard = edIdCard.getText().toString();
+                        ((JAppActivity) getActivity()).mortorLaser = edLaser.getText().toString();
+                    }
+
+                    verifyOTP();
+
+//                    ((JAppActivity) getActivity()).OpenCameraForCapture();
+                } else {
+                    Toast.makeText(getActivity(), "กรุณากรอกข้อมูลให้ถูกต้อง", Toast.LENGTH_LONG).show();
+                }
+            }
+        } else if (v == btnRequestOtp) {
+            mPhoneNumber = edPhone.getText().toString();
+            if (mPhoneNumber.length() <= 9) {
+                alertDialogOtg("กรุณากรอกเบอร์โทรศัพท์");
+            } else {
+                Log.d("mPhoneNumber", mPhoneNumber);
+                edOtp.setVisibility(View.VISIBLE);
+                tvOtpRefText.setVisibility(View.VISIBLE);
+                txtOTPREF.setVisibility(View.VISIBLE);
+                checkPhoneNumber(mPhoneNumber);
+            }
+        }
     }
 }

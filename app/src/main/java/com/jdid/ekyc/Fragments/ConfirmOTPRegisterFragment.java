@@ -25,25 +25,19 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
 import com.jdid.ekyc.models.RetrofitInstance;
-import com.jdid.ekyc.models.RetrofitMotorShowInstance;
 import com.jdid.ekyc.models.RetrofitMotorShowParseInstance;
 import com.jdid.ekyc.models.api.Admin;
 import com.jdid.ekyc.models.pojo.Photo;
 import com.jdid.ekyc.models.pojo.RequestOTPForRegister;
 import com.jdid.ekyc.models.pojo.RequestOTPForVerify;
-import com.jdid.ekyc.models.pojo.RequestSubjectMegvii;
 import com.jdid.ekyc.models.pojo.RequestUserMotorShow;
 import com.jdid.ekyc.models.pojo.ResponseImageMegvii;
 import com.jdid.ekyc.models.pojo.ResponseOTPForRegister;
 import com.jdid.ekyc.models.pojo.ResponseOTPForVerify;
 import com.jdid.ekyc.models.pojo.ResponseParse;
-import com.jdid.ekyc.models.pojo.ResponseSubjectMegvii;
-import com.jdid.ekyc.models.pojo.RetrofitMotorImageInstance;
+import com.jdid.ekyc.models.RetrofitMotorImageInstance;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -52,7 +46,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.jdid.ekyc.JAppActivity.CID;
 import static com.jdid.ekyc.JAppActivity.THAIFULLNAME;
 
 public class ConfirmOTPRegisterFragment extends Fragment {
@@ -104,7 +97,6 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_otp_register, container, false);
         setHasOptionsMenu(true);
-        //TODO OTP 1
         mPhoneNumber = ((JAppActivity) getActivity()).fieldsList[JAppActivity.CONTACT_NUMBER];
         Log.d( "mPhoneNumber xxx ::: ", mPhoneNumber);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
@@ -351,85 +343,6 @@ public class ConfirmOTPRegisterFragment extends Fragment {
 
     }
 
-    private void requestDataToSubjectMegvii(String name, int photoIds) {
-        mProgressDialog = ProgressDialog.show(getContext(),
-                null, "ระบบกำลังดำเนินการกรุณารอสักครู่", true, false);
-        final List<Integer> photoId = new ArrayList<>();
-        List<Object> groupId = new ArrayList<>();
-
-        Log.d("photo ID", photoIds + "");
-
-        photoId.add(photoIds);
-        groupId.add(0);
-        RequestSubjectMegvii request = new RequestSubjectMegvii();
-        request.setBirthday(0);
-        request.setEntryDate(0);
-        request.setGender(0);
-        request.setGroupIds(groupId);
-        request.setName(name);
-        request.setPhotoIds(photoId);
-        request.setSubjectType(0);
-
-        Log.d("request xxx", request.toString());
-
-        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorShowInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow .class);
-        Call<ResponseSubjectMegvii> call = service.postData(request);
-        call.enqueue(new Callback<ResponseSubjectMegvii>() {
-            @Override
-            public void onResponse(Call<ResponseSubjectMegvii> call, Response<ResponseSubjectMegvii> response) {
-                if (response.isSuccessful()) {
-                    int subjectId = 0 ;
-                    int photoId = 0;
-                    String url ="";
-                    String urls = "";
-                    ResponseSubjectMegvii results = response.body();
-                    if (results.getCode() == 0) {
-                        mProgressDialog.dismiss();
-                        mProgressDialog = null;
-                        if (!results.getData().getPhotos().isEmpty()) {
-                            List<Photo> data = results.getData().getPhotos();
-                            subjectId = data.get(0).getSubjectId();
-                            photoId = data.get(0).getId();
-                            url = data.get(0).getUrl();
-                            urls = "http://megvii-manage.ap.ngrok.io" + url;
-
-                            //
-                            String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
-                            String name = generalInformation[THAIFULLNAME];
-                            Log.d("response: ", name);
-                            Log.d("response: ", "6");
-
-                            requestDataToSubjectParse(subjectId, photoId, name, urls);
-                        } else {
-//                            Toast.makeText(getContext(), , Toast.LENGTH_SHORT).show();
-                            alertDialogPhone("กรุณาทำรายการใหม่อีกครั้ง");
-                        }
-
-                    } else {
-                        mProgressDialog.dismiss();
-                        mProgressDialog = null;
-                        String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
-                        String name = generalInformation[THAIFULLNAME];
-                        requestDataToSubjectParse(subjectId, photoId, name, urls);
-                    }
-
-                }else {
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
-                    alertDialogPhone("ไม่สามารถทำรายการใหม่ได้ กรุณาลองใหม่อีกครั้ง");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseSubjectMegvii> call, Throwable t) {
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
-                alertDialogPhone("ไม่สามารถทำรายการใหม่ได้ กรุณาลองใหม่อีกครั้ง");
-            }
-        });
-
-
-    }
 
     private void requestDataToSubjectParse(int subjectId, int photoId, String name ,String photoUrl) {
 //        mProgressDialog = ProgressDialog.show(getContext(),
@@ -441,6 +354,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         request.setPhotoId(photoId);
         request.setFullname(name);
         request.setPhotoUrl(photoUrl);
+        request.setPhonNumber(mPhoneNumber);
         request.setCoffee("");
         request.setStatus("created");
         request.setDipchip(true);

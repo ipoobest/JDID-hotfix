@@ -5,7 +5,11 @@ import com.jdid.ekyc.models.pojo.RequestSubjectMegvii;
 import com.jdid.ekyc.models.pojo.RequestUserMotorShow;
 import com.jdid.ekyc.models.pojo.ResponseImageMegvii;
 import com.jdid.ekyc.models.pojo.ResponseParse;
+import com.jdid.ekyc.models.pojo.ResponsePhoneNumber;
 import com.jdid.ekyc.models.pojo.ResponseSubjectMegvii;
+import com.jdid.ekyc.models.pojo.ResultCheckPhoneNUmber;
+
+import org.json.JSONObject;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -45,9 +49,10 @@ public interface MotorShow {
     @POST("/parse/classes/MotorShow20Coffee")
     Call<ResponseParse> postDataToParse(@Body RequestUserMotorShow request);
 
+//    https://api.jfin.network/parse/classes/MotorShow20Coffee?where={"objectId":"F2PXN0qSH2"}
+
     @Headers("X-Parse-Application-Id: 928f24ed35d8876dee76d0a5460ef078")
     @GET("/parse/classes/MotorShow20Coffee")
-    Call<ResponseParse> checkPhoneNumner(@Query("phone_number") String phoneNumber);
-
+    Call<ResponsePhoneNumber> checkPhoneNumber(@Query("where") String phoneNumber);
 
 }

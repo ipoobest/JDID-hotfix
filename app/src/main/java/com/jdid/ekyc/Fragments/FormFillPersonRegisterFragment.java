@@ -24,8 +24,18 @@ import androidx.fragment.app.Fragment;
 
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
+import com.jdid.ekyc.models.RetrofitMotorShowParseInstance;
+import com.jdid.ekyc.models.api.MotorShow;
+import com.jdid.ekyc.models.pojo.ResponsePhoneNumber;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.content.ContentValues.TAG;
 import static com.jdid.ekyc.JAppActivity.ADDRESS;
@@ -77,7 +87,9 @@ public class FormFillPersonRegisterFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (finishedFormFill()) {
-                    authenOTP();
+                    //TODO CHECK PHONE
+                    String phoneNumber = edPhone.getText().toString();
+                    checkPhoneNumber(phoneNumber);
                 } else {
                     Toast.makeText(getActivity(), "กรุณากรอกหมายเลขโทรศัพท์", Toast.LENGTH_LONG).show();
                 }
@@ -107,6 +119,52 @@ public class FormFillPersonRegisterFragment extends Fragment {
         }
 
         return true;
+    }
+    /* ******************************************************* */
+    private void checkPhoneNumber(String phoneNumber) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("phone_number", phoneNumber);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        MotorShow service = RetrofitMotorShowParseInstance.getRetrofitInstance().create(MotorShow.class);
+        Call<ResponsePhoneNumber> call = service.checkPhoneNumber(obj.toString());
+        call.enqueue(new Callback<ResponsePhoneNumber>() {
+            @Override
+            public void onResponse(Call<ResponsePhoneNumber> call, Response<ResponsePhoneNumber> response) {
+                if (response.isSuccessful()){
+                    ResponsePhoneNumber results = response.body();
+                    if (results.getResults().isEmpty()){
+                        authenOTP();
+
+                    } else {
+                        alertDialogOtg("หมายเลขโทรศัพท์นี้ถูกใช้งานแล้ว");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponsePhoneNumber> call, Throwable t) {
+                //false
+                alertDialogOtg("หมายเลขโทรศัพท์นี้ถูกใช้งานแล้ว");
+
+            }
+        });
+    }
+
+    private void alertDialogOtg(String text) {
+        new AlertDialog.Builder(getContext())
+                .setMessage(text)
+                .setCancelable(false)
+                .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        return;
+                    }
+                })
+                .show();
+
     }
 
     @Override

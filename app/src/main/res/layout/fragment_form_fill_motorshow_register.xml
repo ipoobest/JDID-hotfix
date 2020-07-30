@@ -9,11 +9,11 @@
         android:id="@+id/txtTitleFill"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:fontFamily="@font/kanit"
         android:text="กรุณากรอกข้อมูล"
         android:textColor="@android:color/black"
         android:textSize="30sp"
-        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,105 +34,160 @@
 
 
     <LinearLayout
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/btnNextStep"
         app:layout_constraintTop_toBottomOf="@+id/txtTitleFill"
         tools:layout_editor_absoluteX="8dp">
 
 
-<!--        <TextView-->
-<!--            android:id="@+id/txtName"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:fontFamily="@font/kanit"-->
-<!--            android:text="ขื่อ-นามสกุุล"-->
-<!--            android:textSize="16sp" />-->
+        <!--        <TextView-->
+        <!--            android:id="@+id/txtName"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/kanit"-->
+        <!--            android:text="ขื่อ-นามสกุุล"-->
+        <!--            android:textSize="16sp" />-->
 
         <EditText
             android:id="@+id/edName"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/rounded_border_edittext"
+            android:ellipsize="start"
+            android:gravity="center_horizontal"
             android:hint="ชื่อ-นามสกุล"
-            android:layout_centerInParent="true"
-            android:ellipsize="start"
-            android:singleLine="true"
-            android:gravity="center_horizontal"
-            android:background="@drawable/rounded_border_edittext"
-             />
-
-        <EditText
-            android:layout_marginTop="16dp"
-            android:id="@+id/edPhone"
             android:paddingTop="12dp"
             android:paddingBottom="12dp"
+            android:singleLine="true" />
+
+        <!--        1991-01-18-->
+        <EditText
+            android:id="@+id/edPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="กรุณากรอกหมายเลขโทรศัพท์ 10 หลัก"
-            android:maxLength="10"
             android:layout_centerInParent="true"
-            android:ellipsize="start"
-            android:singleLine="true"
-            android:gravity="center_horizontal"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/rounded_border_edittext"
-            android:inputType="phone" />
-        <Button
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_marginTop="6dp"
-            android:layout_gravity="center"
-            android:id="@+id/btnRequestOtp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:backgroundTint="@color/colorAccent"
-            android:text="request otp" />
+
+            android:ellipsize="start"
+            android:gravity="center_horizontal"
+            android:hint="กรุณากรอกหมายเลขโทรศัพท์ 10 หลัก"
+            android:inputType="phone"
+            android:maxLength="10"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:singleLine="true" />
 
         <LinearLayout
-            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+        <EditText
+            android:id="@+id/edBirthDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/rounded_border_edittext"
+            android:ellipsize="start"
+            android:gravity="center_horizontal"
+            android:hint="ค.ศ-เดือน-วัน : 1995-02-24"
+            android:inputType="date"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:singleLine="true" />
+
+        <EditText
+            android:id="@+id/edIdCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/rounded_border_edittext"
+            android:ellipsize="start"
+            android:gravity="center_horizontal"
+            android:hint="หมายเลขบัตรประชาชน 13 หลัก"
+            android:maxLength="13"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:singleLine="true" />
+
+        <EditText
+            android:id="@+id/edLaser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/rounded_border_edittext"
+            android:ellipsize="start"
+            android:gravity="center_horizontal"
+            android:hint="หมายเลขเลเซอร์หลังบัตร"
+            android:maxLength="12"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:singleLine="true" />
+
+        <Button
+            android:id="@+id/btnRequestOtp"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="6dp"
+            android:text="request otp"
+            app:backgroundTint="@color/colorAccent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="center"
             android:orientation="horizontal">
+
             <TextView
                 android:id="@+id/tvOtpRefText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="OTP REF :"/>
+                android:text="OTP REF :" />
 
             <TextView
                 android:id="@+id/tvOtpRef"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""/>
+                android:text="" />
         </LinearLayout>
 
         <EditText
-            android:layout_marginTop="16dp"
             android:id="@+id/edOtp"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="กรุณากรอกหมาย OTP ที่ได้รับ"
-            android:maxLength="6"
             android:layout_centerInParent="true"
-            android:ellipsize="start"
-            android:singleLine="true"
-            android:gravity="center_horizontal"
+            android:layout_marginTop="16dp"
             android:background="@drawable/rounded_border_edittext"
-            android:inputType="number" />
+            android:ellipsize="start"
+            android:gravity="center_horizontal"
+            android:hint="กรุณากรอกหมาย OTP ที่ได้รับ"
+            android:inputType="number"
+            android:maxLength="6"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:singleLine="true" />
 
-<!--        <EditText-->
-<!--            android:id="@+id/edPhone"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:maxLength="10"-->
-<!--            android:hint="กรุณากรอกหมายเลขโทรศัพท์ 10 หลัก"-->
-<!--            android:inputType="phone" />-->
+        <!--        <EditText-->
+        <!--            android:id="@+id/edPhone"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:maxLength="10"-->
+        <!--            android:hint="กรุณากรอกหมายเลขโทรศัพท์ 10 หลัก"-->
+        <!--            android:inputType="phone" />-->
 
     </LinearLayout>
 
