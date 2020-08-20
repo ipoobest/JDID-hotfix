@@ -53,7 +53,6 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     private static final int VERIFY_EKYC = 0;
     private static final int VERIFY_PERSON = 1;
     private static final int VERIFY_DIP_CHIP = 2;
-    private static final int VERIFY_DIP_CHIP_MOTORSHOW = 3;
 
     private ProgressDialog mProgressDialog;
     private EditText edOTP;
@@ -116,9 +115,6 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                 break;
             case VERIFY_PERSON:
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.verify_person);
-                break;
-            case VERIFY_DIP_CHIP_MOTORSHOW:
-                ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.dip_chip_motorshow);
                 break;
         }
 
@@ -238,15 +234,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                             mProgressDialog = null;
                             Log.d("response", "2");
                             ((JAppActivity) getActivity()).CheckTypePersonal();
-                        } else if ((((JAppActivity) getActivity()).isVerifyDipChip() == VERIFY_DIP_CHIP_MOTORSHOW)) {
-//                            mProgressDialog.dismiss();
-//                            mProgressDialog = null;
-
-                            Log.d("response", "3");
-                            Log.d("onResponse: ",((JAppActivity) getActivity()).photoFile.getName() );
-                            requestImageToMegvii(((JAppActivity) getActivity()).photoFile);
-
-                        } else {
+                        }  else {
                             mProgressDialog.dismiss();
                             mProgressDialog = null;
                             Log.d("response", "4");
@@ -278,128 +266,5 @@ public class ConfirmOTPRegisterFragment extends Fragment {
         });
     }
 
-
-    private void requestImageToMegvii(File image) {
-//        mProgressDialog = ProgressDialog.show(getContext(),
-//                null, "ระบบกำลังจัดเก็บข้อมูล", true, false);
-        RequestBody requestFile =
-                RequestBody.create(
-                        MediaType.parse("image/*"),
-                        image
-                );
-//
-    String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
-    String name = generalInformation[THAIFULLNAME];
-        MultipartBody.Part body =
-                MultipartBody.Part.createFormData("photo", image.getName(), requestFile);
-        RequestBody requestName = RequestBody.create(name, MediaType.parse("text/plain"));
-
-        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorImageInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
-        Call<ResponseImageMegvii> call = service.postImage(body, requestName);
-        call.enqueue(new Callback<ResponseImageMegvii>() {
-            @Override
-            public void onResponse(Call<ResponseImageMegvii> call, Response<ResponseImageMegvii> response) {
-                if (response.isSuccessful()) {
-                    ResponseImageMegvii result = response.body();
-//                    Log.d(TAG , "onResponse: " + result.getData().getId());
-                    if (result.getStatus() ==  1) {
-//                        int photoId = result.getData();
-//                        mProgressDialog.dismiss();
-//                        mProgressDialog = null;
-                        ((JAppActivity) getActivity()).photoFile = null;
-                        Photo photos = result.getData();
-                        int photoId = photos.getId();
-                        int subjectId = photos.getSubjectId();
-                        String url = photos.getUrl();
-                        String urls = "http://megvii-manage.ap.ngrok.io" + url;
-                        String[] generalInformation = ((JAppActivity) getActivity()).getGeneralInformation();
-                        String name = generalInformation[THAIFULLNAME];
-                       requestDataToSubjectParse(subjectId, photoId, name, urls);
-//                        requestDataToSubjectMegvii(name, photoId);
-
-                    } else {
-//                        mProgressDialog.dismiss();
-//                        mProgressDialog = null;
-                        ((JAppActivity) getActivity()).photoFile = null;
-//                        Toast.makeText(getContext(), "", Toast.LENGTH_SHORT).show();
-                        alertDialogPhone("ไม่สามารถทำรายการใหม่ได้ กรุณาลองใหม่อีกครั้ง");
-                    }
-
-                } else {
-//                    mProgressDialog.dismiss();
-//                    mProgressDialog = null;
-                    ((JAppActivity) getActivity()).photoFile = null;
-                    alertDialogPhone("ไม่สามารถทำรายการใหม่ได้ กรุณาลองใหม่อีกครั้ง");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseImageMegvii> call, Throwable t) {
-//                mProgressDialog.dismiss();
-//                mProgressDialog = null;
-                ((JAppActivity) getActivity()).photoFile = null;
-            }
-        });
-
-    }
-
-
-    private void requestDataToSubjectParse(int subjectId, int photoId, String name ,String photoUrl) {
-//        mProgressDialog = ProgressDialog.show(getContext(),
-//                null, "ระบบกำลังดำเนินการจัดเก็บข้อมูล", true, false);
-
-        Log.d("response", "requestDataToSubjectParse: ");
-        RequestUserMotorShow request = new RequestUserMotorShow();
-        request.setSubjectId(subjectId);
-        request.setPhotoId(photoId);
-        request.setFullname(name);
-        request.setPhotoUrl(photoUrl);
-        request.setPhonNumber(mPhoneNumber);
-        request.setCoffee("");
-        request.setStatus("created");
-        request.setDipchip(true);
-
-        Log.d("request xxx", request.toString());
-
-        com.jdid.ekyc.models.api.MotorShow service = RetrofitParseApiJfinInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
-        Call<ResponseParse> call = service.postDataToParse(request);
-        call.enqueue(new Callback<ResponseParse>() {
-            @Override
-            public void onResponse(Call<ResponseParse> call, Response<ResponseParse> response) {
-                if (response.isSuccessful()){
-                    Log.d("response", "onResponse: if");
-
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
-//                    successFragment();
-                    ((JAppActivity) getActivity()).CheckTypePersonal();
-                } else {
-                    Log.d("response", "onResponse: else");
-//                    mProgressDialog.dismiss();
-//                    mProgressDialog = null;
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseParse> call, Throwable t) {
-                Log.d("onFailure", "onFailure: " + t.toString());
-//                mProgressDialog.dismiss();
-//                mProgressDialog = null;
-            }
-        });
-
-    }
-    private void alertDialogPhone(String message) {
-        new AlertDialog.Builder(getContext())
-                .setMessage(message)
-                .setCancelable(false)
-                .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        ((JAppActivity) getActivity()).showMotorShowFragment();
-                    }
-                })
-                .show();
-
-    }
 
 }

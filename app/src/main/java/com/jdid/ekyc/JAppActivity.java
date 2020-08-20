@@ -16,7 +16,6 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -52,36 +51,27 @@ import com.jdid.ekyc.Fragments.ConfirmOTPRegisterFragment;
 import com.jdid.ekyc.Fragments.ConfirmOTPRegisterUserFragment;
 import com.jdid.ekyc.Fragments.FaceCompareResultFragment;
 import com.jdid.ekyc.Fragments.FormFillFragment;
-import com.jdid.ekyc.Fragments.FormFillMotorShowRegisterFragment;
 import com.jdid.ekyc.Fragments.FormFillPersonRegisterFragment;
 import com.jdid.ekyc.Fragments.HomeFragment;
-import com.jdid.ekyc.Fragments.MotorShowHomeFragment;
-import com.jdid.ekyc.Fragments.MotorShowPreviewFace;
 import com.jdid.ekyc.Fragments.PinCodeFragment;
 import com.jdid.ekyc.Fragments.SuccessFragment;
 import com.jdid.ekyc.Fragments.WaitForAuthoriseFragment;
 import com.jdid.ekyc.base.JCompatActivity;
 import com.jdid.ekyc.models.RetrofitFaceInstance;
 import com.jdid.ekyc.models.RetrofitInstance;
-import com.jdid.ekyc.models.RetrofitParseApiJfinInstance;
 import com.jdid.ekyc.models.api.FaceCompare;
 import com.jdid.ekyc.models.api.Device;
 import com.jdid.ekyc.models.pojo.Dopa;
 import com.jdid.ekyc.models.pojo.OtpRef;
-import com.jdid.ekyc.models.pojo.Photo;
 import com.jdid.ekyc.models.pojo.RequestFaceCompare;
-import com.jdid.ekyc.models.pojo.RequestUserMotorShow;
 import com.jdid.ekyc.models.pojo.RequestVrifyPin;
 import com.jdid.ekyc.models.pojo.ResponVerifyPin;
 import com.jdid.ekyc.models.pojo.ResponseCreateUser;
 import com.jdid.ekyc.models.pojo.ResponseDopa;
 import com.jdid.ekyc.models.pojo.ResponseFaceCompare;
-import com.jdid.ekyc.models.pojo.ResponseImageMegvii;
-import com.jdid.ekyc.models.pojo.ResponseParse;
 import com.jdid.ekyc.models.pojo.ResponseVerifyUser;
 import com.jdid.ekyc.models.pojo.ResultFaceCompare;
 import com.jdid.ekyc.models.pojo.RetrofitDopaInstance;
-import com.jdid.ekyc.models.RetrofitMotorImageInstance;
 import com.jdid.ekyc.models.pojo.User;
 import com.jdid.ekyc.models.pojo.UserInformation;
 import com.jdid.ekyc.views.PFCodeView;
@@ -100,23 +90,16 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.Format;
 import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.concurrent.TimeoutException;
 
 
 import co.advancedlogic.thainationalidcard.SmartCardDevice;
 import co.advancedlogic.thainationalidcard.ThaiSmartCard;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -134,7 +117,6 @@ public class JAppActivity extends JCompatActivity {
 //    private static final int VERIFY_EKYC = 0;
     private static final int VERIFY_PERSON = 1;
     private static final int VERIFY_DIPCHIP = 2;
-    private static final int VERIFY_DIPCHIP_MOTORSHOW = 3;
 
 
     private PFCodeView mCodeView;
@@ -283,14 +265,6 @@ public class JAppActivity extends JCompatActivity {
     public String mEMail;
     public boolean skip = false;
     public int skipNumber = 0;
-    // motorshow variable
-    public boolean mortorshowRegister = false;
-    public String mortorName;
-    public String mortorPhone;
-    public String mortorBirthDate;
-    public String mortorIdCard;
-    public String mortorLaser;
-    public Boolean ekycFill = false;
 
     public File photoFile;
 
@@ -407,11 +381,7 @@ public class JAppActivity extends JCompatActivity {
     }
 
 //
-    public void FormFillMotorShowRegisterFragment(boolean takePhoto) {
-        final FormFillMotorShowRegisterFragment fragment = new FormFillMotorShowRegisterFragment(takePhoto);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container_view, fragment).addToBackStack(null).commit();
-    }
+
 
     public void showFormFillFragment() {
         final FormFillFragment fragment = new FormFillFragment();
@@ -451,25 +421,6 @@ public class JAppActivity extends JCompatActivity {
         final SuccessFragment fragment = new SuccessFragment();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container_view, fragment).commit();
-    }
-
-    //    public void acquireCardData(boolean fVerify) {
-//        mfVerifyPerson = fVerify;
-//        final CardAcquireFragment fragment = new CardAcquireFragment();
-//        mcardAcquireFragment = fragment;
-//        getSupportFragmentManager().beginTransaction()
-//                .replace(R.id.container_view, fragment).commit();
-//    }
-
-    public void showMotorShowFragment() {
-        final MotorShowHomeFragment fragment = new MotorShowHomeFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.container_view, fragment).commit();
-    }
-
-    public void showMotorShowPreviewFaceFragment(int id, int subjectId, int photoId, String name, String urls) {
-//        result.getStatus() ,subjectId, photoId, mortorName, urls
-        final MotorShowPreviewFace fragment = new MotorShowPreviewFace(id, subjectId, photoId, name , urls);
-        getSupportFragmentManager().beginTransaction().replace(R.id.container_view, fragment).commit();
     }
 
 
@@ -561,23 +512,9 @@ public class JAppActivity extends JCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            if (mortorshowRegister) {
-                Log.d(TAG, "byteImageCam: "+ imageUri.getPath());
-                //write the bytes in file
-                // 1. get files
-                requestImageToMegvii(photoFile);
-
-//                String path = imageUri.getPath();
-
-                // 2. request files
-
-            } else {
                String imageDB = Base64.encodeToString(byteImage, Base64.NO_WRAP);
                String imageCam = Base64.encodeToString(byteImageCam, Base64.NO_WRAP);
                comPareImageBuidu(imageDB, imageCam);
-            }
-
         }
     }
 
@@ -824,10 +761,7 @@ public class JAppActivity extends JCompatActivity {
         if (isVerifyPerson() == VERIFY_PERSON){
             request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
         }
-        if (isVerifyPerson() == VERIFY_DIPCHIP_MOTORSHOW) {
-            fieldsList[JAppActivity.REF_COMPANY] = "motorshow";
-            request.setNot_verify(true);
-        }
+
         request.setNameTh(generalInformation[THAIFULLNAME]);
         request.setNameEn(generalInformation[ENGLISHFULLNAME]);
         request.setBirthdate(generalInformation[BIRTH]);
@@ -841,29 +775,6 @@ public class JAppActivity extends JCompatActivity {
         request.setReferBy(fieldsList[REF_COMPANY]);
         request.setSkip(skip);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
-        request.setVerifyBy(mStrDeviceID);
-
-        Log.d("personal", request.isSkip() + "");
-        createUser(request);
-    }
-
-    public void SavePersonalInformationPersonalMotorShow() {
-        String mStrDeviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        User request = new User();
-        if (isVerifyPerson() == VERIFY_PERSON){
-            request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
-        }
-        if (isVerifyPerson() == VERIFY_DIPCHIP_MOTORSHOW) {
-            fieldsList[JAppActivity.REF_COMPANY] = "motorshow";
-            request.setNot_verify(true);
-        }
-        request.setNameTh(mortorName);
-        request.setBirthdate(mortorBirthDate);
-        request.setId(mortorIdCard);
-        request.setNationality("Thai");
-        request.setContactNumber(mortorPhone);
-        request.setBackIdcard(mortorLaser);
-        request.setPortraitUrl(Base64.encodeToString(byteImageCam, Base64.NO_WRAP));
         request.setVerifyBy(mStrDeviceID);
 
         Log.d("personal", request.isSkip() + "");
@@ -899,10 +810,8 @@ public class JAppActivity extends JCompatActivity {
                 }else {
                     Log.d(TAG, "CheckTypePersonal:3  ");
 
-//                    Log.d("get user: ", "xxxxx");
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
-//                    Log.d("get user : ", "xxxx");
                     SavePersonalInformationPersonal();
                 }
             }
@@ -982,11 +891,9 @@ public class JAppActivity extends JCompatActivity {
                         params.putString("create", result.getStatusCode().toString());
                         mFirebaseAnalytics.logEvent("createUser", params);
 
-                        if (isVerifyPerson() == VERIFY_DIPCHIP_MOTORSHOW) {
+                        if (isVerifyPerson() == VERIFY_DIPCHIP) {
                             successFragment();
-                        } else if (ekycFill){
-                            successFragment();
-                        }else {
+                        } else {
 //                            successFragment();
                             sentConfirmOtp(generalInformation[CID], result);
                         }
@@ -1195,115 +1102,6 @@ public class JAppActivity extends JCompatActivity {
         if (otp != null) {
             showOTPVerifyUserFragment(id, otp, mPhonePerson);
         }
-    }
-
-    public void requestImageToMegvii(File image) {
-        mProgressDialog = ProgressDialog.show(JAppActivity.this,
-                null, "ระบบกำลังดำเนินการกรุณารอสักครู่", true, false);
-        RequestBody requestFile =
-                RequestBody.create(
-                        image,
-                        MediaType.parse("image/*")
-
-                );
-
-        MultipartBody.Part body =
-                MultipartBody.Part.createFormData("photo", image.getName(), requestFile);
-        RequestBody name = RequestBody.create(mortorName, MediaType.parse("text/plain"));
-
-        Log.d(TAG, "requestImageToMegvii: " + image.getName());
-        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorImageInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
-        Call<ResponseImageMegvii> call = service.postImage(body, name);
-        call.enqueue(new Callback<ResponseImageMegvii>() {
-            @Override
-            public void onResponse(Call<ResponseImageMegvii> call, Response<ResponseImageMegvii> response) {
-
-                if (response.isSuccessful()) {
-                    ResponseImageMegvii result = response.body();
-//                    Log.d(TAG , "onResponse: " + result.getData().getId());
-                    Log.d("result.getData()", result.getData() + "");
-                    if (result.getStatus() == 1) {
-                        mProgressDialog.dismiss();
-                        mProgressDialog = null;
-                        photoFile = null;
-                        Photo photos = result.getData();
-                        int photoId = photos.getId();
-                        int subjectId = photos.getSubjectId();
-                        String url = photos.getUrl();
-                        String urls = "http://megvii-manage.ap.ngrok.io" + url;
-
-                        showMotorShowPreviewFaceFragment(result.getStatus() ,subjectId, photoId, mortorName, urls);
-                    } else {
-                        mProgressDialog.dismiss();
-                        mProgressDialog = null;
-                        photoFile = null;
-                        showMotorShowPreviewFaceFragment( result.getStatus(), 0 ,0 ,"","");
-//                        FormFillMotorShowRegisterFragment(true);
-//                        Toast.makeText(context, "รูปภาพไม่สมบูรณ์ กรุณาถ่ายใหม่", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
-                    photoFile = null;
-                    Toast.makeText(context, "เครื่อง nuc ปิด", Toast.LENGTH_SHORT).show();
-                    showMotorShowPreviewFaceFragment( 9, 0 ,0 ,"","");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseImageMegvii> call, Throwable t) {
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
-                photoFile = null;
-                showMotorShowPreviewFaceFragment( 9, 0 ,0 ,"","");
-            }
-        });
-
-    }
-
-
-    public void requestDataToSubjectParse(int subjectId, int photoId, String name ,String photoUrl) {
-        mProgressDialog = ProgressDialog.show(JAppActivity.this,
-                null, "ระบบกำลังดำเนินการกรุณารอสักครู่", true, false);
-        RequestUserMotorShow request = new RequestUserMotorShow();
-        request.setSubjectId(subjectId);
-        request.setPhotoId(photoId);
-        //TODO 4 :: set phone number
-        request.setPhonNumber(mortorPhone);
-        request.setFullname(name);
-        request.setPhotoUrl(photoUrl);
-        request.setCoffee("");
-        request.setStatus("created");
-        request.setDipchip(false);
-
-        com.jdid.ekyc.models.api.MotorShow service = RetrofitParseApiJfinInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
-        Call<ResponseParse> call = service.postDataToParse(request);
-        call.enqueue(new Callback<ResponseParse>() {
-            @Override
-            public void onResponse(Call<ResponseParse> call, Response<ResponseParse> response) {
-                if (response.isSuccessful()){
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
-                    Log.d("ekycFill", ekycFill + "");
-                    if (ekycFill) {
-                        //TODO sent data to ekyc
-                        SavePersonalInformationPersonalMotorShow();
-                    } else {
-                        successFragment();
-                    }
-                } else {
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseParse> call, Throwable t) {
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
-            }
-        });
-
     }
 
     public byte[] recoverImageFromUrl(String urlText) throws Exception {
@@ -2200,9 +1998,7 @@ public class JAppActivity extends JCompatActivity {
                             showFormFillPersonRegisterFragment();
                         } else if (isVerifyPerson() == VERIFY_PERSON) {
                             showFormFillPersonRegisterFragment();
-                        } else if(isVerifyPerson() == VERIFY_DIPCHIP_MOTORSHOW){
-                            showFormFillPersonRegisterFragment();
-                        }else {
+                        } else {
                             showFormFillFragment();
                         }
                     }
