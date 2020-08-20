@@ -66,6 +66,18 @@ public class User {
     @Expose
     private String backIdcard;
 
+    @SerializedName("card_expired_date")
+    @Expose
+    private String cardExpiredDate;
+
+    public String getCardExpiredDate() {
+        return cardExpiredDate;
+    }
+
+    public void setCardExpiredDate(String cardExpiredDate) {
+        this.cardExpiredDate = cardExpiredDate;
+    }
+
     @SerializedName("skip")
     @Expose
     private boolean skip;

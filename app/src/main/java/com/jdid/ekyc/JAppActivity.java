@@ -16,6 +16,7 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -33,6 +34,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -61,7 +63,7 @@ import com.jdid.ekyc.Fragments.WaitForAuthoriseFragment;
 import com.jdid.ekyc.base.JCompatActivity;
 import com.jdid.ekyc.models.RetrofitFaceInstance;
 import com.jdid.ekyc.models.RetrofitInstance;
-import com.jdid.ekyc.models.RetrofitMotorShowParseInstance;
+import com.jdid.ekyc.models.RetrofitParseApiJfinInstance;
 import com.jdid.ekyc.models.api.FaceCompare;
 import com.jdid.ekyc.models.api.Device;
 import com.jdid.ekyc.models.pojo.Dopa;
@@ -98,10 +100,15 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.Format;
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.concurrent.TimeoutException;
 
 
@@ -118,8 +125,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.1.21";
-    public static final String APP_DATE_UPDATE = "30/07/63";
+    public static final String APP_VERSION = "release 1.1.23";
+    public static final String APP_DATE_UPDATE = "11/08/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -195,7 +202,7 @@ public class JAppActivity extends JCompatActivity {
             "80b014680200FF"
     };
     static boolean boolGetInformation = false;
-    static int iMaxInfoChunk = 10;
+    static int iMaxInfoChunk = 11;
     static int iCurrentInfoChunk = 0;
     public static final int CID = 0;
     public static final int THAIFULLNAME = 1;
@@ -207,7 +214,9 @@ public class JAppActivity extends JCompatActivity {
     public static final int EXPIRE = 7;
     public static final int ADDRESS = 8;
     public static final int LASER_ID = 9;
-    static String[] generalInformation = new String[10];
+    public static final int EXPIRE_DATE = 10;
+
+    static String[] generalInformation = new String[11];
 
     public String[] getGeneralInformation() {
         return generalInformation;
@@ -795,6 +804,7 @@ public class JAppActivity extends JCompatActivity {
         request.setCompany(fieldsList[COMPANY]);
         request.setCompanyAddress(fieldsList[COMPANY_ADDRSS]);
         request.setBackIdcard(generalInformation[LASER_ID]);
+        request.setCardExpiredDate(generalInformation[EXPIRE_DATE]);
         request.setIncome(income);
         request.setVerifyBy(mStrDeviceID);
         request.setReferBy(fieldsList[REF_COMPANY]);
@@ -827,6 +837,7 @@ public class JAppActivity extends JCompatActivity {
         request.setNationality("Thai");
         request.setContactNumber(fieldsList[CONTACT_NUMBER]);
         request.setBackIdcard(generalInformation[LASER_ID]);
+        request.setCardExpiredDate(generalInformation[EXPIRE_DATE]);
         request.setReferBy(fieldsList[REF_COMPANY]);
         request.setSkip(skip);
         request.setPhoto(Base64.encodeToString(byteImage, Base64.NO_WRAP));
@@ -927,6 +938,7 @@ public class JAppActivity extends JCompatActivity {
         request.setGender(generalInformation[GENDER]);
         request.setOfficialAddress(generalInformation[ADDRESS]);
         request.setBackIdcard(generalInformation[LASER_ID]);
+        request.setCardExpiredDate(generalInformation[EXPIRE_DATE]);
         request.setReferBy(fieldsList[REF_COMPANY]);
         request.setSkip(skip);
         request.setNationality("Thai");
@@ -1264,7 +1276,7 @@ public class JAppActivity extends JCompatActivity {
         request.setStatus("created");
         request.setDipchip(false);
 
-        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorShowParseInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
+        com.jdid.ekyc.models.api.MotorShow service = RetrofitParseApiJfinInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
         Call<ResponseParse> call = service.postDataToParse(request);
         call.enqueue(new Callback<ResponseParse>() {
             @Override
@@ -1566,6 +1578,7 @@ public class JAppActivity extends JCompatActivity {
         deviceName = getDeviceName();
 
         SmartCardDevice device  = SmartCardDevice.getSmartCardDevice(getApplicationContext(), deviceName, new SmartCardDevice.SmartCardDeviceEvent() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void OnReady(SmartCardDevice device) {
                 ThaiSmartCard thaiSmartCard = new ThaiSmartCard(device);
@@ -1639,6 +1652,10 @@ public class JAppActivity extends JCompatActivity {
 
                 Log.d(TAG, "OnReady9: " + generalInformation[LASER_ID]);
 
+                String expireDate = info.ExpireDate;
+                String date = dateFormatThai(expireDate);
+                generalInformation[EXPIRE_DATE] = date;
+                Log.d(TAG, "OnReady10: " + generalInformation[EXPIRE_DATE] );
 
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 personalPic.compress(Bitmap.CompressFormat.PNG,100, stream);
@@ -2040,7 +2057,7 @@ public class JAppActivity extends JCompatActivity {
 
     static void clearCardInformation() {
         fImageFromCamLoaded = false;
-        generalInformation = new String[10];
+        generalInformation = new String[11];
     }
     private String getDeviceName(){
         HashMap<String, UsbDevice> deviceList;
@@ -2126,9 +2143,37 @@ public class JAppActivity extends JCompatActivity {
         }else{
             sex = "ชาย";
         }
-
         return new String[]{title_name, first_name,last_name, sex};
+    }
 
+    // Date format
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private String dateFormatThai(String date) {
+        final String OLD_FORMAT = "yyyyMMdd";
+        final String NEW_FORMAT = "yyyy-MM-dd";
+
+        String newDateString;
+
+        SimpleDateFormat sdf = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            sdf = new SimpleDateFormat(OLD_FORMAT);
+        }
+        Date day = null;
+        try {
+            day = sdf.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        sdf.applyPattern(NEW_FORMAT);
+        newDateString = sdf.format(day);
+        String year = newDateString.substring(0,4);
+        String mountDay = newDateString.substring(4);
+
+        int yearThai = Integer.parseInt(year);
+        int newYear = yearThai - 543;
+        String dateExpire = newYear + mountDay;
+
+        return  dateExpire;
     }
 
 

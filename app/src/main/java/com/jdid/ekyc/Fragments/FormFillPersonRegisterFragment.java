@@ -3,17 +3,12 @@ package com.jdid.ekyc.Fragments;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,21 +19,16 @@ import androidx.fragment.app.Fragment;
 
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
-import com.jdid.ekyc.models.RetrofitMotorShowParseInstance;
+import com.jdid.ekyc.models.RetrofitParseApiJfinInstance;
 import com.jdid.ekyc.models.api.MotorShow;
 import com.jdid.ekyc.models.pojo.ResponsePhoneNumber;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.content.ContentValues.TAG;
-import static com.jdid.ekyc.JAppActivity.ADDRESS;
 
 public class FormFillPersonRegisterFragment extends Fragment {
 
@@ -89,7 +79,8 @@ public class FormFillPersonRegisterFragment extends Fragment {
                 if (finishedFormFill()) {
                     //TODO CHECK PHONE
                     String phoneNumber = edPhone.getText().toString();
-                    checkPhoneNumber(phoneNumber);
+//                    checkPhoneNumber(phoneNumber);
+                    authenOTP();
                 } else {
                     Toast.makeText(getActivity(), "กรุณากรอกหมายเลขโทรศัพท์", Toast.LENGTH_LONG).show();
                 }
@@ -129,7 +120,7 @@ public class FormFillPersonRegisterFragment extends Fragment {
             e.printStackTrace();
         }
 
-        MotorShow service = RetrofitMotorShowParseInstance.getRetrofitInstance().create(MotorShow.class);
+        MotorShow service = RetrofitParseApiJfinInstance.getRetrofitInstance().create(MotorShow.class);
         Call<ResponsePhoneNumber> call = service.checkPhoneNumber(obj.toString());
         call.enqueue(new Callback<ResponsePhoneNumber>() {
             @Override

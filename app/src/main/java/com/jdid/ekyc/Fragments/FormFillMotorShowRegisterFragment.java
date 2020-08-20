@@ -1,9 +1,7 @@
 package com.jdid.ekyc.Fragments;
 
-import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +24,7 @@ import androidx.fragment.app.Fragment;
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
 import com.jdid.ekyc.models.RetrofitInstance;
-import com.jdid.ekyc.models.RetrofitMotorShowParseInstance;
+import com.jdid.ekyc.models.RetrofitParseApiJfinInstance;
 import com.jdid.ekyc.models.api.Admin;
 import com.jdid.ekyc.models.api.MotorShow;
 import com.jdid.ekyc.models.pojo.RequestOTPForRegister;
@@ -231,7 +228,7 @@ public class FormFillMotorShowRegisterFragment extends Fragment implements View.
             e.printStackTrace();
         }
 
-        MotorShow service = RetrofitMotorShowParseInstance.getRetrofitInstance().create(MotorShow.class);
+        MotorShow service = RetrofitParseApiJfinInstance.getRetrofitInstance().create(MotorShow.class);
         Call<ResponsePhoneNumber> call = service.checkPhoneNumber(obj.toString());
         call.enqueue(new Callback<ResponsePhoneNumber>() {
             @Override

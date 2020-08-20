@@ -7,7 +7,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RetrofitMotorShowParseInstance {
+public class RetrofitParseApiJfinInstance {
     private static Retrofit retrofit;
     private static final String BASE_URL = "https://api.jfin.network";
 

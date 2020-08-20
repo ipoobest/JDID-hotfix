@@ -25,7 +25,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
 import com.jdid.ekyc.models.RetrofitInstance;
-import com.jdid.ekyc.models.RetrofitMotorShowParseInstance;
+import com.jdid.ekyc.models.RetrofitParseApiJfinInstance;
 import com.jdid.ekyc.models.api.Admin;
 import com.jdid.ekyc.models.pojo.Photo;
 import com.jdid.ekyc.models.pojo.RequestOTPForRegister;
@@ -361,7 +361,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
 
         Log.d("request xxx", request.toString());
 
-        com.jdid.ekyc.models.api.MotorShow service = RetrofitMotorShowParseInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
+        com.jdid.ekyc.models.api.MotorShow service = RetrofitParseApiJfinInstance.getRetrofitInstance().create(com.jdid.ekyc.models.api.MotorShow.class);
         Call<ResponseParse> call = service.postDataToParse(request);
         call.enqueue(new Callback<ResponseParse>() {
             @Override
