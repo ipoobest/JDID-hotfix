@@ -72,6 +72,7 @@ import com.jdid.ekyc.models.pojo.ResponseFaceCompare;
 import com.jdid.ekyc.models.pojo.ResponseVerifyUser;
 import com.jdid.ekyc.models.pojo.ResultFaceCompare;
 import com.jdid.ekyc.models.pojo.RetrofitDopaInstance;
+import com.jdid.ekyc.models.pojo.RetrofitLocalTestInStance;
 import com.jdid.ekyc.models.pojo.User;
 import com.jdid.ekyc.models.pojo.UserInformation;
 import com.jdid.ekyc.views.PFCodeView;
@@ -108,8 +109,8 @@ public class JAppActivity extends JCompatActivity {
 
     private static final String TAG = "JAppActivity";
 
-    public static final String APP_VERSION = "release 1.1.23";
-    public static final String APP_DATE_UPDATE = "11/08/63";
+    public static final String APP_VERSION = "release 1.1.24";
+    public static final String APP_DATE_UPDATE = "21/08/63";
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -531,6 +532,7 @@ public class JAppActivity extends JCompatActivity {
         RequestVrifyPin request = new RequestVrifyPin();
         request.setImei(mIMEI);
         request.setPin(mAuthenPinCode);
+        request.setVerify(true);
 
         Device service = RetrofitInstance.getRetrofitInstance().create(Device.class);
         Call<ResponVerifyPin> call = service.checkPin(request);
@@ -540,6 +542,7 @@ public class JAppActivity extends JCompatActivity {
             public void onResponse(Call<ResponVerifyPin> call, Response<ResponVerifyPin> response) {
                 if (response.isSuccessful()) {
                     ResponVerifyPin result = response.body();
+//                    Log.d("pinxxxxxx", response.code() + " " + result.getVerified() + " ");
                     if (result.getVerified()) {
                         showHomeFragment();
                     } else {

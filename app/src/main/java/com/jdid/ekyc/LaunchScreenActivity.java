@@ -71,7 +71,7 @@ public class LaunchScreenActivity extends AppCompatActivity {
                     String version = result.getResults().get(0).getValue();
                     Log.d("version aaa", version);
                     //TODO : VERSION APP
-                    if (version.equals("1.1.23")) {
+                    if (version.equals("1.1.24")) {
 //                        Log.d("version xxx", version);
                         verifyDevice();
                     } else {

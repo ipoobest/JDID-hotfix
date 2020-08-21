@@ -25,28 +25,16 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jdid.ekyc.JAppActivity;
 import com.jdid.ekyc.R;
 import com.jdid.ekyc.models.RetrofitInstance;
-import com.jdid.ekyc.models.RetrofitParseApiJfinInstance;
 import com.jdid.ekyc.models.api.Admin;
-import com.jdid.ekyc.models.pojo.Photo;
 import com.jdid.ekyc.models.pojo.RequestOTPForRegister;
 import com.jdid.ekyc.models.pojo.RequestOTPForVerify;
-import com.jdid.ekyc.models.pojo.RequestUserMotorShow;
-import com.jdid.ekyc.models.pojo.ResponseImageMegvii;
 import com.jdid.ekyc.models.pojo.ResponseOTPForRegister;
 import com.jdid.ekyc.models.pojo.ResponseOTPForVerify;
-import com.jdid.ekyc.models.pojo.ResponseParse;
-import com.jdid.ekyc.models.RetrofitMotorImageInstance;
 
-import java.io.File;
-
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.jdid.ekyc.JAppActivity.THAIFULLNAME;
 
 public class ConfirmOTPRegisterFragment extends Fragment {
 
@@ -62,6 +50,7 @@ public class ConfirmOTPRegisterFragment extends Fragment {
     private String mPhoneNumber;
     private String mPhonePerson;
     private String mRef;
+    private int falseOtp = 0;
 
     private FirebaseAnalytics mFirebaseAnalytics;
 //
@@ -234,25 +223,42 @@ public class ConfirmOTPRegisterFragment extends Fragment {
                             mProgressDialog = null;
                             Log.d("response", "2");
                             ((JAppActivity) getActivity()).CheckTypePersonal();
-                        }  else {
+                        } else {
                             mProgressDialog.dismiss();
                             mProgressDialog = null;
                             Log.d("response", "4");
                             ((JAppActivity) getActivity()).PutInformationForPerson(VERIFY_DIP_CHIP);
 
                         }
+
+                    } else if (response.body().getStatusCode() == 500){
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
+                        alertDialog("ระบบ SMS ขัดข้องกรุณาติดต่อเจ้าหน้าที่");
+
                     } else {
                         mProgressDialog.dismiss();
                         mProgressDialog = null;
-                        Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
+                        falseOtp += 1;
+                        Toast.makeText(getContext(), "รหัส OTP ผิด กรุณากรอกอีกครั้ง" + falseOtp, Toast.LENGTH_LONG).show();
+                        if (falseOtp == 3) {
+                            falseOtp = 0;
+                            Toast.makeText(getContext(),"กรุณากรอก OTP ที่ท่านได้รับใหม่", Toast.LENGTH_SHORT).show();
+                            requestOTP();
+                        }
                     }
                 } else {
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
-
+                    falseOtp += 1;
+                    if (falseOtp == 3) {
+                        falseOtp = 0;
+                        Toast.makeText(getContext(),"กรุณากรอก OTP ที่ท่านได้รับใหม่", Toast.LENGTH_SHORT).show();
+                        requestOTP();
+                    }
                     response.errorBody();
                     Log.d("error : ", response.errorBody().getClass().getName());
-                    Toast.makeText(getContext(), "รหัส OTP ผิดกรุณากรอกอีกครั้ง", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "รหัส OTP ผิด กรุณากรอกอีกครั้ง" , Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -265,6 +271,17 @@ public class ConfirmOTPRegisterFragment extends Fragment {
 
         });
     }
+    private void alertDialog(String text) {
+        new AlertDialog.Builder(getContext())
+                .setMessage(text)
+                .setCancelable(false)
+                .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ((JAppActivity) getActivity()).showHomeFragment();
+                    }
+                })
+                .show();
+        }
 
 
 }
